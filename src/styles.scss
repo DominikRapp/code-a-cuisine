@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * Global style entry point.
+ * Files with a leading underscore are SCSS partials.
+ * They are imported here and are not meant to be compiled as standalone CSS files.
+ */
+@use './styles/variables';
+@use './styles/breakpoints';
+@use './styles/typography';
+@use './styles/layout';
