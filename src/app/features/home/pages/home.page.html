@@ -1,7 +1,36 @@
 <app-page-shell>
   <app-content-container>
-    <main>
-      <h1>Code a Cuisine</h1>
+    <main class="home-hero" aria-labelledby="home-hero-title">
+      <section class="home-hero__left">
+        <header class="home-hero__header" aria-label="Code à Cuisine">
+          <img class="home-hero__logo" src="assets/images/svg/white-logo.svg" alt="Code à Cuisine" />
+        </header>
+
+        <div class="home-hero__content">
+          <p class="home-hero__eyebrow">AI-Powered recipe generator</p>
+
+          <h1 id="home-hero-title" class="home-hero__title">
+            Code à Cuisine
+          </h1>
+
+          <a class="home-hero__start-link" href="/generate/ingredients">
+            Get started
+          </a>
+        </div>
+
+        <footer class="home-hero__footer">
+          <p class="home-hero__footer-title">Hungry for inspiration?</p>
+
+          <a class="home-hero__cookbook-link" href="/cookbook">
+            <img class="home-hero__cookbook-image" src="assets/images/svg/white-go-to-cookbook.svg"
+              alt="Go to cookbook" />
+          </a>
+        </footer>
+      </section>
+
+      <section class="home-hero__right" aria-hidden="true">
+        <img class="home-hero__image" src="assets/images/svg/herobigpic.svg" alt="" />
+      </section>
     </main>
   </app-content-container>
 </app-page-shell>

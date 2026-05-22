@@ -1,0 +1,207 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: var(--app-color-brand-green);
+}
+
+.home-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 56%) minmax(0, 44%);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.home-hero__left {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: clamp(48px, 1.7vw, 32px);
+    padding-left: 48px;
+}
+
+.home-hero__right {
+    display: flex;
+    justify-content: flex-end;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.home-hero__logo {
+    display: block;
+    width: clamp(120px, 7.6vw, 145px);
+    height: auto;
+}
+
+.home-hero__content {
+    margin-top: clamp(88px, 6.25vw, 120px);
+}
+
+.home-hero__eyebrow {
+    margin: 0 0 8px;
+    color: var(--app-color-cream-soft);
+    font-family: var(--app-font-family-primary);
+    font-size: clamp(32px, 2.5vw, 48px);
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.home-hero__title {
+    margin: 0 0 clamp(36px, 2.5vw, 48px);
+    color: var(--app-color-cream-warm);
+    font-family: var(--app-font-family-secondary);
+    font-size: clamp(72px, 5.4vw, 104px);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.home-hero__start-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(150px, 9.5vw, 183px);
+    height: clamp(50px, 3.2vw, 60px);
+    background: var(--app-color-cream-warm);
+    color: var(--app-color-action-green);
+    font-family: var(--app-font-family-primary);
+    font-size: clamp(18px, 1.25vw, 24px);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 160ms ease, font-weight 160ms ease;
+}
+
+.home-hero__start-link:hover,
+.home-hero__start-link:focus-visible {
+    background: var(--app-color-cream-hover);
+    font-weight: 700;
+}
+
+.home-hero__footer {
+    display: flex;
+    align-items: center;
+    gap: clamp(24px, 1.7vw, 32px);
+    margin-top: clamp(160px, 15vw, 288px);
+}
+
+.home-hero__footer-title {
+    margin: 0;
+    color: var(--app-color-cream-warm);
+    font-family: var(--app-font-family-secondary);
+    font-size: clamp(24px, 1.7vw, 32px);
+    font-weight: 500;
+    line-height: 1.15;
+}
+
+.home-hero__cookbook-link {
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 160ms ease;
+}
+
+.home-hero__cookbook-link:hover,
+.home-hero__cookbook-link:focus-visible {
+    background: var(--app-color-cookbook-hover);
+}
+
+.home-hero__cookbook-image {
+    display: block;
+    width: clamp(188px, 12.3vw, 236px);
+    height: auto;
+}
+
+.home-hero__image {
+    height: 100vh;
+    padding-right: 40px;
+    max-height: 1000px;
+}
+
+@media (min-width: 1921px) {
+    .home-hero__left {
+        justify-content: center;
+    }
+
+    .home-hero__content {
+        margin-top: clamp(88px, 6.25vw, 120px);
+    }
+
+    .home-hero__footer {
+        margin-top: clamp(160px, 15vw, 288px);
+    }
+
+    .home-hero__right {
+        align-items: center;
+    }
+
+    .home-hero__image {
+        height: min(100vh, 1080px);
+    }
+}
+
+@media (max-width: 1024px) {
+    .home-hero__image {
+        height: 100vh;
+        transform: translateX(50%);
+        padding-right: 0px;
+    }
+
+    .home-hero__left {
+        padding-left: 16px;
+    }
+
+}
+
+@media (max-width: 769px) {
+    .home-hero {
+        grid-template-columns: minmax(0, 52%) minmax(0, 48%);
+    }
+
+    .home-hero__left {
+        padding-left: 8px;
+        padding-top: clamp(16px, 4vh, 28px);
+    }
+
+    .home-hero__logo {
+        width: clamp(72px, 16vw, 110px);
+    }
+
+    .home-hero__content {
+        margin-top: clamp(48px, 10vh, 88px);
+    }
+
+    .home-hero__eyebrow {
+        max-width: 260px;
+        font-size: clamp(19px, 6vw, 40px);
+    }
+
+    .home-hero__title {
+        max-width: 360px;
+        margin-bottom: clamp(28px, 6vh, 48px);
+        font-size: clamp(48px, 11vw, 80px);
+    }
+
+    .home-hero__start-link {
+        width: clamp(130px, 24vw, 160px);
+        height: clamp(44px, 7vh, 56px);
+        font-size: clamp(16px, 3vw, 22px);
+    }
+
+    .home-hero__footer {
+        margin-top: clamp(80px, 14vh, 160px);
+        gap: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .home-hero__footer-title {
+        font-size: clamp(22px, 4vw, 30px);
+    }
+
+    .home-hero__cookbook-image {
+        width: clamp(150px, 28vw, 200px);
+    }
+
+    .home-hero__image {
+        transform: translateX(52%);
+    }
+}

@@ -2,17 +2,4 @@
   width: 100%;
   max-width: var(--app-page-max-width);
   margin: 0 auto;
-  padding: 0 var(--app-page-padding-desktop);
-}
-
-@media (max-width: 1024px) {
-  .content-container {
-    padding: 0 var(--app-page-padding-tablet);
-  }
-}
-
-@media (max-width: 769px) {
-  .content-container {
-    padding: 0 var(--app-page-padding-mobile);
-  }
 }

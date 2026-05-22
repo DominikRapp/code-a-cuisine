@@ -1,25 +1,15 @@
 :root {
-    --app-color-primary: #1f1f1f;
-    --app-color-accent: #f4a261;
-    --app-color-background: #ffffff;
-    --app-color-surface: #f8f5ef;
-    --app-color-text: #1f1f1f;
-    --app-color-muted-text: #5f5f5f;
-    --app-color-border: #ded8ce;
-    --app-color-error: #b3261e;
-
+    --app-font-family-primary: 'Quicksand', Arial, sans-serif;
+    --app-font-family-secondary: 'Ubuntu', Arial, sans-serif;
     --app-font-family-base: Arial, sans-serif;
 
-    --app-font-size-small: 14px;
-    --app-font-size-base: 16px;
-    --app-font-size-title: 32px;
+    --app-color-brand-green: #396039;
+    --app-color-cream-soft: #f5f5dc;
+    --app-color-cream-warm: #faf0e6;
+    --app-color-action-green: #008000;
+
+    --app-color-cream-hover: #fae0c6;
+    --app-color-cookbook-hover: #607a56;
 
     --app-page-max-width: 1920px;
-    --app-page-padding-desktop: 48px;
-    --app-page-padding-tablet: 32px;
-    --app-page-padding-mobile: 16px;
-
-    --app-radius-small: 8px;
-    --app-radius-medium: 16px;
-    --app-radius-large: 24px;
 }

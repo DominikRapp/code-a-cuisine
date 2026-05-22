@@ -1,10 +1,39 @@
-html {
-    font-family: var(--app-font-family-base);
-    font-size: var(--app-font-size-base);
+@font-face {
+    font-display: swap;
+    font-family: 'Quicksand';
+    font-style: normal;
+    font-weight: 300 700;
+    src: url('/assets/fonts/quicksand/Quicksand-VariableFont_wght.ttf') format('truetype');
 }
 
-body {
-    color: var(--app-color-text);
-    font-size: var(--app-font-size-base);
-    line-height: 1.5;
+@font-face {
+    font-display: swap;
+    font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/assets/fonts/ubuntu/Ubuntu-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/assets/fonts/ubuntu/Ubuntu-Medium.ttf') format('truetype');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Ubuntu';
+    font-style: normal;
+    font-weight: 700;
+    src: url('/assets/fonts/ubuntu/Ubuntu-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-display: swap;
+    font-family: 'Ubuntu';
+    font-style: italic;
+    font-weight: 400;
+    src: url('/assets/fonts/ubuntu/Ubuntu-Italic.ttf') format('truetype');
 }
