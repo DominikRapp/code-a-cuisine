@@ -96,6 +96,13 @@
 .home-hero__cookbook-link {
     display: inline-flex;
     align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    color: var(--app-color-cream-warm);
+    font-family: var(--app-font-family-primary);
+    font-size: 20px;
+    font-weight: 500;
+    text-decoration: none;
     transition: background-color 160ms ease;
 }
 
@@ -104,10 +111,30 @@
     background: var(--app-color-cookbook-hover);
 }
 
-.home-hero__cookbook-image {
+.home-hero__cookbook-icon {
     display: block;
-    width: clamp(188px, 12.3vw, 236px);
-    height: auto;
+    width: 24px;
+    height: 24px;
+    transform: scaleX(-1);
+}
+
+.home-hero__cookbook-link:hover .home-hero__cookbook-icon,
+.home-hero__cookbook-link:focus-visible .home-hero__cookbook-icon {
+    animation: cookbook-arrow-blink 650ms ease;
+}
+
+@keyframes cookbook-arrow-blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 .home-hero__image {
@@ -149,6 +176,15 @@
         padding-left: 16px;
     }
 
+    .home-hero__footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .home-hero__cookbook-link {
+        margin-left: -12px;
+    }
 }
 
 @media (max-width: 769px) {
@@ -189,16 +225,10 @@
     .home-hero__footer {
         margin-top: clamp(80px, 14vh, 160px);
         gap: 16px;
-        flex-direction: column;
-        align-items: flex-start;
     }
 
     .home-hero__footer-title {
         font-size: clamp(22px, 4vw, 30px);
-    }
-
-    .home-hero__cookbook-image {
-        width: clamp(150px, 28vw, 200px);
     }
 
     .home-hero__image {
