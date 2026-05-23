@@ -1,0 +1,162 @@
+<main class="ingredients-step" aria-labelledby="ingredients-step-title">
+    <header class="ingredients-step__header" aria-label="Code à Cuisine">
+        <a class="ingredients-step__logo-link" href="/" aria-label="Go to home page">
+            <img class="ingredients-step__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
+        </a>
+    </header>
+
+    <section class="ingredients-step__intro">
+        <h1 id="ingredients-step-title" class="ingredients-step__title">
+            Generate recipe
+        </h1>
+
+        <p class="ingredients-step__description">
+            Got random stuff in your kitchen? Pop it in—we’ve got the perfect recipe waiting.
+        </p>
+    </section>
+
+    <section class="ingredients-step__content" aria-label="Recipe ingredient input and ingredient list">
+        <form class="ingredients-step__form" aria-label="Add ingredient">
+            <fieldset class="ingredients-step__fieldset">
+                <legend class="ingredients-step__legend">Add an ingredient</legend>
+
+                <div class="ingredients-step__ingredient-group">
+                    <label class="ingredients-step__label" for="ingredient-name">
+                        Ingredient
+                    </label>
+
+                    <div class="ingredients-step__input-shell">
+                        <input id="ingredient-name" class="ingredients-step__text-input" name="ingredientName"
+                            type="text" value="Pas" autocomplete="off" aria-autocomplete="list"
+                            aria-controls="ingredient-suggestions" />
+
+                        <span class="ingredients-step__autocomplete-preview" aria-hidden="true">
+                            ta
+                        </span>
+                    </div>
+
+                    <ul id="ingredient-suggestions" class="ingredients-step__suggestions"
+                        aria-label="Ingredient suggestions">
+                        <li class="ingredients-step__suggestion">Pasta</li>
+                        <li class="ingredients-step__suggestion">Pastrami</li>
+                        <li class="ingredients-step__suggestion">Passionfruit</li>
+                    </ul>
+                </div>
+
+                <div class="ingredients-step__serving-group">
+                    <label class="ingredients-step__label" for="ingredient-amount">
+                        Serving size
+                    </label>
+
+                    <div class="ingredients-step__serving-controls">
+                        <input id="ingredient-amount" class="ingredients-step__amount-input" name="ingredientAmount"
+                            type="number" placeholder="100" min="1" inputmode="numeric" />
+
+                        <details class="ingredients-step__unit-dropdown">
+                            <summary class="ingredients-step__unit-button" aria-label="Select serving unit">
+                                <span class="ingredients-step__unit-text">gram</span>
+
+                                <img class="ingredients-step__unit-icon" src="assets/images/svg/arrow-down-up.svg"
+                                    alt="" aria-hidden="true" />
+                            </summary>
+
+                            <ul class="ingredients-step__unit-options" aria-label="Serving unit options">
+                                <li class="ingredients-step__unit-option">piece</li>
+                                <li class="ingredients-step__unit-option">ml</li>
+                                <li class="ingredients-step__unit-option">gram</li>
+                            </ul>
+                        </details>
+
+                        <button class="ingredients-step__add-button" type="button" aria-label="Add ingredient to list">
+                            <img class="ingredients-step__add-icon" src="assets/images/svg/add-plus.svg" alt=""
+                                aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
+        <div class="ingredients-step__list-column">
+            <section class="ingredients-step__list-card" aria-labelledby="ingredient-list-title">
+                <h2 id="ingredient-list-title" class="ingredients-step__list-title">
+                    List of your Ingredients
+                </h2>
+
+                <ul class="ingredients-step__list">
+                    <li class="ingredients-step__list-item">
+                        <span class="ingredients-step__ingredient-marker" aria-hidden="true">•</span>
+                        <span class="ingredients-step__ingredient-amount">100 g</span>
+                        <span class="ingredients-step__ingredient-name">Pasta</span>
+
+                        <div class="ingredients-step__item-actions" aria-label="Actions for Pasta">
+                            <button class="ingredients-step__item-button" type="button" aria-label="Edit Pasta">
+                                <img src="assets/images/svg/edit.svg" alt="" aria-hidden="true" />
+                            </button>
+
+                            <button class="ingredients-step__item-button" type="button" aria-label="Delete Pasta">
+                                <img src="assets/images/svg/delete.svg" alt="" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </li>
+
+                    <li class="ingredients-step__list-item">
+                        <span class="ingredients-step__ingredient-marker" aria-hidden="true">•</span>
+                        <span class="ingredients-step__ingredient-amount">100 g</span>
+                        <span class="ingredients-step__ingredient-name">Baby spinach</span>
+
+                        <div class="ingredients-step__item-actions" aria-label="Actions for Baby spinach">
+                            <button class="ingredients-step__item-button" type="button" aria-label="Edit Baby spinach">
+                                <img src="assets/images/svg/edit.svg" alt="" aria-hidden="true" />
+                            </button>
+
+                            <button class="ingredients-step__item-button" type="button"
+                                aria-label="Delete Baby spinach">
+                                <img src="assets/images/svg/delete.svg" alt="" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </li>
+
+                    <li class="ingredients-step__list-item">
+                        <span class="ingredients-step__ingredient-marker" aria-hidden="true">•</span>
+                        <span class="ingredients-step__ingredient-amount">150 g</span>
+                        <span class="ingredients-step__ingredient-name">Cherry tomatoes</span>
+
+                        <div class="ingredients-step__item-actions" aria-label="Actions for Cherry tomatoes">
+                            <button class="ingredients-step__item-button" type="button"
+                                aria-label="Edit Cherry tomatoes">
+                                <img src="assets/images/svg/edit.svg" alt="" aria-hidden="true" />
+                            </button>
+
+                            <button class="ingredients-step__item-button" type="button"
+                                aria-label="Delete Cherry tomatoes">
+                                <img src="assets/images/svg/delete.svg" alt="" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </li>
+
+                    <li class="ingredients-step__list-item">
+                        <span class="ingredients-step__ingredient-marker" aria-hidden="true">•</span>
+                        <span class="ingredients-step__ingredient-amount">1</span>
+                        <span class="ingredients-step__ingredient-name">Egg</span>
+
+                        <div class="ingredients-step__item-actions" aria-label="Actions for Egg">
+                            <button class="ingredients-step__item-button" type="button" aria-label="Edit Egg">
+                                <img src="assets/images/svg/edit.svg" alt="" aria-hidden="true" />
+                            </button>
+
+                            <button class="ingredients-step__item-button" type="button" aria-label="Delete Egg">
+                                <img src="assets/images/svg/delete.svg" alt="" aria-hidden="true" />
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <nav class="ingredients-step__navigation" aria-label="Recipe generation navigation">
+                <a class="ingredients-step__next-link" href="/generate/preferences">
+                    Next step
+                </a>
+            </nav>
+        </div>
+    </section>
+</main>
