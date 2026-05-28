@@ -1,14 +1,13 @@
 import { Injectable, computed, signal } from '@angular/core';
 
 import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
+import { MOCK_RECIPE_LIBRARY } from '../../shared/data/mock-recipes.data';
 import {
   GeneratedRecipe,
-  RecipeCookingTime,
   RecipeCuisine,
-  RecipeDiet,
   RecipeGenerationRequest,
   RecipeIngredient,
-  RecipePreferences,
+  RecipePreferences
 } from '../../shared/models/recipe-generation.model';
 
 const LIKED_RECIPE_IDS_STORAGE_KEY = 'code-a-cuisine-liked-recipe-ids';
@@ -21,7 +20,7 @@ export class RecipeGenerationService {
   private readonly ingredients = signal<RecipeIngredient[]>([]);
   private readonly preferences = signal<RecipePreferences | null>(null);
   private readonly generatedRecipes = signal<GeneratedRecipe[]>([]);
-  private readonly libraryRecipes = signal<GeneratedRecipe[]>(this.buildLibraryRecipes());
+  private readonly libraryRecipes = signal<GeneratedRecipe[]>(MOCK_RECIPE_LIBRARY);
   private readonly likedRecipeIds = signal<Set<string>>(this.loadLikedRecipeIds());
   private readonly maxGeneratedRecipes = RECIPE_GENERATION_CONFIG.generatedRecipes.max;
 
@@ -192,40 +191,6 @@ export class RecipeGenerationService {
     };
   }
 
-  /** Builds static cookbook recipes until Firebase exists. */
-  private buildLibraryRecipes(): GeneratedRecipe[] {
-    return [
-      this.buildLibraryRecipe('pasta-spinach-cherry-tomatoes', 'Pasta with spinach and cherry tomatoes', 'quick', 'italian', 'vegetarian', 66),
-      this.buildLibraryRecipe('low-carb-vegan-bake-paleo-bars', 'Low Carb Vegan No-Bake Paleo Bars', 'medium', 'fusion', 'vegan', 57),
-      this.buildLibraryRecipe('schnitzel-potato-salad', 'Schnitzel with potato salad', 'complex', 'german', 'none', 52),
-      this.buildLibraryRecipe('sushi-rice-bowl', 'Sushi rice bowl with salmon', 'medium', 'japanese', 'none', 49),
-      this.buildLibraryRecipe('indian-curry-rice', 'Indian curry rice platter', 'medium', 'indian', 'vegetarian', 44),
-    ];
-  }
-
-  /** Builds one static cookbook recipe. */
-  private buildLibraryRecipe(
-    id: string,
-    title: string,
-    cookingTime: RecipeCookingTime,
-    cuisine: RecipeCuisine,
-    diet: RecipeDiet,
-    likes: number,
-  ): GeneratedRecipe {
-    return {
-      id,
-      title,
-      description: 'Temporary cookbook recipe until Firebase is connected.',
-      ingredients: this.getLibraryIngredients(id),
-      nutrition: this.getLibraryNutrition(likes),
-      steps: this.getLibrarySteps(title),
-      cookingTime,
-      cuisine,
-      diet,
-      likes,
-    };
-  }
-
   /** Returns locally stored liked recipe ids. */
   private loadLikedRecipeIds(): Set<string> {
     const storedRecipeIds = localStorage.getItem(LIKED_RECIPE_IDS_STORAGE_KEY);
@@ -276,33 +241,6 @@ export class RecipeGenerationService {
       { order: 1, text: `Prepare ${ingredientName} and all other ingredients.` },
       { order: 2, text: 'Cook everything gently until it smells great.' },
       { order: 3, text: 'Season, plate, and serve warm.' },
-    ];
-  }
-
-  /** Returns temporary cookbook ingredients. */
-  private getLibraryIngredients(recipeId: string): RecipeIngredient[] {
-    return [
-      { id: `${recipeId}-ingredient-1`, name: 'main ingredient', amount: 250, unit: 'gram' },
-      { id: `${recipeId}-ingredient-2`, name: 'fresh herbs', amount: 1, unit: 'piece' },
-    ];
-  }
-
-  /** Returns temporary cookbook nutrition values. */
-  private getLibraryNutrition(likes: number): GeneratedRecipe['nutrition'] {
-    return {
-      calories: 380 + likes,
-      protein: 18,
-      carbohydrates: 42,
-      fat: 12,
-    };
-  }
-
-  /** Returns temporary cookbook cooking steps. */
-  private getLibrarySteps(title: string): GeneratedRecipe['steps'] {
-    return [
-      { order: 1, text: `Prepare everything for ${title}.` },
-      { order: 2, text: 'Cook the ingredients until ready.' },
-      { order: 3, text: 'Serve warm and enjoy.' },
     ];
   }
 }
