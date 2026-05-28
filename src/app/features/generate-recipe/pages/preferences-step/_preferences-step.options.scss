@@ -1,0 +1,104 @@
+.preferences-step__options-card {
+    display: flex;
+    flex-direction: column;
+    width: 780px;
+    min-height: 412px;
+    height: auto;
+    margin: 32px auto 0;
+    padding: 20px;
+    border-radius: 20px;
+    background: var(--app-color-preferences-card);
+    box-sizing: border-box;
+}
+
+.preferences-step__option-section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.preferences-step__option-section+.preferences-step__option-section {
+    margin-top: 42px;
+}
+
+.preferences-step__section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 30px;
+}
+
+.preferences-step__section-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.preferences-step__time-options,
+.preferences-step__tag-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.preferences-step__time-options {
+    gap: 34px;
+}
+
+.preferences-step__tag-label {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.preferences-step__tag-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.preferences-step__tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 18px;
+    border-radius: 20px;
+    background: var(--app-color-cream-warm);
+    color: var(--app-color-generate-title);
+    font-family: var(--app-font-family-primary);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+    cursor: pointer;
+}
+
+.preferences-step__tag:hover,
+.preferences-step__tag-input:focus-visible+.preferences-step__tag {
+    background: var(--app-color-cream-hover);
+}
+
+.preferences-step__tag-input:checked+.preferences-step__tag {
+    background: var(--app-color-preferences-tag-active);
+    color: var(--app-color-generate-text);
+    box-shadow: none;
+}
+
+.preferences-step__tag-note {
+    color: var(--app-color-generate-title);
+    font-family: var(--app-font-family-primary);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 22px;
+}

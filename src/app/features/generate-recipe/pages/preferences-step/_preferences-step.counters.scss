@@ -1,0 +1,91 @@
+.preferences-step__counters {
+    display: grid;
+    grid-template-columns: 290px 290px;
+    justify-content: center;
+    gap: 74px;
+    margin: 32px 0 0;
+}
+
+.preferences-step__counter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.preferences-step__counter-title {
+    margin: 0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 26px;
+}
+
+.preferences-step__counter-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.preferences-step__counter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--app-color-preferences-icon);
+    font-family: var(--app-font-family-primary);
+    font-size: 8px;
+    font-weight: 600;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.preferences-step__counter-button svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    color: currentColor;
+}
+
+.preferences-step__counter-button:not(:disabled):hover,
+.preferences-step__counter-button:focus-visible {
+    background: var(--app-color-preferences-counter-hover);
+    color: var(--app-color-preferences-icon);
+    outline: none;
+}
+
+.preferences-step__counter-button:not(:disabled):active {
+    background: var(--app-color-preferences-counter-active);
+    transform: none;
+}
+
+.preferences-step__counter-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    background: var(--app-color-preferences-card);
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.preferences-step__counter-label {
+    display: inline-flex;
+    align-items: center;
+    width: 72px;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 26px;
+}

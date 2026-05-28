@@ -1,10 +1,10 @@
 <main class="preferences-step" aria-labelledby="preferences-step-title">
     <header class="preferences-step__header" aria-label="Code à Cuisine">
-        <a class="preferences-step__logo-link" href="/" aria-label="Go to home page">
+        <a class="preferences-step__logo-link" routerLink="/" aria-label="Go to home page">
             <img class="preferences-step__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
         </a>
 
-        <a class="preferences-step__back-link" href="/generate/ingredients" aria-label="Go back to ingredients">
+        <a class="preferences-step__back-link" routerLink="/generate/ingredients" aria-label="Go back to ingredients">
             <img class="preferences-step__back-image" src="assets/images/svg/back-arrow.svg" alt=""
                 aria-hidden="true" />
             <span class="preferences-step__back-text">Ingredients</span>
@@ -24,7 +24,8 @@
             </h2>
 
             <div class="preferences-step__counter-controls" aria-label="Portion amount">
-                <button class="preferences-step__counter-button" type="button" aria-label="Decrease portions">
+                <button class="preferences-step__counter-button" type="button" aria-label="Decrease portions"
+                    [disabled]="isMinServings()" (click)="decreaseServings()">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M5.55556 11.1111H14.4444C14.7593 11.1111 15.0231 11.0046 15.2361 10.7917C15.4491 10.5787 15.5556 10.3148 15.5556 10C15.5556 9.68519 15.4491 9.4213 15.2361 9.20833C15.0231 8.99537 14.7593 8.88889 14.4444 8.88889H5.55556C5.24074 8.88889 4.97685 8.99537 4.76389 9.20833C4.55093 9.4213 4.44444 9.68519 4.44444 10C4.44444 10.3148 4.55093 10.5787 4.76389 10.7917C4.97685 11.0046 5.24074 11.1111 5.55556 11.1111ZM2.22222 20C1.61111 20 1.08796 19.7824 0.652778 19.3472C0.217593 18.912 0 18.3889 0 17.7778V2.22222C0 1.61111 0.217593 1.08796 0.652778 0.652778C1.08796 0.217593 1.61111 0 2.22222 0H17.7778C18.3889 0 18.912 0.217593 19.3472 0.652778C19.7824 1.08796 20 1.61111 20 2.22222V17.7778C20 18.3889 19.7824 18.912 19.3472 19.3472C18.912 19.7824 18.3889 20 17.7778 20H2.22222ZM2.22222 17.7778H17.7778V2.22222H2.22222V17.7778Z"
@@ -32,10 +33,11 @@
                     </svg>
                 </button>
 
-                <span class="preferences-step__counter-value" aria-live="polite">0</span>
-                <span class="preferences-step__counter-label">Portions</span>
+                <span class="preferences-step__counter-value" aria-live="polite">{{ servings() }}</span>
+                <span class="preferences-step__counter-label">{{ getServingLabel() }}</span>
 
-                <button class="preferences-step__counter-button" type="button" aria-label="Increase portions">
+                <button class="preferences-step__counter-button" type="button" aria-label="Increase portions"
+                    [disabled]="isMaxServings()" (click)="increaseServings()">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M8.33333 11.6667V13.8889C8.33333 14.3519 8.49537 14.7454 8.81944 15.0694C9.14352 15.3935 9.53704 15.5556 10 15.5556C10.463 15.5556 10.8565 15.3935 11.1806 15.0694C11.5046 14.7454 11.6667 14.3519 11.6667 13.8889V11.6667H13.8889C14.3519 11.6667 14.7454 11.5046 15.0694 11.1806C15.3935 10.8565 15.5556 10.463 15.5556 10C15.5556 9.53704 15.3935 9.14352 15.0694 8.81944C14.7454 8.49537 14.3519 8.33333 13.8889 8.33333H11.6667V6.11111C11.6667 5.64815 11.5046 5.25463 11.1806 4.93056C10.8565 4.60648 10.463 4.44444 10 4.44444C9.53704 4.44444 9.14352 4.60648 8.81944 4.93056C8.49537 5.25463 8.33333 5.64815 8.33333 6.11111V8.33333H6.11111C5.64815 8.33333 5.25463 8.49537 4.93056 8.81944C4.60648 9.14352 4.44444 9.53704 4.44444 10C4.44444 10.463 4.60648 10.8565 4.93056 11.1806C5.25463 11.5046 5.64815 11.6667 6.11111 11.6667H8.33333ZM2.22222 20C1.61111 20 1.08796 19.7824 0.652778 19.3472C0.217593 18.912 0 18.3889 0 17.7778V2.22222C0 1.61111 0.217593 1.08796 0.652778 0.652778C1.08796 0.217593 1.61111 0 2.22222 0H17.7778C18.3889 0 18.912 0.217593 19.3472 0.652778C19.7824 1.08796 20 1.61111 20 2.22222V17.7778C20 18.3889 19.7824 18.912 19.3472 19.3472C18.912 19.7824 18.3889 20 17.7778 20H2.22222ZM2.22222 17.7778H17.7778V2.22222H2.22222V17.7778Z"
@@ -51,22 +53,24 @@
             </h2>
 
             <div class="preferences-step__counter-controls" aria-label="Cooking person amount">
-                <button class="preferences-step__counter-button" type="button" aria-label="Decrease cooking persons">
+                <button class="preferences-step__counter-button" type="button" aria-label="Decrease cooking persons"
+                    [disabled]="isMinCookingPersons()" (click)="decreaseCookingPersons()">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M5.55556 11.1111H14.4444C14.7593 11.1111 15.0231 11.0046 15.2361 10.7917C15.4491 10.5787 15.5556 10.3148 15.5556 10C15.5556 9.68519 15.4491 9.4213 15.2361 9.20833C15.0231 8.99537 14.7593 8.88889 14.4444 8.88889H5.55556C5.24074 8.88889 4.97685 8.99537 4.76389 9.20833C4.55093 9.4213 4.44444 9.68519 4.44444 10C4.44444 10.3148 4.55093 10.5787 4.76389 10.7917C4.97685 11.0046 5.24074 11.1111 5.55556 11.1111ZM2.22222 20C1.61111 20 1.08796 19.7824 0.652778 19.3472C0.217593 18.912 0 18.3889 0 17.7778V2.22222C0 1.61111 0.217593 1.08796 0.652778 0.652778C1.08796 0.217593 1.61111 0 2.22222 0H17.7778C18.3889 0 18.912 0.217593 19.3472 0.652778C19.7824 1.08796 20 1.61111 20 2.22222V17.7778C20 18.3889 19.7824 18.912 19.3472 19.3472C18.912 19.7824 18.3889 20 17.7778 20H2.22222ZM2.22222 17.7778H17.7778V2.22222H2.22222V17.7778Z"
-                            fill="#10310B" />
+                            fill="currentColor" />
                     </svg>
                 </button>
 
-                <span class="preferences-step__counter-value" aria-live="polite">0</span>
-                <span class="preferences-step__counter-label">Person</span>
+                <span class="preferences-step__counter-value" aria-live="polite">{{ cookingPersons() }}</span>
+                <span class="preferences-step__counter-label">{{ getCookingPersonLabel() }}</span>
 
-                <button class="preferences-step__counter-button" type="button" aria-label="Increase cooking persons">
+                <button class="preferences-step__counter-button" type="button" aria-label="Increase cooking persons"
+                    [disabled]="isMaxCookingPersons()" (click)="increaseCookingPersons()">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M8.33333 11.6667V13.8889C8.33333 14.3519 8.49537 14.7454 8.81944 15.0694C9.14352 15.3935 9.53704 15.5556 10 15.5556C10.463 15.5556 10.8565 15.3935 11.1806 15.0694C11.5046 14.7454 11.6667 14.3519 11.6667 13.8889V11.6667H13.8889C14.3519 11.6667 14.7454 11.5046 15.0694 11.1806C15.3935 10.8565 15.5556 10.463 15.5556 10C15.5556 9.53704 15.3935 9.14352 15.0694 8.81944C14.7454 8.49537 14.3519 8.33333 13.8889 8.33333H11.6667V6.11111C11.6667 5.64815 11.5046 5.25463 11.1806 4.93056C10.8565 4.60648 10.463 4.44444 10 4.44444C9.53704 4.44444 9.14352 4.60648 8.81944 4.93056C8.49537 5.25463 8.33333 5.64815 8.33333 6.11111V8.33333H6.11111C5.64815 8.33333 5.25463 8.49537 4.93056 8.81944C4.60648 9.14352 4.44444 9.53704 4.44444 10C4.44444 10.463 4.60648 10.8565 4.93056 11.1806C5.25463 11.5046 5.64815 11.6667 6.11111 11.6667H8.33333ZM2.22222 20C1.61111 20 1.08796 19.7824 0.652778 19.3472C0.217593 18.912 0 18.3889 0 17.7778V2.22222C0 1.61111 0.217593 1.08796 0.652778 0.652778C1.08796 0.217593 1.61111 0 2.22222 0H17.7778C18.3889 0 18.912 0.217593 19.3472 0.652778C19.7824 1.08796 20 1.61111 20 2.22222V17.7778C20 18.3889 19.7824 18.912 19.3472 19.3472C18.912 19.7824 18.3889 20 17.7778 20H2.22222ZM2.22222 17.7778H17.7778V2.22222H2.22222V17.7778Z"
-                            fill="#10310B" />
+                            fill="currentColor" />
                     </svg>
                 </button>
             </div>
@@ -83,19 +87,22 @@
 
             <div class="preferences-step__time-options">
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="quick" />
+                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="quick"
+                        [checked]="cookingTime() === 'quick'" (change)="selectCookingTime('quick')" />
                     <span class="preferences-step__tag">Quick</span>
                     <span class="preferences-step__tag-note">ab to 20min</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="medium" />
+                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="medium"
+                        [checked]="cookingTime() === 'medium'" (change)="selectCookingTime('medium')" />
                     <span class="preferences-step__tag">Medium</span>
                     <span class="preferences-step__tag-note">25-40min</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="complex" />
+                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="complex"
+                        [checked]="cookingTime() === 'complex'" (change)="selectCookingTime('complex')" />
                     <span class="preferences-step__tag">Complex</span>
                     <span class="preferences-step__tag-note">over 45min</span>
                 </label>
@@ -111,32 +118,38 @@
 
             <div class="preferences-step__tag-grid">
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="german" />
+                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="german"
+                        [checked]="cuisine() === 'german'" (change)="selectCuisine('german')" />
                     <span class="preferences-step__tag">German</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="italian" />
+                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="italian"
+                        [checked]="cuisine() === 'italian'" (change)="selectCuisine('italian')" />
                     <span class="preferences-step__tag">Italian</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="indian" />
+                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="indian"
+                        [checked]="cuisine() === 'indian'" (change)="selectCuisine('indian')" />
                     <span class="preferences-step__tag">Indian</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="japanese" />
+                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="japanese"
+                        [checked]="cuisine() === 'japanese'" (change)="selectCuisine('japanese')" />
                     <span class="preferences-step__tag">Japanese</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="gourmet" />
+                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="gourmet"
+                        [checked]="cuisine() === 'gourmet'" (change)="selectCuisine('gourmet')" />
                     <span class="preferences-step__tag">Gourmet</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="fusion" />
+                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="fusion"
+                        [checked]="cuisine() === 'fusion'" (change)="selectCuisine('fusion')" />
                     <span class="preferences-step__tag">Fusion</span>
                 </label>
             </div>
@@ -151,22 +164,26 @@
 
             <div class="preferences-step__tag-grid">
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="vegetarian" />
+                    <input class="preferences-step__tag-input" type="radio" name="diet" value="vegetarian"
+                        [checked]="diet() === 'vegetarian'" (change)="selectDiet('vegetarian')" />
                     <span class="preferences-step__tag">Vegetarian</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="vegan" />
+                    <input class="preferences-step__tag-input" type="radio" name="diet" value="vegan"
+                        [checked]="diet() === 'vegan'" (change)="selectDiet('vegan')" />
                     <span class="preferences-step__tag">Vegan</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="keto" />
+                    <input class="preferences-step__tag-input" type="radio" name="diet" value="keto"
+                        [checked]="diet() === 'keto'" (change)="selectDiet('keto')" />
                     <span class="preferences-step__tag">Keto</span>
                 </label>
 
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="none" />
+                    <input class="preferences-step__tag-input" type="radio" name="diet" value="none"
+                        [checked]="diet() === 'none'" (change)="selectDiet('none')" />
                     <span class="preferences-step__tag">No preferences</span>
                 </label>
             </div>
@@ -174,7 +191,7 @@
     </section>
 
     <nav class="preferences-step__navigation" aria-label="Recipe generation navigation">
-        <a class="preferences-step__generate-link" href="/generate/loading">
+        <a class="preferences-step__generate-link" routerLink="/generate/loading">
             Generate a recipe
         </a>
     </nav>
