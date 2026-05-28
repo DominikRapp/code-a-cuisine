@@ -261,7 +261,7 @@
 
             @if (ingredients().length > 0) {
             <nav class="ingredients-step__navigation" aria-label="Recipe generation navigation">
-                <a class="ingredients-step__next-link" routerLink="/generate/preferences">
+                <a class="ingredients-step__next-link" routerLink="/generate/preferences" (click)="saveIngredients()">
                     Next step
                 </a>
             </nav>

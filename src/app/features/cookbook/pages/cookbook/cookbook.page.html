@@ -1,11 +1,11 @@
 <main class="cookbook-page" aria-labelledby="cookbook-title">
     <header class="cookbook-page__header">
-        <a class="cookbook-page__logo-link" href="/" aria-label="Go to home page">
+        <a class="cookbook-page__logo-link" routerLink="/" aria-label="Go to home page">
             <img class="cookbook-page__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" width="142"
                 height="48" />
         </a>
 
-        <a class="cookbook-page__back-link" href="/" aria-label="Back to home page">
+        <a class="cookbook-page__back-link" routerLink="/" aria-label="Back to home page">
             <img class="cookbook-page__back-icon" src="assets/images/svg/back-arrow.svg" alt="" aria-hidden="true" />
             <span>Back</span>
         </a>
@@ -34,102 +34,33 @@
                     aria-hidden="true" />
             </div>
 
-            <div class="cookbook-page__liked-scroll" aria-label="Most liked recipe list">
-                <a class="cookbook-page__liked-card" href="/recipe/pasta-spinach-cherry-tomatoes">
+            <div class="cookbook-page__liked-scroll" aria-label="Most liked recipe list"
+                (wheel)="scrollLikedRecipes($event)">
+                @for (recipe of mostLikedRecipes(); track recipe.id) {
+                <a class="cookbook-page__liked-card" [routerLink]="getRecipeDetailRoute(recipe)">
                     <span class="cookbook-page__liked-meta">
                         <img class="cookbook-page__liked-clock" src="assets/images/svg/clock.svg" alt=""
                             aria-hidden="true" />
-                        Cooking time: 20min
+                        Cooking time: {{ getCookingTimeLabel(recipe.cookingTime) }}
                     </span>
 
                     <span class="cookbook-page__liked-name">
-                        Pasta with spinach and cherry tomatoes
+                        {{ recipe.title }}
                     </span>
 
-                    <span class="cookbook-page__likes-tag" aria-label="66 likes">
+                    <span class="cookbook-page__likes-tag" [attr.aria-label]="recipe.likes + ' likes'">
                         <img class="cookbook-page__likes-icon" src="assets/images/svg/likes-heart.svg" alt=""
                             aria-hidden="true" />
-                        <span>66</span>
+                        <span>{{ recipe.likes }}</span>
                     </span>
                 </a>
-
-                <a class="cookbook-page__liked-card" href="/recipe/low-carb-vegan-bake-paleo-bars">
-                    <span class="cookbook-page__liked-meta">
-                        <img class="cookbook-page__liked-clock" src="assets/images/svg/clock.svg" alt=""
-                            aria-hidden="true" />
-                        Cooking time: 35min
-                    </span>
-
-                    <span class="cookbook-page__liked-name">
-                        Low Carb Vegan No-Bake Paleo Bars
-                    </span>
-
-                    <span class="cookbook-page__likes-tag" aria-label="57 likes">
-                        <img class="cookbook-page__likes-icon" src="assets/images/svg/likes-heart.svg" alt=""
-                            aria-hidden="true" />
-                        <span>57</span>
-                    </span>
-                </a>
-
-                <a class="cookbook-page__liked-card" href="/recipe/schnitzel-potato-salad">
-                    <span class="cookbook-page__liked-meta">
-                        <img class="cookbook-page__liked-clock" src="assets/images/svg/clock.svg" alt=""
-                            aria-hidden="true" />
-                        Cooking time: 45min
-                    </span>
-
-                    <span class="cookbook-page__liked-name">
-                        Schnitzel with potato salad
-                    </span>
-
-                    <span class="cookbook-page__likes-tag" aria-label="52 likes">
-                        <img class="cookbook-page__likes-icon" src="assets/images/svg/likes-heart.svg" alt=""
-                            aria-hidden="true" />
-                        <span>52</span>
-                    </span>
-                </a>
-
-                <a class="cookbook-page__liked-card" href="/recipe/sushi-rice-bowl">
-                    <span class="cookbook-page__liked-meta">
-                        <img class="cookbook-page__liked-clock" src="assets/images/svg/clock.svg" alt=""
-                            aria-hidden="true" />
-                        Cooking time: 30min
-                    </span>
-
-                    <span class="cookbook-page__liked-name">
-                        Sushi rice bowl with salmon
-                    </span>
-
-                    <span class="cookbook-page__likes-tag" aria-label="49 likes">
-                        <img class="cookbook-page__likes-icon" src="assets/images/svg/likes-heart.svg" alt=""
-                            aria-hidden="true" />
-                        <span>49</span>
-                    </span>
-                </a>
-
-                <a class="cookbook-page__liked-card" href="/recipe/indian-curry-rice">
-                    <span class="cookbook-page__liked-meta">
-                        <img class="cookbook-page__liked-clock" src="assets/images/svg/clock.svg" alt=""
-                            aria-hidden="true" />
-                        Cooking time: 40min
-                    </span>
-
-                    <span class="cookbook-page__liked-name">
-                        Indian curry rice platter
-                    </span>
-
-                    <span class="cookbook-page__likes-tag" aria-label="44 likes">
-                        <img class="cookbook-page__likes-icon" src="assets/images/svg/likes-heart.svg" alt=""
-                            aria-hidden="true" />
-                        <span>44</span>
-                    </span>
-                </a>
+                }
             </div>
         </section>
     </section>
 
     <section class="cookbook-page__categories" aria-label="Cuisine categories">
-        <a class="cookbook-page__category-card" href="/cookbook/category/italian">
+        <a class="cookbook-page__category-card" routerLink="/cookbook/category/italian">
             <span class="cookbook-page__category-title">
                 Italian cuisine
                 <img class="cookbook-page__category-emoji" src="assets/images/png/italian-emoji.png" alt=""
@@ -142,7 +73,7 @@
             </span>
         </a>
 
-        <a class="cookbook-page__category-card" href="/cookbook/category/german">
+        <a class="cookbook-page__category-card" routerLink="/cookbook/category/german">
             <span class="cookbook-page__category-title">
                 German cuisine
                 <img class="cookbook-page__category-emoji" src="assets/images/png/german-emoji.png" alt=""
@@ -155,7 +86,7 @@
             </span>
         </a>
 
-        <a class="cookbook-page__category-card" href="/cookbook/category/japanese">
+        <a class="cookbook-page__category-card" routerLink="/cookbook/category/japanese">
             <span class="cookbook-page__category-title">
                 Japanese cuisine
                 <img class="cookbook-page__category-emoji" src="assets/images/png/japanese-emoji.png" alt=""
@@ -168,7 +99,7 @@
             </span>
         </a>
 
-        <a class="cookbook-page__category-card" href="/cookbook/category/gourmet">
+        <a class="cookbook-page__category-card" routerLink="/cookbook/category/gourmet">
             <span class="cookbook-page__category-title">
                 Gourmet cuisine
                 <img class="cookbook-page__category-emoji" src="assets/images/png/gourmet-emoji.png" alt=""
@@ -181,7 +112,7 @@
             </span>
         </a>
 
-        <a class="cookbook-page__category-card" href="/cookbook/category/indian">
+        <a class="cookbook-page__category-card" routerLink="/cookbook/category/indian">
             <span class="cookbook-page__category-title">
                 Indian cuisine
                 <img class="cookbook-page__category-emoji" src="assets/images/png/indian-emoji.png" alt=""
@@ -194,7 +125,7 @@
             </span>
         </a>
 
-        <a class="cookbook-page__category-card" href="/cookbook/category/fusion">
+        <a class="cookbook-page__category-card" routerLink="/cookbook/category/fusion">
             <span class="cookbook-page__category-title">
                 Fusion cuisine
                 <img class="cookbook-page__category-emoji" src="assets/images/png/fusion-emoji.png" alt=""
@@ -209,8 +140,8 @@
     </section>
 
     <div class="cookbook-page__new-link-row">
-        <a class="cookbook-page__new-link" href="/generate/ingredients">
-            <span class="cookbook-page__new-link-text">Generate new recipie</span>
+        <a class="cookbook-page__new-link" routerLink="/generate/ingredients">
+            <span class="cookbook-page__new-link-text">Generate new recipe</span>
 
             <span class="cookbook-page__new-link-icon" aria-hidden="true">
                 <svg width="32" height="20" viewBox="0 0 32 20" fill="none" xmlns="http://www.w3.org/2000/svg">

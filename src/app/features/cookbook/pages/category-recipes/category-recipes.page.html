@@ -1,357 +1,74 @@
 <main class="category-recipes-page" aria-labelledby="category-recipes-title">
     <header class="category-recipes-page__header">
-        <a class="category-recipes-page__logo-link" href="/" aria-label="Go to home page">
+        <a class="category-recipes-page__logo-link" routerLink="/" aria-label="Go to home page">
             <img class="category-recipes-page__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine"
                 width="142" height="48" />
         </a>
 
-        <a class="category-recipes-page__back-link" href="/cookbook" aria-label="Back to cookbook">
+        <a class="category-recipes-page__back-link" routerLink="/cookbook" aria-label="Back to cookbook">
             <img class="category-recipes-page__back-icon" src="assets/images/svg/back-arrow.svg" alt=""
                 aria-hidden="true" />
             <span>Cookbook</span>
         </a>
-
     </header>
 
     <section class="category-recipes-page__hero" aria-labelledby="category-recipes-title">
         <h1 id="category-recipes-title" class="category-recipes-page__title">
-            Italian cuisine
+            {{ config.title }}
         </h1>
 
         <picture>
-            <source media="(max-width: 769px)" srcset="assets/images/svg/italian-cousine-hero-mobile.svg" />
-            <img class="category-recipes-page__hero-image" src="assets/images/svg/italian-cousine-hero.svg" alt=""
-                aria-hidden="true" width="1143" height="144" />
+            <source media="(max-width: 769px)" [srcset]="config.heroMobile" />
+            <img class="category-recipes-page__hero-image" [src]="config.heroDesktop" alt="" aria-hidden="true"
+                width="1143" height="144" />
         </picture>
     </section>
 
-    <section class="category-recipes-page__content" aria-label="Italian recipe list">
+    <section class="category-recipes-page__content" [attr.aria-label]="config.label">
+        @if (recipes().length > 0) {
         <ol class="category-recipes-page__recipe-list">
+            @for (recipe of recipes(); track recipe.id; let index = $index) {
             <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/pasta-spinach-cherry-tomatoes">
-                    <span class="category-recipes-page__recipe-number">1.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 20min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Pasta with spinach and cherry tomatoes</span>
+                <a class="category-recipes-page__recipe-link" [routerLink]="getRecipeDetailRoute(recipe)">
+                    <span class="category-recipes-page__recipe-number">
+                        {{ index + 1 }}.
                     </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Vegetarian</span>
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="66 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            66
-                        </span>
-                    </span>
-                </a>
-            </li>
 
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/creamy-garlic-shrimp-pasta">
-                    <span class="category-recipes-page__recipe-number">2.</span>
                     <span class="category-recipes-page__recipe-main">
                         <span class="category-recipes-page__recipe-time">
                             <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 22min
+                            Cooking time: {{ getCookingTimeLabel(recipe.cookingTime) }}
                         </span>
-                        <span class="category-recipes-page__recipe-title">Creamy garlic shrimp pasta</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="32 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            32
-                        </span>
-                    </span>
-                </a>
-            </li>
 
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/funghi-salami-pizza">
-                    <span class="category-recipes-page__recipe-number">3.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 16min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Funghi salami pizza</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="42 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            42
+                        <span class="category-recipes-page__recipe-title">
+                            {{ recipe.title }}
                         </span>
                     </span>
-                </a>
-            </li>
 
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/pasta-spinach-cherry-tomatoes">
-                    <span class="category-recipes-page__recipe-number">4.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 20min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Pasta with spinach and cherry tomatoes</span>
-                    </span>
                     <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Vegetarian</span>
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="66 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            66
+                        @for (tag of getRecipeTags(recipe); track tag) {
+                        <span class="category-recipes-page__tag">
+                            {{ tag }}
                         </span>
-                    </span>
-                </a>
-            </li>
+                        }
 
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/creamy-garlic-shrimp-pasta">
-                    <span class="category-recipes-page__recipe-number">5.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 22min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Creamy garlic shrimp pasta</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="32 likes">
+                        <span class="category-recipes-page__like-tag" [attr.aria-label]="recipe.likes + ' likes'">
                             <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            32
+                            {{ recipe.likes }}
                         </span>
                     </span>
                 </a>
             </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/funghi-salami-pizza">
-                    <span class="category-recipes-page__recipe-number">6.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 16min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Funghi salami pizza</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="42 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            42
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/pasta-spinach-cherry-tomatoes">
-                    <span class="category-recipes-page__recipe-number">7.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 20min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Pasta with spinach and cherry tomatoes</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Vegetarian</span>
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="66 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            66
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/creamy-garlic-shrimp-pasta">
-                    <span class="category-recipes-page__recipe-number">8.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 22min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Creamy garlic shrimp pasta</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="32 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            32
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/funghi-salami-pizza">
-                    <span class="category-recipes-page__recipe-number">9.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 16min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Funghi salami pizza</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="42 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            42
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/pasta-spinach-cherry-tomatoes">
-                    <span class="category-recipes-page__recipe-number">10.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 20min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Pasta with spinach and cherry tomatoes</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Vegetarian</span>
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="66 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            66
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/creamy-garlic-shrimp-pasta">
-                    <span class="category-recipes-page__recipe-number">11.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 22min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Creamy garlic shrimp pasta</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="32 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            32
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/funghi-salami-pizza">
-                    <span class="category-recipes-page__recipe-number">12.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 16min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Funghi salami pizza</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="42 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            42
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/pasta-spinach-cherry-tomatoes">
-                    <span class="category-recipes-page__recipe-number">13.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 20min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Pasta with spinach and cherry tomatoes</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Vegetarian</span>
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="66 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            66
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/creamy-garlic-shrimp-pasta">
-                    <span class="category-recipes-page__recipe-number">14.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 22min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Creamy garlic shrimp pasta</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="32 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            32
-                        </span>
-                    </span>
-                </a>
-            </li>
-
-            <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" href="/recipe/funghi-salami-pizza">
-                    <span class="category-recipes-page__recipe-number">15.</span>
-                    <span class="category-recipes-page__recipe-main">
-                        <span class="category-recipes-page__recipe-time">
-                            <img src="assets/images/svg/clock.svg" alt="" aria-hidden="true" />
-                            Cooking time: 16min
-                        </span>
-                        <span class="category-recipes-page__recipe-title">Funghi salami pizza</span>
-                    </span>
-                    <span class="category-recipes-page__recipe-tags">
-                        <span class="category-recipes-page__tag">Quick</span>
-                        <span class="category-recipes-page__like-tag" aria-label="42 likes">
-                            <img src="assets/images/svg/likes-heart.svg" alt="" aria-hidden="true" />
-                            42
-                        </span>
-                    </span>
-                </a>
-            </li>
+            }
         </ol>
-
-        <nav class="category-recipes-page__pagination" aria-label="Recipe pages">
-            <a class="category-recipes-page__page-link category-recipes-page__page-link--arrow"
-                href="/cookbook/category/italian" aria-label="Previous page">
-                <img src="assets/images/svg/nav-arrow-left-green.svg" alt="" aria-hidden="true" />
-            </a>
-
-            <a class="category-recipes-page__page-link" href="/cookbook/category/italian" aria-current="page">1</a>
-            <a class="category-recipes-page__page-link" href="/cookbook/category/italian?page=2">2</a>
-            <a class="category-recipes-page__page-link" href="/cookbook/category/italian?page=3">3</a>
-            <span class="category-recipes-page__page-dots" aria-hidden="true">...</span>
-            <a class="category-recipes-page__page-link" href="/cookbook/category/italian?page=8">8</a>
-
-            <a class="category-recipes-page__page-link category-recipes-page__page-link--arrow"
-                href="/cookbook/category/italian?page=2" aria-label="Next page">
-                <img src="assets/images/svg/nav-arrow-right-green.svg" alt="" aria-hidden="true" />
-            </a>
-        </nav>
+        } @else {
+        <p class="category-recipes-page__empty-text">
+            No recipes found in this category yet.
+        </p>
+        }
     </section>
-    <a class="category-recipes-page__generate-link" href="/generate/ingredients">
+
+    <a class="category-recipes-page__generate-link" routerLink="/generate/ingredients">
         Generate a recipe
     </a>
 </main>

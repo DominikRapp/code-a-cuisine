@@ -76,24 +76,30 @@
     margin: 52px 0 0;
 }
 
-.preferences-step__generate-link {
+.preferences-step__generate-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 258px;
     height: 62px;
+    border: 0;
     background: var(--app-color-brand-green);
     color: var(--app-color-cream-warm);
     font-family: var(--app-font-family-primary);
     font-size: 24px;
     font-weight: 600;
     line-height: 30px;
-    text-decoration: none;
+    cursor: pointer;
 }
 
-.preferences-step__generate-link:hover,
-.preferences-step__generate-link:focus-visible {
+.preferences-step__generate-button:not(:disabled):hover,
+.preferences-step__generate-button:not(:disabled):focus-visible {
     background: var(--app-color-generate-next-hover-bg);
     color: var(--app-color-generate-next-hover-text);
     outline: none;
+}
+
+.preferences-step__generate-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }

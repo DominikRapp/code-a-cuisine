@@ -1,5 +1,5 @@
 <main class="loading-page" aria-labelledby="loading-title">
-    <a class="loading-page__logo-link" href="/" aria-label="Go to home page">
+    <a class="loading-page__logo-link" routerLink="/" aria-label="Go to home page">
         <img class="loading-page__logo" src="assets/images/svg/white-logo.svg" alt="Code à Cuisine" width="142"
             height="48" />
     </a>
@@ -12,25 +12,30 @@
         <h1 id="loading-title" class="loading-page__title">Generating ...</h1>
     </section>
 
-    <aside class="loading-page__popup" role="dialog" aria-modal="true" aria-labelledby="loading-popup-title"
-        aria-describedby="loading-popup-description">
-        <button class="loading-page__popup-close" type="button" aria-label="Close message">
-            <img src="assets/images/svg/close-x.svg" alt="" aria-hidden="true" />
-        </button>
+    @if (showErrorPopup()) {
+    <div class="loading-page__overlay" (click)="closeErrorPopup()">
+        <aside class="loading-page__popup" role="dialog" aria-modal="true" aria-labelledby="loading-popup-title"
+            aria-describedby="loading-popup-description" (click)="$event.stopPropagation()">
+            <button class="loading-page__popup-close" type="button" aria-label="Close message"
+                (click)="closeErrorPopup()">
+                <img src="assets/images/svg/close-x.svg" alt="" aria-hidden="true" />
+            </button>
 
-        <h2 id="loading-popup-title" class="loading-page__popup-title">
-            Ups! Not quite enough...
-        </h2>
+            <h2 id="loading-popup-title" class="loading-page__popup-title">
+                Ups! Not quite enough...
+            </h2>
 
-        <p id="loading-popup-description" class="loading-page__popup-text">
-            It looks like some ingredient quantities aren’t sufficient for your selected
-            servings. Please add or adjust quantities and try again.
-        </p>
+            <p id="loading-popup-description" class="loading-page__popup-text">
+                It looks like some ingredient quantities aren’t sufficient for your selected
+                servings. Please add or adjust quantities and try again.
+            </p>
 
-        <a class="loading-page__popup-link" href="/generate/ingredients">
-            <span>Go back to ingredients</span>
-            <img class="loading-page__popup-link-icon" src="assets/images/svg/back-arrow-creamy.svg" alt=""
-                aria-hidden="true" />
-        </a>
-    </aside>
+            <a class="loading-page__popup-link" routerLink="/generate/ingredients">
+                <span>Go back to ingredients</span>
+                <img class="loading-page__popup-link-icon" src="assets/images/svg/back-arrow-creamy.svg" alt=""
+                    aria-hidden="true" />
+            </a>
+        </aside>
+    </div>
+    }
 </main>

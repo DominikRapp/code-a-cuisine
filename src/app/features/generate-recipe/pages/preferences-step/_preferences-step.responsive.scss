@@ -34,8 +34,8 @@
         color: var(--app-color-generate-text);
     }
 
-    .preferences-step__generate-link:hover,
-    .preferences-step__generate-link:focus-visible {
+    .preferences-step__generate-button:not(:disabled):hover,
+    .preferences-step__generate-button:not(:disabled):focus-visible {
         background: var(--app-color-brand-green);
         color: var(--app-color-cream-warm);
         outline: none;
@@ -174,7 +174,7 @@
         font-size: 17px;
     }
 
-    .preferences-step__generate-link {
+    .preferences-step__generate-button {
         width: 220px;
         height: 58px;
         font-size: 20px;

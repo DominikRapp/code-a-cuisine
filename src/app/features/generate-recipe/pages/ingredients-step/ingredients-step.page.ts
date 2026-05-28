@@ -1,15 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-
-type IngredientUnit = 'piece' | 'ml' | 'gram';
-
-interface SelectedIngredient {
-    id: string;
-    name: string;
-    amount: number;
-    unit: IngredientUnit;
-}
+import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
+import { RecipeIngredient, RecipeIngredientUnit } from '../../../../shared/models/recipe-generation.model';
 
 const MOCK_INGREDIENTS = [
     'Pasta',
@@ -27,7 +20,7 @@ const MOCK_INGREDIENTS = [
     'Chicken',
 ] as const;
 
-const UNIT_OPTIONS: IngredientUnit[] = ['piece', 'ml', 'gram'];
+const UNIT_OPTIONS: RecipeIngredientUnit[] = ['piece', 'ml', 'gram'];
 
 @Component({
     selector: 'app-ingredients-step-page',
@@ -37,19 +30,25 @@ const UNIT_OPTIONS: IngredientUnit[] = ['piece', 'ml', 'gram'];
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IngredientsStepPage {
+    private readonly recipeGenerationService = inject(RecipeGenerationService);
     readonly unitOptions = UNIT_OPTIONS;
     readonly ingredientName = signal('');
     readonly ingredientAmount = signal<number | null>(null);
-    readonly selectedUnit = signal<IngredientUnit>('gram');
-    readonly ingredients = signal<SelectedIngredient[]>([]);
+    readonly selectedUnit = signal<RecipeIngredientUnit>('gram');
+    readonly ingredients = signal<RecipeIngredient[]>([]);
     readonly editingIngredientId = signal<string | null>(null);
     readonly editName = signal('');
     readonly editAmount = signal<number | null>(null);
-    readonly editUnit = signal<IngredientUnit>('gram');
+    readonly editUnit = signal<RecipeIngredientUnit>('gram');
     readonly suggestions = computed(() => this.getSuggestions());
     readonly autocompleteCompletion = computed(() => this.getAutocompleteCompletion());
     readonly autocompleteOffset = computed(() => 16 + this.ingredientName().length * 8.5);
     readonly canAddIngredient = computed(() => this.hasValidIngredientInput());
+
+    /** Saves the selected ingredients for the preferences step. */
+    saveIngredients(): void {
+        this.recipeGenerationService.setIngredients(this.ingredients());
+    }
 
     /** Updates the current ingredient name input. */
     setIngredientName(value: string): void {
@@ -62,7 +61,7 @@ export class IngredientsStepPage {
     }
 
     /** Selects the unit for a new ingredient. */
-    selectUnit(unit: IngredientUnit, dropdown: HTMLDetailsElement): void {
+    selectUnit(unit: RecipeIngredientUnit, dropdown: HTMLDetailsElement): void {
         this.selectedUnit.set(unit);
         dropdown.open = false;
     }
@@ -83,7 +82,7 @@ export class IngredientsStepPage {
     }
 
     /** Starts edit mode for one ingredient row. */
-    startEdit(ingredient: SelectedIngredient): void {
+    startEdit(ingredient: RecipeIngredient): void {
         this.editingIngredientId.set(ingredient.id);
         this.editAmount.set(ingredient.amount);
         this.editUnit.set(ingredient.unit);
@@ -95,7 +94,7 @@ export class IngredientsStepPage {
     }
 
     /** Selects the unit for the edited ingredient. */
-    selectEditUnit(unit: IngredientUnit, dropdown: HTMLDetailsElement): void {
+    selectEditUnit(unit: RecipeIngredientUnit, dropdown: HTMLDetailsElement): void {
         this.editUnit.set(unit);
         dropdown.open = false;
     }
@@ -124,7 +123,7 @@ export class IngredientsStepPage {
     }
 
     /** Formats the unit for the ingredient list. */
-    formatUnit(unit: IngredientUnit): string {
+    formatUnit(unit: RecipeIngredientUnit): string {
         if (unit === 'piece') {
             return '';
         }
@@ -205,7 +204,7 @@ export class IngredientsStepPage {
     }
 
     /** Creates a selected ingredient from the current form values. */
-    private createIngredient(amount: number): SelectedIngredient {
+    private createIngredient(amount: number): RecipeIngredient {
         return {
             id: crypto.randomUUID(),
             name: this.ingredientName().trim(),
@@ -216,19 +215,19 @@ export class IngredientsStepPage {
 
     /** Updates one ingredient inside the selected ingredient list. */
     private updateIngredient(
-        items: SelectedIngredient[],
+        items: RecipeIngredient[],
         ingredientId: string,
         amount: number,
-    ): SelectedIngredient[] {
+    ): RecipeIngredient[] {
         return items.map((item) => this.getUpdatedIngredient(item, ingredientId, amount));
     }
 
     /** Returns the updated ingredient when the id matches. */
     private getUpdatedIngredient(
-        item: SelectedIngredient,
+        item: RecipeIngredient,
         ingredientId: string,
         amount: number,
-    ): SelectedIngredient {
+    ): RecipeIngredient {
         if (item.id !== ingredientId) {
             return item;
         }

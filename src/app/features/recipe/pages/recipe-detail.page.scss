@@ -357,10 +357,24 @@
     transition: background-color 160ms ease;
 }
 
-.recipe-detail__heart-button:hover,
-.recipe-detail__heart-button:focus-visible {
+.recipe-detail__heart-button:not(.recipe-detail__heart-button--liked):hover,
+.recipe-detail__heart-button:not(.recipe-detail__heart-button--liked):focus-visible {
     background: var(--app-color-recipe-heart-hover-bg);
     outline: none;
+}
+
+.recipe-detail__heart-button--liked {
+    background: transparent;
+    color: var(--app-color-recipe-heart);
+}
+
+.recipe-detail__heart-button--liked:focus-visible {
+    outline: 2px solid var(--app-color-recipe-heart);
+    outline-offset: 3px;
+}
+
+.recipe-detail__heart-button--liked .recipe-detail__heart-icon {
+    transform: scale(1.08);
 }
 
 .recipe-detail__heart-icon {
@@ -370,6 +384,7 @@
     width: 34px;
     height: 32px;
     color: currentColor;
+    transition: transform 160ms ease;
 }
 
 .recipe-detail__heart-icon svg {
@@ -475,7 +490,6 @@
     width: 32px;
     height: 20px;
     color: var(--app-color-brand-green);
-    transform: scaleX(-1);
 }
 
 .recipe-detail__new-link-icon svg {

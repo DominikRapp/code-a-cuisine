@@ -51,10 +51,9 @@
 
 .loading-page__spinner {
     display: block;
-    width: 100%;
-    height: 100%;
-    margin-bottom: 40px;
     width: 253px;
+    height: 309px;
+    margin-bottom: 40px;
 }
 
 .loading-page__title {
@@ -66,21 +65,27 @@
     line-height: 1.1;
 }
 
-/* Popup test switch:
-   Add display: none; here when the popup should be hidden during layout testing. */
+.loading-page__overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(12, 33, 8, 0.4);
+    z-index: 10;
+}
+
 .loading-page__popup {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 567px;
     min-height: 345px;
     padding: 58px 64px 48px;
-    background: var(--app-color-brand-green);
+    background: #2f532f;
     border-radius: 30px;
-    transform: translate(-50%, -50%);
-    // display: none;
+    animation: loading-popup-move-in 400ms linear;
 }
 
 .loading-page__popup-close {
@@ -154,6 +159,18 @@
     animation: loading-popup-arrow-blink 650ms ease;
 }
 
+@keyframes loading-popup-move-in {
+    from {
+        opacity: 0;
+        transform: translateX(140px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 @keyframes loading-popup-arrow-blink {
     0% {
         opacity: 1;
@@ -172,9 +189,7 @@
     .loading-page {
         padding: 8px 16px;
     }
-}
 
-@media (max-width: 768px) {
     .loading-page__logo-link {
         top: 40px;
         left: 24px;

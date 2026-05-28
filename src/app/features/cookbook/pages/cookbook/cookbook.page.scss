@@ -128,9 +128,11 @@
     overflow-x: auto;
     overflow-y: hidden;
     border-radius: 16px;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    scroll-behavior: auto;
+    overscroll-behavior-inline: contain;
 }
 
 .cookbook-page__liked-scroll::-webkit-scrollbar {
@@ -149,7 +151,7 @@
     background: #e4e8e4;
     color: var(--app-color-generate-title);
     text-decoration: none;
-    scroll-snap-align: start;
+    scroll-snap-align: nearest;
     box-sizing: border-box;
     transition: background-color 180ms ease, transform 180ms ease;
 }

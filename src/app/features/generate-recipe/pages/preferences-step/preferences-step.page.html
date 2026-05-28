@@ -191,8 +191,9 @@
     </section>
 
     <nav class="preferences-step__navigation" aria-label="Recipe generation navigation">
-        <a class="preferences-step__generate-link" routerLink="/generate/loading">
+        <button class="preferences-step__generate-button" type="button" [disabled]="isGenerateDisabled()"
+            (click)="generateRecipe()">
             Generate a recipe
-        </a>
+        </button>
     </nav>
 </main>
