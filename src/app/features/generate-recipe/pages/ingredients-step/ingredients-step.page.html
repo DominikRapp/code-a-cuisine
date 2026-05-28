@@ -1,0 +1,271 @@
+<main class="ingredients-step" aria-labelledby="ingredients-step-title">
+    <header class="ingredients-step__header" aria-label="Code à Cuisine">
+        <a class="ingredients-step__logo-link" routerLink="/" aria-label="Go to home page">
+            <img class="ingredients-step__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
+        </a>
+    </header>
+
+    <section class="ingredients-step__intro">
+        <h1 id="ingredients-step-title" class="ingredients-step__title">
+            Generate recipe
+        </h1>
+
+        <p class="ingredients-step__description">
+            Got random stuff in your kitchen? Pop it in—we’ve got the perfect recipe waiting.
+        </p>
+    </section>
+
+    <section class="ingredients-step__content" aria-label="Recipe ingredient input and ingredient list">
+        <form class="ingredients-step__form" aria-label="Add ingredient" (ngSubmit)="addIngredient()">
+            <fieldset class="ingredients-step__fieldset">
+                <legend class="ingredients-step__legend">Add an ingredient</legend>
+
+                <div class="ingredients-step__ingredient-group">
+                    <label class="ingredients-step__label" for="ingredient-name">
+                        Ingredient
+                    </label>
+
+                    <div class="ingredients-step__input-shell">
+                        <input id="ingredient-name" class="ingredients-step__text-input" name="ingredientName"
+                            type="text" autocomplete="off" aria-autocomplete="list"
+                            aria-controls="ingredient-suggestions" [ngModel]="ingredientName()"
+                            (ngModelChange)="setIngredientName($event)"
+                            (keydown.arrowdown)="focusFirstSuggestion($event)" />
+                        @if (autocompleteCompletion()) {
+                        <span class="ingredients-step__autocomplete-preview" aria-hidden="true"
+                            [style.left.px]="autocompleteOffset()">
+                            {{ autocompleteCompletion() }}
+                        </span>
+                        }
+                    </div>
+
+                    @if (suggestions().length > 0) {
+                    <ul id="ingredient-suggestions" class="ingredients-step__suggestions"
+                        aria-label="Ingredient suggestions">
+                        @for (suggestion of suggestions(); track suggestion) {
+                        <li class="ingredients-step__suggestion" tabindex="0" role="button"
+                            (click)="selectSuggestion(suggestion)" (keydown.enter)="selectSuggestion(suggestion)"
+                            (keydown.space)="selectSuggestion(suggestion)"
+                            (keydown.arrowdown)="focusAdjacentOption($event, 1)"
+                            (keydown.arrowup)="focusAdjacentOption($event, -1)">
+                            {{ suggestion }}
+                        </li>
+                        }
+                    </ul>
+                    }
+                </div>
+
+                <div class="ingredients-step__serving-group">
+                    <label class="ingredients-step__label" for="ingredient-amount">
+                        Serving size
+                    </label>
+
+                    <div class="ingredients-step__serving-controls">
+                        <input id="ingredient-amount" class="ingredients-step__amount-input" name="ingredientAmount"
+                            type="number" placeholder="100" min="1" inputmode="numeric" [ngModel]="ingredientAmount()"
+                            (ngModelChange)="setIngredientAmount($event)" />
+
+                        <details #unitDropdown class="ingredients-step__unit-dropdown">
+                            <summary class="ingredients-step__unit-button" aria-label="Select serving unit"
+                                (keydown.arrowdown)="focusFirstUnitOption($event, unitDropdown)">
+                                <span class="ingredients-step__unit-text">{{ selectedUnit() }}</span>
+
+                                <img class="ingredients-step__unit-icon" src="assets/images/svg/arrow-down-up.svg"
+                                    alt="" aria-hidden="true" />
+                            </summary>
+
+                            <ul class="ingredients-step__unit-options" aria-label="Serving unit options">
+                                @for (unit of unitOptions; track unit) {
+                                <li class="ingredients-step__unit-option" tabindex="0" role="option"
+                                    [attr.aria-selected]="selectedUnit() === unit"
+                                    (click)="selectUnit(unit, unitDropdown)"
+                                    (keydown.enter)="selectUnit(unit, unitDropdown)"
+                                    (keydown.space)="selectUnit(unit, unitDropdown)"
+                                    (keydown.arrowdown)="focusAdjacentOption($event, 1)"
+                                    (keydown.arrowup)="focusAdjacentOption($event, -1)">
+                                    {{ unit }}
+                                </li>
+                                }
+                            </ul>
+                        </details>
+
+                        <button class="ingredients-step__add-button" type="submit" aria-label="Add ingredient to list"
+                            [disabled]="!canAddIngredient()">
+                            <span class="ingredients-step__action-icon" aria-hidden="true">
+                                <svg width="36" height="36" viewBox="0 0 36 36" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <mask id="mask0_4352_3453" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="6"
+                                        y="6" width="24" height="24">
+                                        <rect x="6" y="6" width="24" height="24" fill="#D9D9D9" />
+                                    </mask>
+                                    <g mask="url(#mask0_4352_3453)">
+                                        <path
+                                            d="M18 27C17.7167 27 17.4792 26.9042 17.2875 26.7125C17.0958 26.5208 17 26.2833 17 26V19H10C9.71667 19 9.47917 18.9042 9.2875 18.7125C9.09583 18.5208 9 18.2833 9 18C9 17.7167 9.09583 17.4792 9.2875 17.2875C9.47917 17.0958 9.71667 17 10 17H17V10C17 9.71667 17.0958 9.47917 17.2875 9.2875C17.4792 9.09583 17.7167 9 18 9C18.2833 9 18.5208 9.09583 18.7125 9.2875C18.9042 9.47917 19 9.71667 19 10V17H26C26.2833 17 26.5208 17.0958 26.7125 17.2875C26.9042 17.4792 27 17.7167 27 18C27 18.2833 26.9042 18.5208 26.7125 18.7125C26.5208 18.9042 26.2833 19 26 19H19V26C19 26.2833 18.9042 26.5208 18.7125 26.7125C18.5208 26.9042 18.2833 27 18 27Z"
+                                            fill="currentColor" />
+                                    </g>
+                                </svg>
+
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
+        <div class="ingredients-step__list-column">
+            <section class="ingredients-step__list-card" aria-labelledby="ingredient-list-title">
+                <h2 id="ingredient-list-title" class="ingredients-step__list-title">
+                    List of your Ingredients
+                </h2>
+
+                @if (ingredients().length > 0) {
+                <ul class="ingredients-step__list">
+                    @for (ingredient of ingredients(); track ingredient.id) {
+                    <li class="ingredients-step__list-item"
+                        [class.ingredients-step__list-item--editing]="editingIngredientId() === ingredient.id">
+                        @if (editingIngredientId() === ingredient.id) {
+                        <form class="ingredients-step__edit-form" aria-label="Edit ingredient"
+                            (ngSubmit)="saveEdit(ingredient.id)">
+                            <span class="ingredients-step__ingredient-marker" aria-hidden="true">•</span>
+
+                            <div class="ingredients-step__edit-serving-controls">
+                                <input class="ingredients-step__edit-amount-input" name="editAmount-{{ ingredient.id }}"
+                                    type="number" min="1" inputmode="numeric" aria-label="Ingredient amount"
+                                    [ngModel]="editAmount()" (ngModelChange)="setEditAmount($event)" />
+
+                                <details #editUnitDropdown
+                                    class="ingredients-step__unit-dropdown ingredients-step__unit-dropdown--edit">
+                                    <summary class="ingredients-step__unit-button"
+                                        aria-label="Select edited serving unit"
+                                        (keydown.arrowdown)="focusFirstUnitOption($event, editUnitDropdown)">
+                                        <span class="ingredients-step__unit-text">{{ editUnit() }}</span>
+
+                                        <img class="ingredients-step__unit-icon"
+                                            src="assets/images/svg/arrow-down-up.svg" alt="" aria-hidden="true" />
+                                    </summary>
+
+                                    <ul class="ingredients-step__unit-options" aria-label="Edited serving unit options">
+                                        @for (unit of unitOptions; track unit) {
+                                        <li class="ingredients-step__unit-option" tabindex="0" role="option"
+                                            [attr.aria-selected]="editUnit() === unit"
+                                            (click)="selectEditUnit(unit, editUnitDropdown)"
+                                            (keydown.enter)="selectEditUnit(unit, editUnitDropdown)"
+                                            (keydown.space)="selectEditUnit(unit, editUnitDropdown)"
+                                            (keydown.arrowdown)="focusAdjacentOption($event, 1)"
+                                            (keydown.arrowup)="focusAdjacentOption($event, -1)">
+                                            {{ unit }}
+                                        </li>
+                                        }
+                                    </ul>
+                                </details>
+                            </div>
+
+                            <span class="ingredients-step__edit-name-text">
+                                {{ ingredient.name }}
+                            </span>
+
+                            <div class="ingredients-step__item-actions"
+                                [attr.aria-label]="'Actions for ' + ingredient.name">
+                                <button class="ingredients-step__item-button ingredients-step__item-button--check"
+                                    type="submit" [attr.aria-label]="'Save ' + ingredient.name">
+                                    <span class="ingredients-step__action-icon" aria-hidden="true">
+                                        <svg width="19" height="19" viewBox="0 0 19 19" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M7.29821 12.3497L14.9348 4.71307C15.115 4.53286 15.3253 4.44275 15.5656 4.44275C15.8059 4.44275 16.0161 4.53286 16.1963 4.71307C16.3766 4.89329 16.4667 5.10729 16.4667 5.35509C16.4667 5.60288 16.3766 5.81689 16.1963 5.9971L7.92897 14.287C7.74875 14.4672 7.5385 14.5573 7.29821 14.5573C7.05793 14.5573 6.84768 14.4672 6.66746 14.287L2.79283 10.4124C2.61262 10.2322 2.52627 10.0182 2.53378 9.77036C2.54128 9.52256 2.63515 9.30856 2.81536 9.12834C2.99558 8.94813 3.20958 8.85802 3.45738 8.85802C3.70517 8.85802 3.91918 8.94813 4.09939 9.12834L7.29821 12.3497Z"
+                                                fill="currentColor" />
+                                        </svg>
+
+                                    </span>
+                                </button>
+
+                                <button class="ingredients-step__item-button ingredients-step__item-button--delete"
+                                    type="button" [attr.aria-label]="'Delete ' + ingredient.name"
+                                    (click)="deleteIngredient(ingredient.id)">
+                                    <span class="ingredients-step__action-icon" aria-hidden="true">
+                                        <svg width="19" height="19" viewBox="0 0 19 19" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <mask id="mask0_4352_3467" style="mask-type:alpha"
+                                                maskUnits="userSpaceOnUse" x="0" y="0" width="19" height="19">
+                                                <rect width="19" height="19" fill="#D9D9D9" />
+                                            </mask>
+                                            <g mask="url(#mask0_4352_3467)">
+                                                <path
+                                                    d="M5.54169 16.625C5.10627 16.625 4.73353 16.47 4.42346 16.1599C4.11339 15.8498 3.95835 15.4771 3.95835 15.0417V4.75C3.73405 4.75 3.54603 4.67413 3.39429 4.5224C3.24256 4.37066 3.16669 4.18264 3.16669 3.95833C3.16669 3.73403 3.24256 3.54601 3.39429 3.39427C3.54603 3.24253 3.73405 3.16667 3.95835 3.16667H7.12502C7.12502 2.94236 7.20089 2.75434 7.35262 2.6026C7.50436 2.45087 7.69238 2.375 7.91669 2.375H11.0834C11.3077 2.375 11.4957 2.45087 11.6474 2.6026C11.7992 2.75434 11.875 2.94236 11.875 3.16667H15.0417C15.266 3.16667 15.454 3.24253 15.6058 3.39427C15.7575 3.54601 15.8334 3.73403 15.8334 3.95833C15.8334 4.18264 15.7575 4.37066 15.6058 4.5224C15.454 4.67413 15.266 4.75 15.0417 4.75V15.0417C15.0417 15.4771 14.8867 15.8498 14.5766 16.1599C14.2665 16.47 13.8938 16.625 13.4584 16.625H5.54169ZM13.4584 4.75H5.54169V15.0417H13.4584V4.75ZM7.91669 13.4583C8.14099 13.4583 8.32901 13.3825 8.48075 13.2307C8.63249 13.079 8.70835 12.891 8.70835 12.6667V7.125C8.70835 6.90069 8.63249 6.71267 8.48075 6.56094C8.32901 6.4092 8.14099 6.33333 7.91669 6.33333C7.69238 6.33333 7.50436 6.4092 7.35262 6.56094C7.20089 6.71267 7.12502 6.90069 7.12502 7.125V12.6667C7.12502 12.891 7.20089 13.079 7.35262 13.2307C7.50436 13.3825 7.69238 13.4583 7.91669 13.4583ZM11.0834 13.4583C11.3077 13.4583 11.4957 13.3825 11.6474 13.2307C11.7992 13.079 11.875 12.891 11.875 12.6667V7.125C11.875 6.90069 11.7992 6.71267 11.6474 6.56094C11.4957 6.4092 11.3077 6.33333 11.0834 6.33333C10.859 6.33333 10.671 6.4092 10.5193 6.56094C10.3676 6.71267 10.2917 6.90069 10.2917 7.125V12.6667C10.2917 12.891 10.3676 13.079 10.5193 13.2307C10.671 13.3825 10.859 13.4583 11.0834 13.4583Z"
+                                                    fill="currentColor" />
+                                            </g>
+                                        </svg>
+
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                        } @else {
+                        <span class="ingredients-step__ingredient-marker" aria-hidden="true">•</span>
+                        <span class="ingredients-step__ingredient-amount">
+                            {{ ingredient.amount }}
+                            @if (formatUnit(ingredient.unit)) {
+                            {{ formatUnit(ingredient.unit) }}
+                            }
+                        </span>
+                        <span class="ingredients-step__ingredient-name">{{ ingredient.name }}</span>
+
+                        <div class="ingredients-step__item-actions"
+                            [attr.aria-label]="'Actions for ' + ingredient.name">
+                            <button class="ingredients-step__item-button ingredients-step__item-button--edit"
+                                type="button" [attr.aria-label]="'Edit ' + ingredient.name"
+                                (click)="startEdit(ingredient)">
+                                <span class="ingredients-step__action-icon" aria-hidden="true">
+                                    <svg width="19" height="19" viewBox="0 0 19 19" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <mask id="mask0_4352_3477" style="mask-type:alpha" maskUnits="userSpaceOnUse"
+                                            x="2" y="2" width="15" height="15">
+                                            <rect x="2" y="2" width="15" height="15" fill="#D9D9D9" />
+                                        </mask>
+                                        <g mask="url(#mask0_4352_3477)">
+                                            <path
+                                                d="M4.25 16.25C3.90625 16.25 3.61198 16.1276 3.36719 15.8828C3.1224 15.638 3 15.3438 3 15C3 14.6562 3.1224 14.362 3.36719 14.1172C3.61198 13.8724 3.90625 13.75 4.25 13.75H14.25C14.5938 13.75 14.888 13.8724 15.1328 14.1172C15.3776 14.362 15.5 14.6562 15.5 15C15.5 15.3438 15.3776 15.638 15.1328 15.8828C14.888 16.1276 14.5938 16.25 14.25 16.25H4.25ZM5.5 11.25H6.375L11.25 6.39062L10.3594 5.5L5.5 10.375V11.25ZM4.25 11.875V10.1094C4.25 10.026 4.26562 9.94531 4.29688 9.86719C4.32812 9.78906 4.375 9.71875 4.4375 9.65625L11.25 2.85938C11.3646 2.74479 11.4974 2.65625 11.6484 2.59375C11.7995 2.53125 11.9583 2.5 12.125 2.5C12.2917 2.5 12.4531 2.53125 12.6094 2.59375C12.7656 2.65625 12.9063 2.75 13.0313 2.875L13.8906 3.75C14.0156 3.86458 14.1068 4 14.1641 4.15625C14.2214 4.3125 14.25 4.47396 14.25 4.64062C14.25 4.79688 14.2214 4.95052 14.1641 5.10156C14.1068 5.2526 14.0156 5.39063 13.8906 5.51563L7.09375 12.3125C7.03125 12.375 6.96094 12.4219 6.88281 12.4531C6.80469 12.4844 6.72396 12.5 6.64063 12.5H4.875C4.69792 12.5 4.54948 12.4401 4.42969 12.3203C4.3099 12.2005 4.25 12.0521 4.25 11.875Z"
+                                                fill="currentColor" />
+                                        </g>
+                                    </svg>
+
+                                </span>
+                            </button>
+
+                            <button class="ingredients-step__item-button ingredients-step__item-button--delete"
+                                type="button" [attr.aria-label]="'Delete ' + ingredient.name"
+                                (click)="deleteIngredient(ingredient.id)">
+                                <span class="ingredients-step__action-icon" aria-hidden="true">
+                                    <svg width="19" height="19" viewBox="0 0 19 19" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <mask id="mask0_4352_3467" style="mask-type:alpha" maskUnits="userSpaceOnUse"
+                                            x="0" y="0" width="19" height="19">
+                                            <rect width="19" height="19" fill="#D9D9D9" />
+                                        </mask>
+                                        <g mask="url(#mask0_4352_3467)">
+                                            <path
+                                                d="M5.54169 16.625C5.10627 16.625 4.73353 16.47 4.42346 16.1599C4.11339 15.8498 3.95835 15.4771 3.95835 15.0417V4.75C3.73405 4.75 3.54603 4.67413 3.39429 4.5224C3.24256 4.37066 3.16669 4.18264 3.16669 3.95833C3.16669 3.73403 3.24256 3.54601 3.39429 3.39427C3.54603 3.24253 3.73405 3.16667 3.95835 3.16667H7.12502C7.12502 2.94236 7.20089 2.75434 7.35262 2.6026C7.50436 2.45087 7.69238 2.375 7.91669 2.375H11.0834C11.3077 2.375 11.4957 2.45087 11.6474 2.6026C11.7992 2.75434 11.875 2.94236 11.875 3.16667H15.0417C15.266 3.16667 15.454 3.24253 15.6058 3.39427C15.7575 3.54601 15.8334 3.73403 15.8334 3.95833C15.8334 4.18264 15.7575 4.37066 15.6058 4.5224C15.454 4.67413 15.266 4.75 15.0417 4.75V15.0417C15.0417 15.4771 14.8867 15.8498 14.5766 16.1599C14.2665 16.47 13.8938 16.625 13.4584 16.625H5.54169ZM13.4584 4.75H5.54169V15.0417H13.4584V4.75ZM7.91669 13.4583C8.14099 13.4583 8.32901 13.3825 8.48075 13.2307C8.63249 13.079 8.70835 12.891 8.70835 12.6667V7.125C8.70835 6.90069 8.63249 6.71267 8.48075 6.56094C8.32901 6.4092 8.14099 6.33333 7.91669 6.33333C7.69238 6.33333 7.50436 6.4092 7.35262 6.56094C7.20089 6.71267 7.12502 6.90069 7.12502 7.125V12.6667C7.12502 12.891 7.20089 13.079 7.35262 13.2307C7.50436 13.3825 7.69238 13.4583 7.91669 13.4583ZM11.0834 13.4583C11.3077 13.4583 11.4957 13.3825 11.6474 13.2307C11.7992 13.079 11.875 12.891 11.875 12.6667V7.125C11.875 6.90069 11.7992 6.71267 11.6474 6.56094C11.4957 6.4092 11.3077 6.33333 11.0834 6.33333C10.859 6.33333 10.671 6.4092 10.5193 6.56094C10.3676 6.71267 10.2917 6.90069 10.2917 7.125V12.6667C10.2917 12.891 10.3676 13.079 10.5193 13.2307C10.671 13.3825 10.859 13.4583 11.0834 13.4583Z"
+                                                fill="currentColor" />
+                                        </g>
+                                    </svg>
+
+                                </span>
+                            </button>
+                        </div>
+                        }
+                    </li>
+                    }
+                </ul>
+                }
+            </section>
+
+            @if (ingredients().length > 0) {
+            <nav class="ingredients-step__navigation" aria-label="Recipe generation navigation">
+                <a class="ingredients-step__next-link" routerLink="/generate/preferences">
+                    Next step
+                </a>
+            </nav>
+            }
+        </div>
+    </section>
+</main>

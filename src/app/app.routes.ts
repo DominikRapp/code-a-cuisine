@@ -11,28 +11,28 @@ export const routes: Routes = [
     {
         path: APP_ROUTES.generateIngredients,
         loadComponent: () =>
-            import('./features/generate-recipe/pages/ingredients-step.page').then(
+            import('./features/generate-recipe/pages/ingredients-step/ingredients-step.page').then(
                 (m) => m.IngredientsStepPage,
             ),
     },
     {
         path: APP_ROUTES.generatePreferences,
         loadComponent: () =>
-            import('./features/generate-recipe/pages/preferences-step.page').then(
+            import('./features/generate-recipe/pages/preferences-step/preferences-step.page').then(
                 (m) => m.PreferencesStepPage,
             ),
     },
     {
         path: APP_ROUTES.generateLoading,
         loadComponent: () =>
-            import('./features/generate-recipe/pages/loading.page').then(
+            import('./features/generate-recipe/pages/loading/loading.page').then(
                 (m) => m.LoadingPage,
             ),
     },
     {
         path: APP_ROUTES.generateResults,
         loadComponent: () =>
-            import('./features/generate-recipe/pages/results.page').then(
+            import('./features/generate-recipe/pages/results/results.page').then(
                 (m) => m.ResultsPage,
             ),
     },
@@ -46,14 +46,14 @@ export const routes: Routes = [
     {
         path: APP_ROUTES.cookbook,
         loadComponent: () =>
-            import('./features/cookbook/pages/cookbook.page').then(
+            import('./features/cookbook/pages/cookbook/cookbook.page').then(
                 (m) => m.CookbookPage,
             ),
     },
     {
         path: APP_ROUTES.cookbookCategory,
         loadComponent: () =>
-            import('./features/cookbook/pages/category-recipes.page').then(
+            import('./features/cookbook/pages/category-recipes/category-recipes.page').then(
                 (m) => m.CategoryRecipesPage,
             ),
     },

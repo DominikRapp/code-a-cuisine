@@ -1,0 +1,163 @@
+.ingredients-step__list {
+    display: grid;
+    gap: 4px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ingredients-step__list-item {
+    display: grid;
+    grid-template-columns: 18px 58px 1fr auto;
+    align-items: center;
+    min-height: 34px;
+    column-gap: 8px;
+    padding: 4px 8px;
+    border-radius: 14px;
+    color: var(--app-color-generate-list-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 26px;
+}
+
+.ingredients-step__list-item:hover:not(.ingredients-step__list-item--editing) {
+    background: var(--app-color-generate-input-warm);
+}
+
+.ingredients-step__ingredient-marker,
+.ingredients-step__ingredient-amount,
+.ingredients-step__ingredient-name {
+    color: var(--app-color-generate-list-text);
+}
+
+.ingredients-step__ingredient-marker {
+    text-align: center;
+}
+
+.ingredients-step__ingredient-amount {
+    white-space: nowrap;
+}
+
+.ingredients-step__ingredient-name {
+    min-width: 0;
+}
+
+.ingredients-step__item-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ingredients-step__item-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    color: var(--app-color-generate-text);
+    cursor: pointer;
+}
+
+.ingredients-step__item-button:active {
+    transform: scale(0.94);
+}
+
+.ingredients-step__item-button img {
+    width: 13px;
+    height: 13px;
+}
+
+.ingredients-step__item-button--edit:hover,
+.ingredients-step__item-button--edit:focus-visible,
+.ingredients-step__item-button--delete:hover,
+.ingredients-step__item-button--delete:focus-visible {
+    background: var(--app-color-generate-icon-action-bg);
+    outline: none;
+}
+
+.ingredients-step__item-button--edit:active,
+.ingredients-step__item-button--delete:active {
+    background: var(--app-color-generate-icon-action-bg);
+    color: var(--app-color-generate-next-hover-text);
+}
+
+.ingredients-step__item-button--check:hover,
+.ingredients-step__item-button--check:focus-visible {
+    background: var(--app-color-generate-input-warm);
+    outline: none;
+}
+
+.ingredients-step__item-button--check:active {
+    background: var(--app-color-generate-input-warm);
+    color: var(--app-color-action-green);
+}
+
+.ingredients-step__edit-form {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: 18px auto minmax(0, 1fr) auto;
+    align-items: start;
+    width: 100%;
+    column-gap: 8px;
+}
+
+.ingredients-step__edit-serving-controls {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.ingredients-step__edit-form>.ingredients-step__ingredient-marker,
+.ingredients-step__edit-form>.ingredients-step__edit-name-text,
+.ingredients-step__edit-form>.ingredients-step__item-actions {
+    display: flex;
+    align-items: center;
+    align-self: start;
+    height: 34px;
+}
+
+.ingredients-step__edit-form>.ingredients-step__ingredient-marker {
+    justify-content: center;
+}
+
+.ingredients-step__edit-form>.ingredients-step__item-actions {
+    justify-content: flex-end;
+}
+
+.ingredients-step__edit-amount-input {
+    height: 34px;
+    border: 0;
+    border-radius: 20px;
+    outline: none;
+    background: var(--app-color-generate-input-warm);
+    box-shadow: none;
+    caret-color: var(--app-color-generate-caret);
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 34px;
+}
+
+.ingredients-step__edit-name-text {
+    min-width: 0;
+    color: var(--app-color-generate-list-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 34px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ingredients-step__edit-amount-input {
+    width: 62px;
+    padding: 0 12px;
+    appearance: textfield;
+}

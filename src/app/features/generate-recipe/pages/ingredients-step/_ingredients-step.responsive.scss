@@ -1,0 +1,143 @@
+@media (max-width: 1179px) {
+    .ingredients-step__content {
+        grid-template-columns: 577px;
+        justify-content: center;
+    }
+
+    .ingredients-step__list-column {
+        width: 577px;
+        align-items: center;
+    }
+
+    .ingredients-step__navigation {
+        justify-content: center;
+    }
+
+    .ingredients-step__list-card {
+        width: 577px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .ingredients-step__form {
+        height: auto;
+    }
+
+    .ingredients-step__fieldset {
+        grid-template-columns: 1fr;
+        row-gap: 22px;
+    }
+
+    .ingredients-step__serving-group {
+        width: 100%;
+    }
+}
+
+@media (max-width: 689px) {
+    .ingredients-step {
+        padding: 16px 8px 16px 8px;
+    }
+}
+
+@media (max-width: 599px) {
+    .ingredients-step {
+        padding: 16px 8px;
+    }
+
+    .ingredients-step__logo {
+        width: 120px;
+        height: auto;
+    }
+
+    .ingredients-step__intro {
+        margin: 56px 0 0;
+    }
+
+    .ingredients-step__title {
+        font-size: clamp(34px, 10vw, 54px);
+        line-height: clamp(42px, 12vw, 64px);
+        white-space: nowrap;
+    }
+
+    .ingredients-step__description {
+        font-size: clamp(18px, 5vw, 24px);
+        line-height: clamp(26px, 7vw, 34px);
+    }
+
+    .ingredients-step__content {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+        margin-top: 42px;
+    }
+
+    .ingredients-step__form,
+    .ingredients-step__list-column,
+    .ingredients-step__list-card {
+        width: 100%;
+        max-width: 577px;
+    }
+
+    .ingredients-step__fieldset {
+        padding: 22px 16px 24px;
+    }
+
+    .ingredients-step__list-card {
+        padding: 22px 16px 24px;
+    }
+
+    .ingredients-step__input-shell,
+    .ingredients-step__text-input {
+        width: 100%;
+    }
+
+    .ingredients-step__serving-controls {
+        flex-wrap: wrap;
+    }
+
+    .ingredients-step__list-item {
+        grid-template-columns: 14px minmax(48px, auto) minmax(0, 1fr) auto;
+        column-gap: 6px;
+        padding: 4px 6px;
+    }
+
+    .ingredients-step__ingredient-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ingredients-step__item-actions {
+        gap: 8px;
+    }
+
+    .ingredients-step__edit-form {
+        grid-template-columns: 14px minmax(0, 1fr) auto;
+        row-gap: 8px;
+        column-gap: 6px;
+    }
+
+    .ingredients-step__edit-serving-controls {
+        grid-column: 2 / 3;
+    }
+
+    .ingredients-step__edit-name-text {
+        grid-column: 2 / 3;
+        min-width: 0;
+    }
+
+    .ingredients-step__edit-form .ingredients-step__item-actions {
+        grid-column: 3 / 4;
+        grid-row: 1 / 3;
+    }
+
+    .ingredients-step__navigation {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ingredients-step__next-link {
+        width: min(162px, 100%);
+    }
+}
