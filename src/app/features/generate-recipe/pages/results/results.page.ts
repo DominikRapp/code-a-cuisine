@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-
+import { RecipeDataService } from '../../../../core/services/recipe-data.service';
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
 import {
@@ -24,10 +24,11 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResultsPage {
+  private readonly recipeDataService = inject(RecipeDataService);
   private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly router = inject(Router);
 
-  readonly recipes = this.recipeGenerationService.getGeneratedRecipes();
+  readonly recipes = this.recipeDataService.getGeneratedRecipes();
   readonly preferenceTags = this.getPreferenceTags();
 
   constructor() {

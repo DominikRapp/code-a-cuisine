@@ -44,17 +44,17 @@ export const routes: Routes = [
             ),
     },
     {
-        path: APP_ROUTES.cookbook,
-        loadComponent: () =>
-            import('./features/cookbook/pages/cookbook/cookbook.page').then(
-                (m) => m.CookbookPage,
-            ),
-    },
-    {
         path: APP_ROUTES.cookbookCategory,
         loadComponent: () =>
             import('./features/cookbook/pages/category-recipes/category-recipes.page').then(
                 (m) => m.CategoryRecipesPage,
+            ),
+    },
+    {
+        path: APP_ROUTES.cookbook,
+        loadComponent: () =>
+            import('./features/cookbook/pages/cookbook/cookbook.page').then(
+                (m) => m.CookbookPage,
             ),
     },
     {

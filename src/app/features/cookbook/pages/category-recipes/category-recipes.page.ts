@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
-import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
+import { RecipeDataService } from '../../../../core/services/recipe-data.service';
 import { RECIPE_CATEGORY_DISPLAY_CONFIG } from '../../../../shared/data/recipe-category-display.data';
 import { isRecipeCuisine } from '../../../../shared/data/recipe-cuisine.data';
 import {
@@ -28,7 +28,7 @@ import { RECIPE_CATEGORY_PAGE_SIZE } from '../../../../core/config/recipe-list.c
 export class CategoryRecipesPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly recipeGenerationService = inject(RecipeGenerationService);
+  private readonly recipeDataService = inject(RecipeDataService);
 
   readonly category = this.getCategoryFromRoute();
   readonly config = RECIPE_CATEGORY_DISPLAY_CONFIG[this.category];
@@ -66,7 +66,7 @@ export class CategoryRecipesPage {
 
   /** Returns visible recipes for the current category. */
   private getVisibleRecipes(): GeneratedRecipe[] {
-    return this.recipeGenerationService
+    return this.recipeDataService
       .getRecipesByCuisine(this.category)
       .slice(0, RECIPE_CATEGORY_PAGE_SIZE);
   }

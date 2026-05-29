@@ -1,35 +1,28 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
-import {
-  LIKED_RECIPE_IDS_STORAGE_KEY,
-  MOST_LIKED_RECIPE_COUNT,
-} from '../config/recipe-storage.config';
 import { createMockGeneratedRecipes } from '../../shared/data/mock/generated-recipes.mock-data';
-import { MOCK_RECIPE_LIBRARY } from '../../shared/data/mock/recipe-library.mock-data';
 import {
   GeneratedRecipe,
-  RecipeCuisine,
   RecipeGenerationRequest,
   RecipeIngredient,
   RecipePreferences,
 } from '../../shared/models/recipe-generation.model';
+import { RecipeDataService } from './recipe-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecipeGenerationService {
+  private readonly recipeDataService = inject(RecipeDataService);
   private readonly ingredients = signal<RecipeIngredient[]>([]);
   private readonly preferences = signal<RecipePreferences | null>(null);
-  private readonly generatedRecipes = signal<GeneratedRecipe[]>([]);
-  private readonly libraryRecipes = signal<GeneratedRecipe[]>(MOCK_RECIPE_LIBRARY);
-  private readonly likedRecipeIds = signal<Set<string>>(this.loadLikedRecipeIds());
   private readonly maxGeneratedRecipes = RECIPE_GENERATION_CONFIG.generatedRecipes.max;
 
   readonly hasIngredients = computed(() => this.ingredients().length > 0);
   readonly hasPreferences = computed(() => this.preferences() !== null);
   readonly hasRequest = computed(() => this.getRequest() !== null);
-  readonly hasGeneratedRecipes = computed(() => this.generatedRecipes().length > 0);
+  readonly hasGeneratedRecipes = computed(() => this.recipeDataService.hasGeneratedRecipes());
 
   /** Stores the selected ingredients for recipe generation. */
   setIngredients(ingredients: RecipeIngredient[]): void {
@@ -43,7 +36,8 @@ export class RecipeGenerationService {
 
   /** Stores matching recipes sorted by likes and capped to three. */
   setGeneratedRecipes(recipes: GeneratedRecipe[]): void {
-    this.generatedRecipes.set(this.getTopRecipesByLikes(recipes).slice(0, this.maxGeneratedRecipes));
+    const topRecipes = this.getTopRecipesByLikes(recipes).slice(0, this.maxGeneratedRecipes);
+    this.recipeDataService.setGeneratedRecipes(topRecipes);
   }
 
   /** Stores temporary generated mock recipes until the real API exists. */
@@ -69,45 +63,6 @@ export class RecipeGenerationService {
     return preferences ? { ...preferences } : null;
   }
 
-  /** Returns generated recipes for the results page. */
-  getGeneratedRecipes(): GeneratedRecipe[] {
-    return this.applyLocalLikes(this.generatedRecipes());
-  }
-
-  /** Returns one recipe by id from generated or library recipes. */
-  getGeneratedRecipeById(recipeId: string): GeneratedRecipe | null {
-    const recipe = this.getAllBaseRecipes().find((item) => item.id === recipeId);
-    return recipe ? this.applyLocalLike(recipe) : null;
-  }
-
-  /** Returns the most liked cookbook recipes. */
-  getMostLikedRecipes(): GeneratedRecipe[] {
-    return this.getTopRecipesByLikes(this.applyLocalLikes(this.getAllBaseRecipes())).slice(
-      0,
-      MOST_LIKED_RECIPE_COUNT,
-    );
-  }
-
-  /** Returns cookbook recipes for one cuisine category. */
-  getRecipesByCuisine(cuisine: RecipeCuisine): GeneratedRecipe[] {
-    const recipes = this.applyLocalLikes(this.getAllBaseRecipes());
-
-    return this.getTopRecipesByLikes(
-      recipes.filter((recipe) => recipe.cuisine === cuisine),
-    );
-  }
-
-  /** Checks whether a recipe is liked locally. */
-  isRecipeLiked(recipeId: string): boolean {
-    return this.likedRecipeIds().has(recipeId);
-  }
-
-  /** Toggles a local recipe like. */
-  toggleRecipeLike(recipeId: string): void {
-    const nextIds = this.getNextLikedRecipeIds(recipeId);
-    this.setLikedRecipeIds(nextIds);
-  }
-
   /** Builds the full generation request when all required data exists. */
   getRequest(): RecipeGenerationRequest | null {
     const preferences = this.preferences();
@@ -126,53 +81,11 @@ export class RecipeGenerationService {
   reset(): void {
     this.ingredients.set([]);
     this.preferences.set(null);
-    this.generatedRecipes.set([]);
-  }
-
-  /** Returns all base recipes before local like adjustments. */
-  private getAllBaseRecipes(): GeneratedRecipe[] {
-    return [...this.libraryRecipes(), ...this.generatedRecipes()];
-  }
-
-  /** Returns the next local liked recipe id list. */
-  private getNextLikedRecipeIds(recipeId: string): string[] {
-    if (this.isRecipeLiked(recipeId)) {
-      return [...this.likedRecipeIds()].filter((id) => id !== recipeId);
-    }
-
-    return [...this.likedRecipeIds(), recipeId];
-  }
-
-  /** Updates the local liked recipe id storage. */
-  private setLikedRecipeIds(recipeIds: string[]): void {
-    this.likedRecipeIds.set(new Set(recipeIds));
-    localStorage.setItem(LIKED_RECIPE_IDS_STORAGE_KEY, JSON.stringify(recipeIds));
-  }
-
-  /** Applies local like state to multiple recipes. */
-  private applyLocalLikes(recipes: GeneratedRecipe[]): GeneratedRecipe[] {
-    return recipes.map((recipe) => this.applyLocalLike(recipe));
-  }
-
-  /** Applies local like state to one recipe. */
-  private applyLocalLike(recipe: GeneratedRecipe): GeneratedRecipe {
-    const localLikeCount = this.isRecipeLiked(recipe.id) ? 1 : 0;
-    return { ...recipe, likes: recipe.likes + localLikeCount };
+    this.recipeDataService.clearGeneratedRecipes();
   }
 
   /** Returns recipes sorted by likes descending. */
   private getTopRecipesByLikes(recipes: GeneratedRecipe[]): GeneratedRecipe[] {
     return [...recipes].sort((first, second) => second.likes - first.likes);
-  }
-
-  /** Returns locally stored liked recipe ids. */
-  private loadLikedRecipeIds(): Set<string> {
-    const storedRecipeIds = localStorage.getItem(LIKED_RECIPE_IDS_STORAGE_KEY);
-
-    if (!storedRecipeIds) {
-      return new Set();
-    }
-
-    return new Set(JSON.parse(storedRecipeIds) as string[]);
   }
 }

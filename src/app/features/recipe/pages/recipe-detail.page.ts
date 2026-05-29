@@ -20,6 +20,7 @@ import {
   getRecipeChefIconByStep,
   getRecipeChefIcons,
 } from '../../../shared/data/recipe-chef-icons.data';
+import { RecipeDataService } from '../../../core/services/recipe-data.service';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -33,6 +34,7 @@ export class RecipeDetailPage {
   private readonly router = inject(Router);
   private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly recipeId = this.route.snapshot.paramMap.get('recipeId') ?? '';
+  private readonly recipeDataService = inject(RecipeDataService);
 
   readonly recipe = computed(() => this.getRecipeFromRoute());
   readonly preferences = this.recipeGenerationService.getPreferences();
@@ -44,12 +46,12 @@ export class RecipeDetailPage {
 
   /** Toggles the local like state for the selected recipe. */
   toggleLike(recipe: GeneratedRecipe): void {
-    this.recipeGenerationService.toggleRecipeLike(recipe.id);
+    this.recipeDataService.toggleRecipeLike(recipe.id);
   }
 
   /** Checks whether the selected recipe is liked locally. */
   isLiked(recipe: GeneratedRecipe): boolean {
-    return this.recipeGenerationService.isRecipeLiked(recipe.id);
+    return this.recipeDataService.isRecipeLiked(recipe.id);
   }
 
   /** Returns the accessible like button label. */
@@ -94,7 +96,7 @@ export class RecipeDetailPage {
 
   /** Reads the selected recipe from the generation service. */
   private getRecipeFromRoute(): GeneratedRecipe | null {
-    return this.recipeGenerationService.getGeneratedRecipeById(this.recipeId);
+    return this.recipeDataService.getRecipeById(this.recipeId);
   }
 
   /** Redirects users who opened an invalid recipe detail page. */
