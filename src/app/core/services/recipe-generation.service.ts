@@ -1,17 +1,19 @@
 import { Injectable, computed, signal } from '@angular/core';
 
 import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
-import { MOCK_RECIPE_LIBRARY } from '../../shared/data/mock-recipes.data';
+import {
+  LIKED_RECIPE_IDS_STORAGE_KEY,
+  MOST_LIKED_RECIPE_COUNT,
+} from '../config/recipe-storage.config';
+import { createMockGeneratedRecipes } from '../../shared/data/mock/generated-recipes.mock-data';
+import { MOCK_RECIPE_LIBRARY } from '../../shared/data/mock/recipe-library.mock-data';
 import {
   GeneratedRecipe,
   RecipeCuisine,
   RecipeGenerationRequest,
   RecipeIngredient,
-  RecipePreferences
+  RecipePreferences,
 } from '../../shared/models/recipe-generation.model';
-
-const LIKED_RECIPE_IDS_STORAGE_KEY = 'code-a-cuisine-liked-recipe-ids';
-const MOST_LIKED_RECIPE_COUNT = 5;
 
 @Injectable({
   providedIn: 'root',
@@ -53,7 +55,7 @@ export class RecipeGenerationService {
       return;
     }
 
-    this.setGeneratedRecipes(this.buildMockRecipes(request));
+    this.setGeneratedRecipes(createMockGeneratedRecipes(request));
   }
 
   /** Returns the selected ingredients. */
@@ -163,34 +165,6 @@ export class RecipeGenerationService {
     return [...recipes].sort((first, second) => second.likes - first.likes);
   }
 
-  /** Builds temporary generated recipes until real matching exists. */
-  private buildMockRecipes(request: RecipeGenerationRequest): GeneratedRecipe[] {
-    return [1, 2, 3].map((recipeNumber) =>
-      this.buildMockRecipe(request, recipeNumber),
-    );
-  }
-
-  /** Builds one temporary generated recipe suggestion. */
-  private buildMockRecipe(
-    request: RecipeGenerationRequest,
-    recipeNumber: number,
-  ): GeneratedRecipe {
-    const ingredientName = this.getPrimaryIngredientName(request.ingredients);
-
-    return {
-      id: `mock-recipe-${recipeNumber}`,
-      title: this.getMockRecipeTitle(ingredientName, recipeNumber),
-      description: 'Temporary recipe suggestion until real generation is connected.',
-      ingredients: request.ingredients,
-      nutrition: this.getMockNutrition(recipeNumber),
-      steps: this.getMockSteps(ingredientName),
-      cookingTime: request.preferences.cookingTime ?? 'quick',
-      cuisine: request.preferences.cuisine ?? 'fusion',
-      diet: request.preferences.diet,
-      likes: this.getMockLikes(recipeNumber),
-    };
-  }
-
   /** Returns locally stored liked recipe ids. */
   private loadLikedRecipeIds(): Set<string> {
     const storedRecipeIds = localStorage.getItem(LIKED_RECIPE_IDS_STORAGE_KEY);
@@ -200,47 +174,5 @@ export class RecipeGenerationService {
     }
 
     return new Set(JSON.parse(storedRecipeIds) as string[]);
-  }
-
-  /** Returns the first selected ingredient name. */
-  private getPrimaryIngredientName(ingredients: RecipeIngredient[]): string {
-    return ingredients[0]?.name || 'your ingredients';
-  }
-
-  /** Returns a temporary generated recipe title. */
-  private getMockRecipeTitle(ingredientName: string, recipeNumber: number): string {
-    const titles = [
-      `Easy ${ingredientName} skillet`,
-      `Creamy ${ingredientName} bowl`,
-      `Fresh ${ingredientName} dinner`,
-    ];
-
-    return titles[recipeNumber - 1];
-  }
-
-  /** Returns temporary generated recipe likes. */
-  private getMockLikes(recipeNumber: number): number {
-    const likes = [66, 42, 18];
-
-    return likes[recipeNumber - 1];
-  }
-
-  /** Returns temporary nutrition values. */
-  private getMockNutrition(recipeNumber: number): GeneratedRecipe['nutrition'] {
-    return {
-      calories: 420 + recipeNumber * 35,
-      protein: 18 + recipeNumber * 2,
-      carbohydrates: 48 + recipeNumber * 3,
-      fat: 14 + recipeNumber,
-    };
-  }
-
-  /** Returns temporary generated cooking steps. */
-  private getMockSteps(ingredientName: string): GeneratedRecipe['steps'] {
-    return [
-      { order: 1, text: `Prepare ${ingredientName} and all other ingredients.` },
-      { order: 2, text: 'Cook everything gently until it smells great.' },
-      { order: 3, text: 'Season, plate, and serve warm.' },
-    ];
   }
 }

@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-
+import {
+  RECIPE_COOKING_TIME_LABELS,
+  RECIPE_CUISINE_LABELS,
+  RECIPE_DIET_LABELS,
+} from '../../../shared/data/recipe-display.data';
 import { APP_ROUTES } from '../../../core/config/app-routes.config';
 import { RecipeGenerationService } from '../../../core/services/recipe-generation.service';
 import {
@@ -10,6 +14,12 @@ import {
   RecipeDiet,
   RecipeIngredient,
 } from '../../../shared/models/recipe-generation.model';
+import { RECIPE_INGREDIENT_UNIT_LABELS } from '../../../shared/data/recipe-ingredient-options.data';
+import {
+  RecipeChefIcon,
+  getRecipeChefIconByStep,
+  getRecipeChefIcons,
+} from '../../../shared/data/recipe-chef-icons.data';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -49,59 +59,37 @@ export class RecipeDetailPage {
 
   /** Returns the display label for a recipe cooking time. */
   getCookingTimeLabel(cookingTime: RecipeCookingTime): string {
-    const labels: Record<RecipeCookingTime, string> = {
-      quick: '20min',
-      medium: '35min',
-      complex: '60min',
-    };
-
-    return labels[cookingTime];
+    return RECIPE_COOKING_TIME_LABELS[cookingTime];
   }
 
   /** Returns the readable cuisine label. */
   getCuisineLabel(cuisine: RecipeCuisine): string {
-    const labels: Record<RecipeCuisine, string> = {
-      german: 'German',
-      italian: 'Italian',
-      indian: 'Indian',
-      japanese: 'Japanese',
-      gourmet: 'Gourmet',
-      fusion: 'Fusion',
-    };
-
-    return labels[cuisine];
+    return RECIPE_CUISINE_LABELS[cuisine];
   }
 
   /** Returns the readable diet label. */
   getDietLabel(diet: RecipeDiet | null): string {
-    const labels: Record<RecipeDiet, string> = {
-      vegetarian: 'Vegetarian',
-      vegan: 'Vegan',
-      keto: 'Keto',
-      none: 'No diet preference',
-    };
-
-    return diet ? labels[diet] : 'No diet preference';
+    return diet ? RECIPE_DIET_LABELS[diet] : RECIPE_DIET_LABELS.none;
   }
 
   /** Returns a readable ingredient amount. */
   getIngredientAmount(ingredient: RecipeIngredient): string {
-    return `${ingredient.amount}${this.getUnitLabel(ingredient.unit)}`;
+    return `${ingredient.amount} ${this.getUnitLabel(ingredient.unit)}`;
   }
 
   /** Returns one chef icon for a step index. */
   getStepChefIcon(stepIndex: number): string {
-    return this.chefIcons[stepIndex % this.chefIcons.length];
+    return getRecipeChefIconByStep(stepIndex, this.chefIcons).src;
   }
 
   /** Returns one chef alt text for a step index. */
   getStepChefAlt(stepIndex: number): string {
-    return `Chef ${(stepIndex % this.chefIcons.length) + 1}`;
+    return getRecipeChefIconByStep(stepIndex, this.chefIcons).alt;
   }
 
-  /** Returns a readable ingredient unit. */
+  /** Returns the readable ingredient unit label. */
   private getUnitLabel(unit: RecipeIngredient['unit']): string {
-    return unit === 'piece' ? ' piece' : unit;
+    return RECIPE_INGREDIENT_UNIT_LABELS[unit];
   }
 
   /** Reads the selected recipe from the generation service. */
@@ -119,18 +107,9 @@ export class RecipeDetailPage {
   }
 
   /** Returns chef icons for the selected cooking person count. */
-  private getChefIcons(): string[] {
+  private getChefIcons(): RecipeChefIcon[] {
     const count = this.preferences?.cookingPersons ?? 1;
 
-    return Array.from({ length: count }, (_, index) =>
-      `assets/images/svg/chef-${this.getChefIconName(index + 1)}.svg`,
-    );
-  }
-
-  /** Returns the matching chef icon file name part. */
-  private getChefIconName(index: number): string {
-    const iconNames = ['one', 'two', 'three', 'four'];
-
-    return iconNames[index - 1];
+    return getRecipeChefIcons(count);
   }
 }

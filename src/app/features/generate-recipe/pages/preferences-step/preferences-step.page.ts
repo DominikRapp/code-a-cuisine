@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-
+import {
+  RECIPE_COOKING_TIME_OPTIONS,
+  RECIPE_CUISINE_OPTIONS,
+  RECIPE_DIET_OPTIONS,
+} from '../../../../shared/data/recipe-preference-options.data';
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RECIPE_GENERATION_CONFIG } from '../../../../core/config/recipe-generation.config';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
@@ -27,6 +31,9 @@ export class PreferencesStepPage {
   readonly cookingTime = signal<RecipeCookingTime | null>(null);
   readonly cuisine = signal<RecipeCuisine | null>(null);
   readonly diet = signal<RecipeDiet | null>(null);
+  readonly cookingTimeOptions = RECIPE_COOKING_TIME_OPTIONS;
+  readonly cuisineOptions = RECIPE_CUISINE_OPTIONS;
+  readonly dietOptions = RECIPE_DIET_OPTIONS;
 
   /** Saves valid preferences and opens the loading page. */
   generateRecipe(): void {

@@ -1,0 +1,15 @@
+export const MOCK_INGREDIENT_SUGGESTIONS = [
+    'Pasta',
+    'Pastrami',
+    'Passionfruit',
+    'Potato',
+    'Paprika',
+    'Parmesan',
+    'Apple',
+    'Baby spinach',
+    'Cherry tomatoes',
+    'Egg',
+    'Milk',
+    'Rice',
+    'Chicken',
+] as const;

@@ -60,83 +60,18 @@
     </section>
 
     <section class="cookbook-page__categories" aria-label="Cuisine categories">
-        <a class="cookbook-page__category-card" routerLink="/cookbook/category/italian">
+        @for (card of cuisineCards; track card.cuisine) {
+        <a class="cookbook-page__category-card" [routerLink]="getCuisineCategoryRoute(card.cuisine)">
             <span class="cookbook-page__category-title">
-                Italian cuisine
-                <img class="cookbook-page__category-emoji" src="assets/images/png/italian-emoji.png" alt=""
-                    aria-hidden="true" />
+                {{ card.title }}
+                <img class="cookbook-page__category-emoji" [src]="card.emojiSrc" alt="" aria-hidden="true" />
             </span>
 
             <span class="cookbook-page__category-image-wrap">
-                <img class="cookbook-page__category-image" src="assets/images/svg/italian-pic.svg" alt=""
-                    aria-hidden="true" />
+                <img class="cookbook-page__category-image" [src]="card.imageSrc" alt="" aria-hidden="true" />
             </span>
         </a>
-
-        <a class="cookbook-page__category-card" routerLink="/cookbook/category/german">
-            <span class="cookbook-page__category-title">
-                German cuisine
-                <img class="cookbook-page__category-emoji" src="assets/images/png/german-emoji.png" alt=""
-                    aria-hidden="true" />
-            </span>
-
-            <span class="cookbook-page__category-image-wrap">
-                <img class="cookbook-page__category-image" src="assets/images/svg/german-pic.svg" alt=""
-                    aria-hidden="true" />
-            </span>
-        </a>
-
-        <a class="cookbook-page__category-card" routerLink="/cookbook/category/japanese">
-            <span class="cookbook-page__category-title">
-                Japanese cuisine
-                <img class="cookbook-page__category-emoji" src="assets/images/png/japanese-emoji.png" alt=""
-                    aria-hidden="true" />
-            </span>
-
-            <span class="cookbook-page__category-image-wrap">
-                <img class="cookbook-page__category-image" src="assets/images/svg/japanese-pic.svg" alt=""
-                    aria-hidden="true" />
-            </span>
-        </a>
-
-        <a class="cookbook-page__category-card" routerLink="/cookbook/category/gourmet">
-            <span class="cookbook-page__category-title">
-                Gourmet cuisine
-                <img class="cookbook-page__category-emoji" src="assets/images/png/gourmet-emoji.png" alt=""
-                    aria-hidden="true" />
-            </span>
-
-            <span class="cookbook-page__category-image-wrap">
-                <img class="cookbook-page__category-image" src="assets/images/svg/gourmet-pic.svg" alt=""
-                    aria-hidden="true" />
-            </span>
-        </a>
-
-        <a class="cookbook-page__category-card" routerLink="/cookbook/category/indian">
-            <span class="cookbook-page__category-title">
-                Indian cuisine
-                <img class="cookbook-page__category-emoji" src="assets/images/png/indian-emoji.png" alt=""
-                    aria-hidden="true" />
-            </span>
-
-            <span class="cookbook-page__category-image-wrap">
-                <img class="cookbook-page__category-image" src="assets/images/svg/indian-pic.svg" alt=""
-                    aria-hidden="true" />
-            </span>
-        </a>
-
-        <a class="cookbook-page__category-card" routerLink="/cookbook/category/fusion">
-            <span class="cookbook-page__category-title">
-                Fusion cuisine
-                <img class="cookbook-page__category-emoji" src="assets/images/png/fusion-emoji.png" alt=""
-                    aria-hidden="true" />
-            </span>
-
-            <span class="cookbook-page__category-image-wrap">
-                <img class="cookbook-page__category-image" src="assets/images/svg/fusion-pic.svg" alt=""
-                    aria-hidden="true" />
-            </span>
-        </a>
+        }
     </section>
 
     <div class="cookbook-page__new-link-row">

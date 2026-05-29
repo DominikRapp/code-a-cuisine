@@ -86,26 +86,14 @@
             </legend>
 
             <div class="preferences-step__time-options">
+                @for (option of cookingTimeOptions; track option.value) {
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="quick"
-                        [checked]="cookingTime() === 'quick'" (change)="selectCookingTime('quick')" />
-                    <span class="preferences-step__tag">Quick</span>
-                    <span class="preferences-step__tag-note">ab to 20min</span>
+                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" [value]="option.value"
+                        [checked]="cookingTime() === option.value" (change)="selectCookingTime(option.value)" />
+                    <span class="preferences-step__tag">{{ option.label }}</span>
+                    <span class="preferences-step__tag-note">{{ option.note }}</span>
                 </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="medium"
-                        [checked]="cookingTime() === 'medium'" (change)="selectCookingTime('medium')" />
-                    <span class="preferences-step__tag">Medium</span>
-                    <span class="preferences-step__tag-note">25-40min</span>
-                </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cookingTime" value="complex"
-                        [checked]="cookingTime() === 'complex'" (change)="selectCookingTime('complex')" />
-                    <span class="preferences-step__tag">Complex</span>
-                    <span class="preferences-step__tag-note">over 45min</span>
-                </label>
+                }
             </div>
         </fieldset>
 
@@ -117,41 +105,13 @@
             </legend>
 
             <div class="preferences-step__tag-grid">
+                @for (option of cuisineOptions; track option.value) {
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="german"
-                        [checked]="cuisine() === 'german'" (change)="selectCuisine('german')" />
-                    <span class="preferences-step__tag">German</span>
+                    <input class="preferences-step__tag-input" type="radio" name="cuisine" [value]="option.value"
+                        [checked]="cuisine() === option.value" (change)="selectCuisine(option.value)" />
+                    <span class="preferences-step__tag">{{ option.label }}</span>
                 </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="italian"
-                        [checked]="cuisine() === 'italian'" (change)="selectCuisine('italian')" />
-                    <span class="preferences-step__tag">Italian</span>
-                </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="indian"
-                        [checked]="cuisine() === 'indian'" (change)="selectCuisine('indian')" />
-                    <span class="preferences-step__tag">Indian</span>
-                </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="japanese"
-                        [checked]="cuisine() === 'japanese'" (change)="selectCuisine('japanese')" />
-                    <span class="preferences-step__tag">Japanese</span>
-                </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="gourmet"
-                        [checked]="cuisine() === 'gourmet'" (change)="selectCuisine('gourmet')" />
-                    <span class="preferences-step__tag">Gourmet</span>
-                </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="cuisine" value="fusion"
-                        [checked]="cuisine() === 'fusion'" (change)="selectCuisine('fusion')" />
-                    <span class="preferences-step__tag">Fusion</span>
-                </label>
+                }
             </div>
         </fieldset>
 
@@ -163,29 +123,13 @@
             </legend>
 
             <div class="preferences-step__tag-grid">
+                @for (option of dietOptions; track option.value) {
                 <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="vegetarian"
-                        [checked]="diet() === 'vegetarian'" (change)="selectDiet('vegetarian')" />
-                    <span class="preferences-step__tag">Vegetarian</span>
+                    <input class="preferences-step__tag-input" type="radio" name="diet" [value]="option.value"
+                        [checked]="diet() === option.value" (change)="selectDiet(option.value)" />
+                    <span class="preferences-step__tag">{{ option.label }}</span>
                 </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="vegan"
-                        [checked]="diet() === 'vegan'" (change)="selectDiet('vegan')" />
-                    <span class="preferences-step__tag">Vegan</span>
-                </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="keto"
-                        [checked]="diet() === 'keto'" (change)="selectDiet('keto')" />
-                    <span class="preferences-step__tag">Keto</span>
-                </label>
-
-                <label class="preferences-step__tag-label">
-                    <input class="preferences-step__tag-input" type="radio" name="diet" value="none"
-                        [checked]="diet() === 'none'" (change)="selectDiet('none')" />
-                    <span class="preferences-step__tag">No preferences</span>
-                </label>
+                }
             </div>
         </fieldset>
     </section>

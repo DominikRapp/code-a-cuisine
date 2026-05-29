@@ -9,8 +9,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
-
-const MOCK_GENERATION_DELAY_MS = 2500;
+import { MOCK_GENERATION_DELAY_MS } from '../../../../shared/data/mock/generation-flow.mock-data';
 
 @Component({
   selector: 'app-loading-page',

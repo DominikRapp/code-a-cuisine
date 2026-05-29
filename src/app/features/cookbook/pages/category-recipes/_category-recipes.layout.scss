@@ -1,0 +1,121 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background: var(--app-color-page-background);
+}
+
+.category-recipes-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    max-width: var(--app-page-max-width);
+    margin: 0 auto;
+    padding: 48px;
+    box-sizing: border-box;
+}
+
+.category-recipes-page__hero {
+    width: min(100%, 1143px);
+    margin: 58px auto 0;
+    order: 3;
+}
+
+.category-recipes-page__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    order: 1;
+    width: 100%;
+    margin: 0;
+}
+
+.category-recipes-page__logo-link {
+    display: inline-flex;
+    width: 142px;
+    height: 48px;
+}
+
+.category-recipes-page__logo {
+    display: block;
+    width: 142px;
+    height: 48px;
+}
+
+.category-recipes-page__back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin-top: 22px;
+    color: var(--app-color-generate-title);
+    font-family: var(--app-font-family-primary);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.category-recipes-page__back-link:hover,
+.category-recipes-page__back-link:focus-visible {
+    outline: none;
+    text-decoration: none;
+}
+
+.category-recipes-page__back-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+}
+
+.category-recipes-page__generate-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    order: 2;
+    width: 258px;
+    height: 62px;
+    margin-top: 0;
+    margin-right: max(0px, calc((100% - 1143px) / 2));
+    background: var(--app-color-brand-green);
+    color: var(--app-color-cream-warm);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 30px;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.category-recipes-page__generate-link:hover,
+.category-recipes-page__generate-link:focus-visible {
+    background: var(--app-color-action-green);
+    color: var(--app-color-generate-next-hover-text);
+    outline: none;
+}
+
+.category-recipes-page__title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    clip: rect(0 0 0 0);
+}
+
+.category-recipes-page__hero-image {
+    display: block;
+    width: 100%;
+    max-width: 1143px;
+    height: auto;
+}
+
+.category-recipes-page__content {
+    width: min(100%, 914px);
+    margin: 62px auto 0;
+    order: 4;
+}

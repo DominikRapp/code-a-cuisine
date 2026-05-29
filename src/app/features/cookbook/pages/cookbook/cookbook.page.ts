@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
+import { RECIPE_COOKING_TIME_LABELS } from '../../../../shared/data/recipe-display.data';
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
 import {
   GeneratedRecipe,
   RecipeCookingTime,
 } from '../../../../shared/models/recipe-generation.model';
+import { RECIPE_CUISINE_CARDS } from '../../../../shared/data/recipe-cuisine-card.data';
 
 @Component({
   selector: 'app-cookbook-page',
@@ -18,19 +19,19 @@ import {
 export class CookbookPage {
   private readonly recipeGenerationService = inject(RecipeGenerationService);
 
+  readonly cuisineCards = RECIPE_CUISINE_CARDS;
   readonly mostLikedRecipes = computed(() =>
     this.recipeGenerationService.getMostLikedRecipes(),
   );
 
+  /** Returns the category route for a cuisine card. */
+  getCuisineCategoryRoute(cuisine: string): string {
+    return `/${APP_ROUTES.cookbookCategory.replace(':category', cuisine)}`;
+  }
+
   /** Returns the display label for a recipe cooking time. */
   getCookingTimeLabel(cookingTime: RecipeCookingTime): string {
-    const labels: Record<RecipeCookingTime, string> = {
-      quick: '20min',
-      medium: '35min',
-      complex: '60min',
-    };
-
-    return labels[cookingTime];
+    return RECIPE_COOKING_TIME_LABELS[cookingTime];
   }
 
   /** Returns the detail route for a recipe. */

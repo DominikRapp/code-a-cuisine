@@ -1,0 +1,120 @@
+.cookbook-page__liked-section {
+    min-width: 0;
+}
+
+.cookbook-page__liked-heading-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 14px;
+}
+
+.cookbook-page__liked-title {
+    margin: 0;
+    color: var(--app-color-generate-title);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 30px;
+}
+
+.cookbook-page__liked-heading-icon {
+    display: block;
+    width: 30px;
+    height: 26px;
+}
+
+.cookbook-page__liked-scroll {
+    display: flex;
+    gap: 16px;
+    width: min(100%, 823px);
+    height: 124px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 16px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: auto;
+    overscroll-behavior-inline: contain;
+}
+
+.cookbook-page__liked-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.cookbook-page__liked-card {
+    position: relative;
+    display: flex;
+    flex: 0 0 370px;
+    flex-direction: column;
+    width: 370px;
+    height: 124px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #e4e8e4;
+    color: var(--app-color-generate-title);
+    text-decoration: none;
+    scroll-snap-align: nearest;
+    box-sizing: border-box;
+    transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.cookbook-page__liked-card:hover,
+.cookbook-page__liked-card:focus-visible {
+    background: var(--app-color-results-card-hover);
+    outline: none;
+}
+
+.cookbook-page__liked-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 250px;
+    color: var(--app-color-brand-green);
+    font-family: var(--app-font-family-primary);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.cookbook-page__liked-clock {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+.cookbook-page__liked-name {
+    max-width: 270px;
+    margin-top: 16px;
+    color: var(--app-color-generate-title);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 30px;
+}
+
+.cookbook-page__likes-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 64px;
+    height: 32px;
+    border-radius: 30px;
+    background: #b0c0b0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-tertiary);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.cookbook-page__likes-icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+}

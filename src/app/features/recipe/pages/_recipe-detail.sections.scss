@@ -1,0 +1,102 @@
+.recipe-detail__section {
+    margin-top: 72px;
+}
+
+.recipe-detail__section-hero {
+    display: block;
+    width: 100%;
+}
+
+.recipe-detail__section-hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.recipe-detail__ingredient-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 88px;
+    width: min(100%, 820px);
+    margin: 40px auto 0;
+}
+
+.recipe-detail__sub-title {
+    margin: 0 0 18px;
+    color: var(--app-color-action-green);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 30px;
+}
+
+.recipe-detail__ingredient-list {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-left: 24px;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 30px;
+}
+
+.recipe-detail__ingredient-list span {
+    display: inline-block;
+    min-width: 76px;
+}
+
+.recipe-detail__directions-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 42px 72px;
+    margin: 46px 0 0;
+    padding: 0 80px;
+    list-style: none;
+}
+
+.recipe-detail__direction-item {
+    min-width: 0;
+}
+
+.recipe-detail__direction-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.recipe-detail__step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: var(--app-color-cream-warm);
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.recipe-detail__direction-title {
+    margin: 0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 30px;
+}
+
+.recipe-detail__direction-text {
+    margin: 0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+}

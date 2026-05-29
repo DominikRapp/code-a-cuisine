@@ -4,7 +4,7 @@ import {
     RecipeCuisine,
     RecipeDiet,
     RecipeIngredient,
-} from '../models/recipe-generation.model';
+} from '../../models/recipe-generation.model';
 
 interface MockRecipeConfig {
     id: string;

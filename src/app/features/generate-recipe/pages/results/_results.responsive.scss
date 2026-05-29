@@ -1,0 +1,160 @@
+@media (max-width: 1439px) and (min-width: 1025px) {
+    .results-page {
+        padding: clamp(32px, 3.35vw, 48px);
+    }
+
+    .results-page__logo-link {
+        margin-bottom: clamp(40px, 3.6vw, 52px);
+    }
+
+    .results-page__hero {
+        grid-template-columns: minmax(0, 1fr) clamp(420px, 39.85vw, 574px);
+        column-gap: clamp(32px, 4.45vw, 64px);
+        max-width: 1344px;
+        margin-bottom: clamp(56px, 5vw, 72px);
+    }
+
+    .results-page__title {
+        font-size: clamp(44px, 3.75vw, 54px);
+    }
+
+    .results-page__description {
+        font-size: clamp(20px, 1.67vw, 24px);
+    }
+
+    .results-page__hero-image {
+        width: clamp(420px, 39.85vw, 574px);
+        height: clamp(163px, 15.43vw, 222px);
+    }
+
+    .results-page__recipes {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: clamp(24px, 3.35vw, 48px);
+        max-width: 1344px;
+    }
+
+    .results-page__recipe-card {
+        width: 100%;
+        height: clamp(300px, 23.5vw, 338px);
+        padding: clamp(28px, 2.5vw, 36px) clamp(24px, 2.22vw, 32px) 30px;
+    }
+
+    .results-page__recipe-title {
+        font-size: clamp(26px, 2.22vw, 32px);
+    }
+
+    .results-page__recipe-time {
+        font-size: clamp(18px, 1.39vw, 20px);
+    }
+}
+
+@media (max-width: 1024px) {
+    .results-page {
+        padding: 16px 8px;
+    }
+
+    .results-page__logo-link {
+        width: clamp(77px, 13.86vw, 142px);
+        height: auto;
+        margin-bottom: clamp(28px, 6.25vw, 64px);
+    }
+
+    .results-page__logo {
+        width: clamp(77px, 13.86vw, 142px);
+        height: auto;
+    }
+
+    .results-page__hero {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "title"
+            "image"
+            "description"
+            "tags";
+        row-gap: 0;
+        width: 100%;
+        max-width: 574px;
+        margin: 0 auto clamp(28px, 4.69vw, 48px);
+    }
+
+    .results-page__title {
+        max-width: 100%;
+        margin-bottom: clamp(16px, 2.35vw, 24px);
+        font-size: clamp(28px, 5.27vw, 54px);
+        line-height: 1.15;
+    }
+
+    .results-page__hero-image {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        aspect-ratio: 574 / 222;
+        margin-bottom: clamp(14px, 2.35vw, 24px);
+    }
+
+    .results-page__description {
+        max-width: 100%;
+        margin-bottom: clamp(14px, 2.54vw, 26px);
+        font-size: clamp(16px, 2.35vw, 24px);
+    }
+
+    .results-page__tags {
+        width: 100%;
+    }
+
+    .results-page__tag {
+        min-height: clamp(24px, 2.93vw, 30px);
+        padding: 3px clamp(12px, 1.76vw, 18px);
+        font-size: clamp(14px, 1.76vw, 18px);
+    }
+
+    .results-page__recipes {
+        grid-template-columns: 1fr;
+        gap: clamp(12px, 2.93vw, 30px);
+        max-width: 640px;
+    }
+
+    .results-page__recipe-card {
+        width: 100%;
+        height: auto;
+        min-height: clamp(178px, 23.44vw, 240px);
+        padding: clamp(20px, 3.13vw, 32px);
+    }
+
+    .results-page__recipe-header {
+        gap: clamp(12px, 1.76vw, 18px);
+        margin-bottom: clamp(12px, 1.76vw, 18px);
+    }
+
+    .results-page__recipe-number {
+        font-size: clamp(18px, 2.35vw, 24px);
+    }
+
+    .results-page__recipe-title {
+        min-height: 0;
+        margin-bottom: clamp(14px, 1.96vw, 20px);
+        font-size: clamp(22px, 3.13vw, 32px);
+    }
+
+    .results-page__recipe-time {
+        margin-bottom: clamp(24px, 3.13vw, 32px);
+        font-size: clamp(16px, 1.96vw, 20px);
+    }
+
+    .results-page__view-link {
+        width: clamp(74px, 10.35vw, 106px);
+        height: clamp(48px, 5.86vw, 60px);
+        font-size: clamp(16px, 2.35vw, 24px);
+    }
+
+    .results-page__footer {
+        justify-content: center;
+        max-width: 640px;
+        margin-top: clamp(28px, 5.86vw, 60px);
+    }
+
+    .results-page__new-link {
+        font-size: clamp(16px, 1.96vw, 20px);
+    }
+}

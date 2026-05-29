@@ -2,25 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
+import { MOCK_INGREDIENT_SUGGESTIONS } from '../../../../shared/data/mock/ingredient-suggestions.mock-data';
+import {
+    RECIPE_INGREDIENT_UNIT_LABELS,
+    RECIPE_INGREDIENT_UNIT_OPTIONS,
+} from '../../../../shared/data/recipe-ingredient-options.data';
 import { RecipeIngredient, RecipeIngredientUnit } from '../../../../shared/models/recipe-generation.model';
 
-const MOCK_INGREDIENTS = [
-    'Pasta',
-    'Pastrami',
-    'Passionfruit',
-    'Potato',
-    'Paprika',
-    'Parmesan',
-    'Apple',
-    'Baby spinach',
-    'Cherry tomatoes',
-    'Egg',
-    'Milk',
-    'Rice',
-    'Chicken',
-] as const;
-
-const UNIT_OPTIONS: RecipeIngredientUnit[] = ['piece', 'ml', 'gram'];
 
 @Component({
     selector: 'app-ingredients-step-page',
@@ -31,7 +19,7 @@ const UNIT_OPTIONS: RecipeIngredientUnit[] = ['piece', 'ml', 'gram'];
 })
 export class IngredientsStepPage {
     private readonly recipeGenerationService = inject(RecipeGenerationService);
-    readonly unitOptions = UNIT_OPTIONS;
+    readonly unitOptions = RECIPE_INGREDIENT_UNIT_OPTIONS;
     readonly ingredientName = signal('');
     readonly ingredientAmount = signal<number | null>(null);
     readonly selectedUnit = signal<RecipeIngredientUnit>('gram');
@@ -124,10 +112,7 @@ export class IngredientsStepPage {
 
     /** Formats the unit for the ingredient list. */
     formatUnit(unit: RecipeIngredientUnit): string {
-        if (unit === 'piece') {
-            return '';
-        }
-        return unit === 'gram' ? 'g' : unit;
+        return unit === 'piece' ? '' : RECIPE_INGREDIENT_UNIT_LABELS[unit];
     }
 
     /** Focuses the first visible ingredient suggestion. */
@@ -165,7 +150,9 @@ export class IngredientsStepPage {
         if (!search) {
             return [];
         }
-        return MOCK_INGREDIENTS.filter((name) => this.matchesSuggestion(name, search)).slice(0, 3);
+        return MOCK_INGREDIENT_SUGGESTIONS
+            .filter((name: string) => this.matchesSuggestion(name, search))
+            .slice(0, 3);
     }
 
     /** Checks whether one ingredient matches the current search input. */

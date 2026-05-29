@@ -31,8 +31,8 @@
                         Cooking person: {{ preferences?.cookingPersons ?? 1 }}
                     </span>
 
-                    @for (chefIcon of chefIcons; track chefIcon; let index = $index) {
-                    <img class="recipe-detail__chef-tag" [src]="chefIcon" [alt]="'Chef ' + (index + 1)" />
+                    @for (chefIcon of chefIcons; track chefIcon.src) {
+                    <img class="recipe-detail__chef-tag" [src]="chefIcon.src" [alt]="chefIcon.alt" />
                     }
                 </div>
             </div>

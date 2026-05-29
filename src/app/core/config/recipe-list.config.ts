@@ -1,0 +1,1 @@
+export const RECIPE_CATEGORY_PAGE_SIZE = 15;

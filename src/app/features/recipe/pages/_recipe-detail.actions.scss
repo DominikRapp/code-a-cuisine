@@ -1,0 +1,203 @@
+.recipe-detail__rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 52px;
+}
+
+.recipe-detail__rating-text {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-tertiary);
+    line-height: 24px;
+}
+
+.recipe-detail__rating-text strong {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.recipe-detail__rating-text span {
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.recipe-detail__heart-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--app-color-recipe-heart);
+    cursor: pointer;
+    transition: background-color 160ms ease;
+}
+
+.recipe-detail__heart-button:not(.recipe-detail__heart-button--liked):hover,
+.recipe-detail__heart-button:not(.recipe-detail__heart-button--liked):focus-visible {
+    background: var(--app-color-recipe-heart-hover-bg);
+    outline: none;
+}
+
+.recipe-detail__heart-button--liked {
+    background: transparent;
+    color: var(--app-color-recipe-heart);
+}
+
+.recipe-detail__heart-button--liked:focus-visible {
+    outline: 2px solid var(--app-color-recipe-heart);
+    outline-offset: 3px;
+}
+
+.recipe-detail__heart-button--liked .recipe-detail__heart-icon {
+    transform: scale(1.08);
+}
+
+.recipe-detail__heart-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 32px;
+    color: currentColor;
+    transition: transform 160ms ease;
+}
+
+.recipe-detail__heart-icon svg {
+    display: block;
+    width: 34px;
+    height: 32px;
+    color: currentColor;
+}
+
+.recipe-detail__cookbook-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+    width: min(100%, 1200px);
+    min-height: 130px;
+    margin: 0 auto;
+    padding: 32px 40px;
+    border-radius: 20px;
+    background: #ecf0ec;
+    box-sizing: border-box;
+}
+
+.recipe-detail__cookbook-card p {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+}
+
+.recipe-detail__cookbook-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 1 169px;
+    width: clamp(104px, 22vw, 169px);
+    min-width: 104px;
+    height: clamp(44px, 7.5vw, 62px);
+    padding: 0 clamp(10px, 2vw, 20px);
+    background: var(--app-color-brand-green);
+    color: var(--app-color-cream-warm);
+    font-family: var(--app-font-family-primary);
+    font-size: clamp(15px, 2.6vw, 24px);
+    font-weight: 600;
+    line-height: 30px;
+    text-decoration: none;
+    box-sizing: border-box;
+    white-space: nowrap;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.recipe-detail__cookbook-button:hover,
+.recipe-detail__cookbook-button:focus-visible {
+    background: var(--app-color-generate-next-hover-bg);
+    color: var(--app-color-generate-next-hover-text);
+    outline: none;
+}
+
+.recipe-detail__new-link-row {
+    display: flex;
+    justify-content: flex-end;
+    width: min(100%, 1200px);
+    margin: 46px auto 0;
+}
+
+.recipe-detail__new-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 285px;
+    height: 52px;
+    padding: 16px 26px;
+    color: var(--app-color-brand-green);
+    font-family: var(--app-font-family-primary);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 20px;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background-color 160ms ease;
+}
+
+.recipe-detail__new-link-text {
+    white-space: nowrap;
+}
+
+.recipe-detail__new-link:hover,
+.recipe-detail__new-link:focus-visible {
+    background: var(--app-color-recipe-new-link-hover-bg);
+    outline: none;
+}
+
+.recipe-detail__new-link-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 20px;
+    color: var(--app-color-brand-green);
+}
+
+.recipe-detail__new-link-icon svg {
+    display: block;
+    width: 32px;
+    height: 20px;
+}
+
+.recipe-detail__new-link:hover .recipe-detail__new-link-icon,
+.recipe-detail__new-link:focus-visible .recipe-detail__new-link-icon {
+    animation: recipe-new-arrow-blink 650ms ease;
+}
+
+@keyframes recipe-new-arrow-blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
