@@ -4,16 +4,13 @@ import { RecipeDataService } from '../../../../core/services/recipe-data.service
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
 import {
-  RECIPE_COOKING_TIME_LABELS,
-  RECIPE_COOKING_TIME_TAGS,
-  RECIPE_CUISINE_LABELS,
-  RECIPE_DIET_LABELS,
-} from '../../../../shared/data/recipe-display.data';
+  buildPreferenceTags,
+  getRecipeCookingTimeLabel,
+} from '../../../../shared/utils/recipe-tag.util';
+import { buildRecipeDetailRoute } from '../../../../shared/utils/recipe-route.util';
 import {
   GeneratedRecipe,
   RecipeCookingTime,
-  RecipeCuisine,
-  RecipeDiet,
 } from '../../../../shared/models/recipe-generation.model';
 
 @Component({
@@ -42,12 +39,12 @@ export class ResultsPage {
 
   /** Returns the display label for a recipe cooking time. */
   getCookingTimeLabel(cookingTime: RecipeCookingTime): string {
-    return RECIPE_COOKING_TIME_LABELS[cookingTime];
+    return getRecipeCookingTimeLabel(cookingTime);
   }
 
   /** Returns the detail route for a generated recipe. */
   getRecipeDetailRoute(recipe: GeneratedRecipe): string {
-    return `/${APP_ROUTES.recipeDetail.replace(':recipeId', recipe.id)}`;
+    return buildRecipeDetailRoute(recipe);
   }
 
   /** Redirects users who opened results without generated recipes. */
@@ -61,31 +58,6 @@ export class ResultsPage {
 
   /** Returns selected preferences as visible result tags. */
   private getPreferenceTags(): string[] {
-    const preferences = this.recipeGenerationService.getPreferences();
-
-    if (!preferences) {
-      return [];
-    }
-
-    return [
-      this.getCuisineLabel(preferences.cuisine),
-      this.getCookingTimeTag(preferences.cookingTime),
-      this.getDietLabel(preferences.diet),
-    ].filter((tag): tag is string => Boolean(tag));
-  }
-
-  /** Returns the readable cuisine label. */
-  private getCuisineLabel(cuisine: RecipeCuisine | null): string | null {
-    return cuisine ? RECIPE_CUISINE_LABELS[cuisine] : null;
-  }
-
-  /** Returns the readable cooking time label. */
-  private getCookingTimeTag(cookingTime: RecipeCookingTime | null): string | null {
-    return cookingTime ? RECIPE_COOKING_TIME_TAGS[cookingTime] : null;
-  }
-
-  /** Returns the readable diet label. */
-  private getDietLabel(diet: RecipeDiet | null): string | null {
-    return diet ? RECIPE_DIET_LABELS[diet] : null;
+    return buildPreferenceTags(this.recipeGenerationService.getPreferences());
   }
 }

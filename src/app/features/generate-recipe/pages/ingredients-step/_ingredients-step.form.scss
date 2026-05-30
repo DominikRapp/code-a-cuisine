@@ -24,8 +24,7 @@
 
 .ingredients-step__text-input:focus,
 .ingredients-step__amount-input:focus,
-.ingredients-step__edit-amount-input:focus,
-.ingredients-step__edit-name-input:focus {
+.ingredients-step__edit-amount-input:focus {
     outline: none;
     box-shadow: none;
 }
@@ -77,7 +76,7 @@
 }
 
 .ingredients-step__amount-input {
-    width: 62px;
+    width: 64px;
     height: 34px;
     padding: 0 12px;
     border: 0;
@@ -91,15 +90,6 @@
     font-size: 18px;
     font-weight: 500;
     line-height: 34px;
-    appearance: textfield;
-}
-
-.ingredients-step__amount-input::-webkit-outer-spin-button,
-.ingredients-step__amount-input::-webkit-inner-spin-button,
-.ingredients-step__edit-amount-input::-webkit-outer-spin-button,
-.ingredients-step__edit-amount-input::-webkit-inner-spin-button {
-    margin: 0;
-    appearance: none;
 }
 
 .ingredients-step__amount-input::placeholder {

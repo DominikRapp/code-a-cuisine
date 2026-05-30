@@ -1,20 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-
+import { buildRecipeDetailRoute } from '../../../../shared/utils/recipe-route.util';
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RecipeDataService } from '../../../../core/services/recipe-data.service';
 import { RECIPE_CATEGORY_DISPLAY_CONFIG } from '../../../../shared/data/recipe-category-display.data';
 import { isRecipeCuisine } from '../../../../shared/data/recipe-cuisine.data';
 import {
-  RECIPE_COOKING_TIME_LABELS,
-  RECIPE_COOKING_TIME_TAGS,
-  RECIPE_DIET_LABELS,
-} from '../../../../shared/data/recipe-display.data';
+  buildRecipeCardTags,
+  getRecipeCookingTimeLabel,
+} from '../../../../shared/utils/recipe-tag.util';
 import {
   GeneratedRecipe,
   RecipeCookingTime,
   RecipeCuisine,
-  RecipeDiet,
 } from '../../../../shared/models/recipe-generation.model';
 import { RECIPE_CATEGORY_PAGE_SIZE } from '../../../../core/config/recipe-list.config';
 
@@ -36,20 +34,17 @@ export class CategoryRecipesPage {
 
   /** Returns the detail route for a recipe. */
   getRecipeDetailRoute(recipe: GeneratedRecipe): string {
-    return `/${APP_ROUTES.recipeDetail.replace(':recipeId', recipe.id)}`;
+    return buildRecipeDetailRoute(recipe);
   }
 
   /** Returns the display label for a recipe cooking time. */
   getCookingTimeLabel(cookingTime: RecipeCookingTime): string {
-    return RECIPE_COOKING_TIME_LABELS[cookingTime];
+    return getRecipeCookingTimeLabel(cookingTime);
   }
 
   /** Returns readable recipe tags. */
   getRecipeTags(recipe: GeneratedRecipe): string[] {
-    return [
-      this.getDietLabel(recipe.diet),
-      this.getCookingTimeTag(recipe.cookingTime),
-    ].filter((tag): tag is string => Boolean(tag));
+    return buildRecipeCardTags(recipe);
   }
 
   /** Returns the selected category from the route. */
@@ -69,15 +64,5 @@ export class CategoryRecipesPage {
     return this.recipeDataService
       .getRecipesByCuisine(this.category)
       .slice(0, RECIPE_CATEGORY_PAGE_SIZE);
-  }
-
-  /** Returns the readable cooking time tag. */
-  private getCookingTimeTag(cookingTime: RecipeCookingTime): string {
-    return RECIPE_COOKING_TIME_TAGS[cookingTime];
-  }
-
-  /** Returns the readable diet label. */
-  private getDietLabel(diet: RecipeDiet | null): string | null {
-    return diet && diet !== 'none' ? RECIPE_DIET_LABELS[diet] : null;
   }
 }

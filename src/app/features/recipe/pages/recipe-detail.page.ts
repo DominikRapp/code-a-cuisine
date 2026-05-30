@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
-  RECIPE_COOKING_TIME_LABELS,
-  RECIPE_CUISINE_LABELS,
-  RECIPE_DIET_LABELS,
-} from '../../../shared/data/recipe-display.data';
+  getRecipeCookingTimeLabel,
+  getRecipeCuisineLabel,
+  getRecipeDietLabel,
+} from '../../../shared/utils/recipe-tag.util';
 import { APP_ROUTES } from '../../../core/config/app-routes.config';
 import { RecipeGenerationService } from '../../../core/services/recipe-generation.service';
 import {
@@ -14,7 +14,7 @@ import {
   RecipeDiet,
   RecipeIngredient,
 } from '../../../shared/models/recipe-generation.model';
-import { RECIPE_INGREDIENT_UNIT_LABELS } from '../../../shared/data/recipe-ingredient-options.data';
+import { getIngredientUnitLabel } from '../../../shared/utils/ingredient.util';
 import {
   RecipeChefIcon,
   getRecipeChefIconByStep,
@@ -32,9 +32,9 @@ import { RecipeDataService } from '../../../core/services/recipe-data.service';
 export class RecipeDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly recipeDataService = inject(RecipeDataService);
   private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly recipeId = this.route.snapshot.paramMap.get('recipeId') ?? '';
-  private readonly recipeDataService = inject(RecipeDataService);
 
   readonly recipe = computed(() => this.getRecipeFromRoute());
   readonly preferences = this.recipeGenerationService.getPreferences();
@@ -61,17 +61,17 @@ export class RecipeDetailPage {
 
   /** Returns the display label for a recipe cooking time. */
   getCookingTimeLabel(cookingTime: RecipeCookingTime): string {
-    return RECIPE_COOKING_TIME_LABELS[cookingTime];
+    return getRecipeCookingTimeLabel(cookingTime);
   }
 
   /** Returns the readable cuisine label. */
   getCuisineLabel(cuisine: RecipeCuisine): string {
-    return RECIPE_CUISINE_LABELS[cuisine];
+    return getRecipeCuisineLabel(cuisine);
   }
 
   /** Returns the readable diet label. */
   getDietLabel(diet: RecipeDiet | null): string {
-    return diet ? RECIPE_DIET_LABELS[diet] : RECIPE_DIET_LABELS.none;
+    return getRecipeDietLabel(diet);
   }
 
   /** Returns a readable ingredient amount. */
@@ -91,10 +91,10 @@ export class RecipeDetailPage {
 
   /** Returns the readable ingredient unit label. */
   private getUnitLabel(unit: RecipeIngredient['unit']): string {
-    return RECIPE_INGREDIENT_UNIT_LABELS[unit];
+    return getIngredientUnitLabel(unit);
   }
 
-  /** Reads the selected recipe from the generation service. */
+  /** Reads the selected recipe from the recipe data service. */
   private getRecipeFromRoute(): GeneratedRecipe | null {
     return this.recipeDataService.getRecipeById(this.recipeId);
   }

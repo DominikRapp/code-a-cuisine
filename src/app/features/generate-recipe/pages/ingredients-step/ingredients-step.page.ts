@@ -2,13 +2,19 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
-import { MOCK_INGREDIENT_SUGGESTIONS } from '../../../../shared/data/mock/ingredient-suggestions.mock-data';
+import { IngredientSuggestionService } from '../../../../core/services/ingredient-suggestion.service';
+import { RECIPE_INGREDIENT_UNIT_OPTIONS } from '../../../../shared/data/recipe-ingredient-options.data';
 import {
-    RECIPE_INGREDIENT_UNIT_LABELS,
-    RECIPE_INGREDIENT_UNIT_OPTIONS,
-} from '../../../../shared/data/recipe-ingredient-options.data';
+    createRecipeIngredient,
+    getVisibleIngredientUnitLabel,
+    hasIngredientName,
+    INGREDIENT_AMOUNT_MAX_DIGITS,
+    sanitizeIngredientAmountInput,
+    sanitizeIngredientNameInput,
+    toIngredientAmount,
+    updateRecipeIngredientAmountAndUnit,
+} from '../../../../shared/utils/ingredient.util';
 import { RecipeIngredient, RecipeIngredientUnit } from '../../../../shared/models/recipe-generation.model';
-
 
 @Component({
     selector: 'app-ingredients-step-page',
@@ -19,13 +25,15 @@ import { RecipeIngredient, RecipeIngredientUnit } from '../../../../shared/model
 })
 export class IngredientsStepPage {
     private readonly recipeGenerationService = inject(RecipeGenerationService);
+    private readonly ingredientSuggestionService = inject(IngredientSuggestionService);
+
+    readonly amountMaxLength = INGREDIENT_AMOUNT_MAX_DIGITS;
     readonly unitOptions = RECIPE_INGREDIENT_UNIT_OPTIONS;
     readonly ingredientName = signal('');
     readonly ingredientAmount = signal<number | null>(null);
     readonly selectedUnit = signal<RecipeIngredientUnit>('gram');
     readonly ingredients = signal<RecipeIngredient[]>([]);
     readonly editingIngredientId = signal<string | null>(null);
-    readonly editName = signal('');
     readonly editAmount = signal<number | null>(null);
     readonly editUnit = signal<RecipeIngredientUnit>('gram');
     readonly suggestions = computed(() => this.getSuggestions());
@@ -39,13 +47,20 @@ export class IngredientsStepPage {
     }
 
     /** Updates the current ingredient name input. */
-    setIngredientName(value: string): void {
-        this.ingredientName.set(value);
+    setIngredientName(event: Event): void {
+        const input = event.target as HTMLInputElement | null;
+
+        if (!input) {
+            return;
+        }
+
+        input.value = sanitizeIngredientNameInput(input.value);
+        this.ingredientName.set(input.value);
     }
 
     /** Updates the current ingredient amount input. */
-    setIngredientAmount(value: number | null): void {
-        this.ingredientAmount.set(this.toAmount(value));
+    setIngredientAmount(event: Event): void {
+        this.ingredientAmount.set(this.getSanitizedAmountFromEvent(event));
     }
 
     /** Selects the unit for a new ingredient. */
@@ -61,7 +76,7 @@ export class IngredientsStepPage {
 
     /** Adds the ingredient to the visible ingredient list. */
     addIngredient(): void {
-        const amount = this.toAmount(this.ingredientAmount());
+        const amount = toIngredientAmount(this.ingredientAmount());
         if (!this.canAddIngredient() || amount === null) {
             return;
         }
@@ -77,8 +92,8 @@ export class IngredientsStepPage {
     }
 
     /** Updates the currently edited ingredient amount. */
-    setEditAmount(value: number | null): void {
-        this.editAmount.set(this.toAmount(value));
+    setEditAmount(event: Event): void {
+        this.editAmount.set(this.getSanitizedAmountFromEvent(event));
     }
 
     /** Selects the unit for the edited ingredient. */
@@ -89,17 +104,23 @@ export class IngredientsStepPage {
 
     /** Saves the edited ingredient row. */
     saveEdit(ingredientId: string): void {
-        const amount = this.toAmount(this.editAmount());
+        const amount = toIngredientAmount(this.editAmount());
         if (!this.hasValidEditInput() || amount === null) {
             return;
         }
-        this.ingredients.update((items) => this.updateIngredient(items, ingredientId, amount));
+        this.ingredients.update((items) =>
+            items.map((item) =>
+                updateRecipeIngredientAmountAndUnit(item, ingredientId, amount, this.editUnit()),
+            ),
+        );
         this.cancelEdit();
     }
 
-    /** Stops ingredient row edit mode. */
+    /** Stops ingredient row edit mode and resets edit values. */
     cancelEdit(): void {
         this.editingIngredientId.set(null);
+        this.editAmount.set(null);
+        this.editUnit.set('gram');
     }
 
     /** Removes one ingredient from the list. */
@@ -110,9 +131,9 @@ export class IngredientsStepPage {
         }
     }
 
-    /** Formats the unit for the ingredient list. */
-    formatUnit(unit: RecipeIngredientUnit): string {
-        return unit === 'piece' ? '' : RECIPE_INGREDIENT_UNIT_LABELS[unit];
+    /** Returns the visible unit label for the ingredient list. */
+    getVisibleUnitLabel(unit: RecipeIngredientUnit): string {
+        return getVisibleIngredientUnitLabel(unit);
     }
 
     /** Focuses the first visible ingredient suggestion. */
@@ -144,85 +165,49 @@ export class IngredientsStepPage {
         options[nextIndex]?.focus();
     }
 
-    /** Returns up to three matching ingredient suggestions. */
+    /** Returns matching ingredient suggestions from the suggestion service. */
     private getSuggestions(): string[] {
-        const search = this.ingredientName().trim().toLowerCase();
-        if (!search) {
-            return [];
-        }
-        return MOCK_INGREDIENT_SUGGESTIONS
-            .filter((name: string) => this.matchesSuggestion(name, search))
-            .slice(0, 3);
-    }
-
-    /** Checks whether one ingredient matches the current search input. */
-    private matchesSuggestion(name: string, search: string): boolean {
-        const normalizedName = name.toLowerCase();
-        return normalizedName.startsWith(search) && normalizedName !== search;
+        return this.ingredientSuggestionService.getSuggestions(this.ingredientName());
     }
 
     /** Returns the missing autocomplete text for the first suggestion. */
     private getAutocompleteCompletion(): string {
-        const typedValue = this.ingredientName();
-        const suggestion = this.suggestions()[0];
-        if (!typedValue || !suggestion) {
-            return '';
-        }
-        return suggestion.slice(typedValue.length);
+        return this.ingredientSuggestionService.getAutocompleteCompletion(
+            this.ingredientName(),
+            this.suggestions(),
+        );
     }
 
     /** Checks whether the add ingredient form has valid values. */
     private hasValidIngredientInput(): boolean {
-        return this.ingredientName().trim().length > 0 && this.toAmount(this.ingredientAmount()) !== null;
+        return (
+            hasIngredientName(this.ingredientName()) &&
+            toIngredientAmount(this.ingredientAmount()) !== null
+        );
     }
 
     /** Checks whether the edited ingredient amount is valid. */
     private hasValidEditInput(): boolean {
-        return this.toAmount(this.editAmount()) !== null;
+        return toIngredientAmount(this.editAmount()) !== null;
     }
 
-    /** Converts an input value into a valid positive amount. */
-    private toAmount(value: number | null): number | null {
-        const amount = Number(value);
-        if (!Number.isFinite(amount) || amount <= 0) {
+    /** Returns the sanitized amount from an input event. */
+    private getSanitizedAmountFromEvent(event: Event): number | null {
+        const input = event.target as HTMLInputElement | null;
+
+        if (!input) {
             return null;
         }
+
+        const amount = sanitizeIngredientAmountInput(input.value);
+        input.value = amount === null ? '' : String(amount);
+
         return amount;
     }
 
     /** Creates a selected ingredient from the current form values. */
     private createIngredient(amount: number): RecipeIngredient {
-        return {
-            id: crypto.randomUUID(),
-            name: this.ingredientName().trim(),
-            amount,
-            unit: this.selectedUnit(),
-        };
-    }
-
-    /** Updates one ingredient inside the selected ingredient list. */
-    private updateIngredient(
-        items: RecipeIngredient[],
-        ingredientId: string,
-        amount: number,
-    ): RecipeIngredient[] {
-        return items.map((item) => this.getUpdatedIngredient(item, ingredientId, amount));
-    }
-
-    /** Returns the updated ingredient when the id matches. */
-    private getUpdatedIngredient(
-        item: RecipeIngredient,
-        ingredientId: string,
-        amount: number,
-    ): RecipeIngredient {
-        if (item.id !== ingredientId) {
-            return item;
-        }
-        return {
-            ...item,
-            amount,
-            unit: this.editUnit(),
-        };
+        return createRecipeIngredient(this.ingredientName(), amount, this.selectedUnit());
     }
 
     /** Resets the add ingredient form to its initial state. */

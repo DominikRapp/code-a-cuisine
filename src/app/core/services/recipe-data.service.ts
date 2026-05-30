@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
+import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
 import {
     LIKED_RECIPE_IDS_STORAGE_KEY,
     MOST_LIKED_RECIPE_COUNT,
@@ -15,12 +16,16 @@ import {
 })
 export class RecipeDataService {
     private readonly generatedRecipes = signal<GeneratedRecipe[]>([]);
-    private readonly libraryRecipes = signal<GeneratedRecipe[]>(MOCK_RECIPE_LIBRARY);
+    private readonly libraryRecipes = signal<GeneratedRecipe[]>(this.loadLibraryRecipes());
     private readonly likedRecipeIds = signal<Set<string>>(this.loadLikedRecipeIds());
+    private readonly maxGeneratedRecipes = RECIPE_GENERATION_CONFIG.generatedRecipes.max;
 
-    /** Stores generated or matched recipes for the results page. */
+    /** Stores sorted and capped generated or matched recipes. */
     setGeneratedRecipes(recipes: GeneratedRecipe[]): void {
-        this.generatedRecipes.set([...recipes]);
+        const uniqueRecipes = this.getUniqueRecipesById(recipes);
+        const topRecipes = this.getTopRecipesByLikes(uniqueRecipes);
+
+        this.generatedRecipes.set(topRecipes.slice(0, this.maxGeneratedRecipes));
     }
 
     /** Returns generated recipes with local like values. */
@@ -69,9 +74,19 @@ export class RecipeDataService {
         this.generatedRecipes.set([]);
     }
 
-    /** Returns all base recipes before local like adjustments. */
+    /** Returns unique base recipes before local like adjustments. */
     private getAllBaseRecipes(): GeneratedRecipe[] {
-        return [...this.libraryRecipes(), ...this.generatedRecipes()];
+        const recipes = [...this.libraryRecipes(), ...this.generatedRecipes()];
+        return this.getUniqueRecipesById(recipes);
+    }
+
+    /** Returns recipes without duplicate recipe ids. */
+    private getUniqueRecipesById(recipes: GeneratedRecipe[]): GeneratedRecipe[] {
+        const recipeMap = new Map<string, GeneratedRecipe>();
+
+        recipes.forEach((recipe) => recipeMap.set(recipe.id, recipe));
+
+        return [...recipeMap.values()];
     }
 
     /** Returns the next local liked recipe id list. */
@@ -105,9 +120,36 @@ export class RecipeDataService {
         return [...recipes].sort((first, second) => second.likes - first.likes);
     }
 
+    /** Loads recipe library data from the current recipe source. */
+    private loadLibraryRecipes(): GeneratedRecipe[] {
+        return [...MOCK_RECIPE_LIBRARY];
+    }
+
     /** Returns locally stored liked recipe ids. */
     private loadLikedRecipeIds(): Set<string> {
+        try {
+            return new Set(this.getStoredLikedRecipeIds());
+        } catch {
+            localStorage.removeItem(LIKED_RECIPE_IDS_STORAGE_KEY);
+            return new Set();
+        }
+    }
+
+    /** Reads liked recipe ids from local storage. */
+    private getStoredLikedRecipeIds(): string[] {
         const storedRecipeIds = localStorage.getItem(LIKED_RECIPE_IDS_STORAGE_KEY);
-        return storedRecipeIds ? new Set(JSON.parse(storedRecipeIds) as string[]) : new Set();
+
+        if (!storedRecipeIds) {
+            return [];
+        }
+
+        const parsedRecipeIds = JSON.parse(storedRecipeIds);
+
+        return Array.isArray(parsedRecipeIds) ? parsedRecipeIds.filter(this.isString) : [];
+    }
+
+    /** Checks whether a value is a string. */
+    private isString(value: unknown): value is string {
+        return typeof value === 'string';
     }
 }

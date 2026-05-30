@@ -1,13 +1,17 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RECIPE_COOKING_TIME_LABELS } from '../../../../shared/data/recipe-display.data';
-import { APP_ROUTES } from '../../../../core/config/app-routes.config';
+import { getRecipeCookingTimeLabel } from '../../../../shared/utils/recipe-tag.util';
 import { RecipeDataService } from '../../../../core/services/recipe-data.service';
 import {
   GeneratedRecipe,
   RecipeCookingTime,
+  RecipeCuisine,
 } from '../../../../shared/models/recipe-generation.model';
 import { RECIPE_CUISINE_CARDS } from '../../../../shared/data/recipe-cuisine-card.data';
+import {
+  buildCookbookCategoryRoute,
+  buildRecipeDetailRoute,
+} from '../../../../shared/utils/recipe-route.util';
 
 @Component({
   selector: 'app-cookbook-page',
@@ -25,18 +29,18 @@ export class CookbookPage {
   );
 
   /** Returns the category route for a cuisine card. */
-  getCuisineCategoryRoute(cuisine: string): string {
-    return `/${APP_ROUTES.cookbookCategory.replace(':categoryId', cuisine)}`;
+  getCuisineCategoryRoute(cuisine: RecipeCuisine): string {
+    return buildCookbookCategoryRoute(cuisine);
   }
 
   /** Returns the display label for a recipe cooking time. */
   getCookingTimeLabel(cookingTime: RecipeCookingTime): string {
-    return RECIPE_COOKING_TIME_LABELS[cookingTime];
+    return getRecipeCookingTimeLabel(cookingTime);
   }
 
   /** Returns the detail route for a recipe. */
   getRecipeDetailRoute(recipe: GeneratedRecipe): string {
-    return `/${APP_ROUTES.recipeDetail.replace(':recipeId', recipe.id)}`;
+    return buildRecipeDetailRoute(recipe);
   }
 
   /** Converts vertical wheel movement into horizontal recipe scrolling. */

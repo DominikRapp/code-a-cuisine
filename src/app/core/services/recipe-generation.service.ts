@@ -1,6 +1,4 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-
-import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
 import { createMockGeneratedRecipes } from '../../shared/data/mock/generated-recipes.mock-data';
 import {
   GeneratedRecipe,
@@ -17,7 +15,6 @@ export class RecipeGenerationService {
   private readonly recipeDataService = inject(RecipeDataService);
   private readonly ingredients = signal<RecipeIngredient[]>([]);
   private readonly preferences = signal<RecipePreferences | null>(null);
-  private readonly maxGeneratedRecipes = RECIPE_GENERATION_CONFIG.generatedRecipes.max;
 
   readonly hasIngredients = computed(() => this.ingredients().length > 0);
   readonly hasPreferences = computed(() => this.preferences() !== null);
@@ -34,10 +31,9 @@ export class RecipeGenerationService {
     this.preferences.set({ ...preferences });
   }
 
-  /** Stores matching recipes sorted by likes and capped to three. */
+  /** Stores matching recipes in the recipe data service. */
   setGeneratedRecipes(recipes: GeneratedRecipe[]): void {
-    const topRecipes = this.getTopRecipesByLikes(recipes).slice(0, this.maxGeneratedRecipes);
-    this.recipeDataService.setGeneratedRecipes(topRecipes);
+    this.recipeDataService.setGeneratedRecipes(recipes);
   }
 
   /** Stores temporary generated mock recipes until the real API exists. */
@@ -82,10 +78,5 @@ export class RecipeGenerationService {
     this.ingredients.set([]);
     this.preferences.set(null);
     this.recipeDataService.clearGeneratedRecipes();
-  }
-
-  /** Returns recipes sorted by likes descending. */
-  private getTopRecipesByLikes(recipes: GeneratedRecipe[]): GeneratedRecipe[] {
-    return [...recipes].sort((first, second) => second.likes - first.likes);
   }
 }
