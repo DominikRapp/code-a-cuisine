@@ -10,8 +10,7 @@
         </h1>
 
         <p class="results-page__description">
-            We took what you have and let our AI do the thinking.
-            Here are 3 easy recipes you can make right now!
+            {{ getResultDescription() }}
         </p>
 
         @if (preferenceTags.length > 0) {

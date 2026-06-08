@@ -67,3 +67,6 @@ tmp/
 temp/
 *.tmp
 *.bak
+
+# Local Firebase environment config
+src/environments/environment.ts

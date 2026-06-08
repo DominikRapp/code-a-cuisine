@@ -61,6 +61,28 @@
             </li>
             }
         </ol>
+
+        @if (pageCount() > 1) {
+        <nav class="category-recipes-page__pagination" aria-label="Recipe pages">
+            <a class="category-recipes-page__page-link category-recipes-page__page-link--arrow" href=""
+                aria-label="Previous recipe page" (click)="goToPreviousPage(); $event.preventDefault()">
+                <img src="assets/images/svg/nav-arrow-left-green.svg" alt="" aria-hidden="true" />
+            </a>
+
+            @for (page of pageNumbers(); track page) {
+            <a class="category-recipes-page__page-link" href=""
+                [attr.aria-current]="currentPage() === page ? 'page' : null"
+                (click)="setPage(page); $event.preventDefault()">
+                {{ page }}
+            </a>
+            }
+
+            <a class="category-recipes-page__page-link category-recipes-page__page-link--arrow" href=""
+                aria-label="Next recipe page" (click)="goToNextPage(); $event.preventDefault()">
+                <img src="assets/images/svg/nav-arrow-right-green.svg" alt="" aria-hidden="true" />
+            </a>
+        </nav>
+        }
         } @else {
         <p class="category-recipes-page__empty-text">
             No recipes found in this category yet.

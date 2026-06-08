@@ -263,7 +263,16 @@
 
             @if (ingredients().length > 0) {
             <nav class="ingredients-step__navigation" aria-label="Recipe generation navigation">
-                <a class="ingredients-step__next-link" routerLink="/generate/preferences" (click)="saveIngredients()">
+                @if (!canContinueToPreferences()) {
+                <p class="ingredients-step__minimum-hint" aria-live="polite">
+                    {{ getMinimumIngredientHint() }}
+                </p>
+                }
+
+                <a class="ingredients-step__next-link" routerLink="/generate/preferences"
+                    [class.ingredients-step__next-link--disabled]="!canContinueToPreferences()"
+                    [attr.aria-disabled]="!canContinueToPreferences()"
+                    [attr.tabindex]="canContinueToPreferences() ? null : -1" (click)="saveIngredients($event)">
                     Next step
                 </a>
             </nav>

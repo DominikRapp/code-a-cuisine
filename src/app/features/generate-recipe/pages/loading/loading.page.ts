@@ -26,7 +26,7 @@ export class LoadingPage implements OnDestroy {
   readonly showErrorPopup = signal(false);
 
   constructor() {
-    this.startMockGeneration();
+    this.startGeneration();
   }
 
   /** Clears pending loading actions when the page is destroyed. */
@@ -39,22 +39,29 @@ export class LoadingPage implements OnDestroy {
     this.showErrorPopup.set(false);
   }
 
-  /** Starts the temporary mock generation flow. */
-  private startMockGeneration(): void {
-    const request = this.recipeGenerationService.getRequest();
-
-    if (!request) {
+  /** Starts the temporary generation flow. */
+  private startGeneration(): void {
+    if (!this.recipeGenerationService.hasRequest()) {
       this.router.navigate([APP_ROUTES.generateIngredients]);
       return;
     }
 
-    this.loadingTimeoutId = window.setTimeout(() => {
-      this.recipeGenerationService.createMockRecipes();
-      this.router.navigate([APP_ROUTES.generateResults]);
-    }, MOCK_GENERATION_DELAY_MS);
+    this.loadingTimeoutId = window.setTimeout(() => this.finishGeneration(), MOCK_GENERATION_DELAY_MS);
   }
 
-  /** Clears the active mock loading timeout. */
+  /** Finishes generation and handles the result state. */
+  private finishGeneration(): void {
+    const result = this.recipeGenerationService.generateRecipes();
+
+    if (result.status === 'success') {
+      this.router.navigate([APP_ROUTES.generateResults]);
+      return;
+    }
+
+    this.showErrorPopup.set(true);
+  }
+
+  /** Clears the active loading timeout. */
   private clearLoadingTimeout(): void {
     if (this.loadingTimeoutId === null) {
       return;

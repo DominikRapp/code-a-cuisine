@@ -1,26 +1,26 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  getRecipeCookingTimeLabel,
-  getRecipeCuisineLabel,
-  getRecipeDietLabel,
-} from '../../../shared/utils/recipe-tag.util';
 import { APP_ROUTES } from '../../../core/config/app-routes.config';
-import { RecipeGenerationService } from '../../../core/services/recipe-generation.service';
+import { RecipeDataService } from '../../../core/services/recipe-data.service';
 import {
   GeneratedRecipe,
   RecipeCookingTime,
   RecipeCuisine,
   RecipeDiet,
   RecipeIngredient,
+  RecipeStep,
 } from '../../../shared/models/recipe-generation.model';
+import {
+  getRecipeCookingTimeLabel,
+  getRecipeCuisineLabel,
+  getRecipeDietLabel,
+} from '../../../shared/utils/recipe-tag.util';
 import { getIngredientUnitLabel } from '../../../shared/utils/ingredient.util';
 import {
   RecipeChefIcon,
   getRecipeChefIconByStep,
   getRecipeChefIcons,
 } from '../../../shared/data/recipe-chef-icons.data';
-import { RecipeDataService } from '../../../core/services/recipe-data.service';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -33,12 +33,9 @@ export class RecipeDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly recipeDataService = inject(RecipeDataService);
-  private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly recipeId = this.route.snapshot.paramMap.get('recipeId') ?? '';
 
   readonly recipe = computed(() => this.getRecipeFromRoute());
-  readonly preferences = this.recipeGenerationService.getPreferences();
-  readonly chefIcons = this.getChefIcons();
 
   constructor() {
     this.redirectWithoutRecipe();
@@ -79,14 +76,24 @@ export class RecipeDetailPage {
     return `${ingredient.amount} ${this.getUnitLabel(ingredient.unit)}`;
   }
 
-  /** Returns one chef icon for a step index. */
-  getStepChefIcon(stepIndex: number): string {
-    return getRecipeChefIconByStep(stepIndex, this.chefIcons).src;
+  /** Returns the configured cooking person count. */
+  getCookingPersonCount(recipe: GeneratedRecipe): number {
+    return recipe.cookingPersons ?? 1;
   }
 
-  /** Returns one chef alt text for a step index. */
-  getStepChefAlt(stepIndex: number): string {
-    return getRecipeChefIconByStep(stepIndex, this.chefIcons).alt;
+  /** Returns chef icons for one recipe. */
+  getChefIcons(recipe: GeneratedRecipe): RecipeChefIcon[] {
+    return getRecipeChefIcons(this.getCookingPersonCount(recipe));
+  }
+
+  /** Returns one chef icon for a step. */
+  getStepChefIcon(recipe: GeneratedRecipe, step: RecipeStep, index: number): string {
+    return step.chefIcon ?? getRecipeChefIconByStep(index, this.getChefIcons(recipe)).src;
+  }
+
+  /** Returns one chef alt text for a step. */
+  getStepChefAlt(step: RecipeStep): string {
+    return `Chef ${step.chefNumber ?? 1}`;
   }
 
   /** Returns the readable ingredient unit label. */
@@ -101,17 +108,10 @@ export class RecipeDetailPage {
 
   /** Redirects users who opened an invalid recipe detail page. */
   private redirectWithoutRecipe(): void {
-    if (this.recipe()) {
+    if (this.recipe() || !this.recipeDataService.isLibraryLoaded()) {
       return;
     }
 
     this.router.navigate([APP_ROUTES.generateIngredients]);
-  }
-
-  /** Returns chef icons for the selected cooking person count. */
-  private getChefIcons(): RecipeChefIcon[] {
-    const count = this.preferences?.cookingPersons ?? 1;
-
-    return getRecipeChefIcons(count);
   }
 }

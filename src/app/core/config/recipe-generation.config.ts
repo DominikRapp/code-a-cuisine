@@ -11,6 +11,7 @@ export const RECIPE_GENERATION_CONFIG = {
         max: 3,
     },
     ingredients: {
+        minCount: 3,
         minUsagePercent: 70,
         maxExtraBasicIngredients: 3,
         maxSuggestions: 3,

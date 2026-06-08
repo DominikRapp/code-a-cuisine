@@ -15,6 +15,7 @@ import {
     updateRecipeIngredientAmountAndUnit,
 } from '../../../../shared/utils/ingredient.util';
 import { RecipeIngredient, RecipeIngredientUnit } from '../../../../shared/models/recipe-generation.model';
+import { RECIPE_GENERATION_CONFIG } from '../../../../core/config/recipe-generation.config';
 
 @Component({
     selector: 'app-ingredients-step-page',
@@ -26,6 +27,7 @@ import { RecipeIngredient, RecipeIngredientUnit } from '../../../../shared/model
 export class IngredientsStepPage {
     private readonly recipeGenerationService = inject(RecipeGenerationService);
     private readonly ingredientSuggestionService = inject(IngredientSuggestionService);
+    private readonly minIngredientCount = RECIPE_GENERATION_CONFIG.ingredients.minCount;
 
     readonly amountMaxLength = INGREDIENT_AMOUNT_MAX_DIGITS;
     readonly unitOptions = RECIPE_INGREDIENT_UNIT_OPTIONS;
@@ -40,9 +42,16 @@ export class IngredientsStepPage {
     readonly autocompleteCompletion = computed(() => this.getAutocompleteCompletion());
     readonly autocompleteOffset = computed(() => 16 + this.ingredientName().length * 8.5);
     readonly canAddIngredient = computed(() => this.hasValidIngredientInput());
+    readonly canContinueToPreferences = computed(() => this.hasRequiredIngredientCount());
+    readonly missingIngredientCount = computed(() => this.getMissingIngredientCount());
 
     /** Saves the selected ingredients for the preferences step. */
-    saveIngredients(): void {
+    saveIngredients(event?: Event): void {
+        if (!this.canContinueToPreferences()) {
+            event?.preventDefault();
+            return;
+        }
+
         this.recipeGenerationService.setIngredients(this.ingredients());
     }
 
@@ -134,6 +143,13 @@ export class IngredientsStepPage {
     /** Returns the visible unit label for the ingredient list. */
     getVisibleUnitLabel(unit: RecipeIngredientUnit): string {
         return getVisibleIngredientUnitLabel(unit);
+    }
+
+    /** Returns the minimum ingredient hint text. */
+    getMinimumIngredientHint(): string {
+        const missingCount = this.missingIngredientCount();
+
+        return `Add at least ${missingCount} more ingredient${missingCount === 1 ? '' : 's'} to continue.`;
     }
 
     /** Focuses the first visible ingredient suggestion. */
@@ -246,5 +262,15 @@ export class IngredientsStepPage {
             return 0;
         }
         return (currentIndex + direction + optionCount) % optionCount;
+    }
+
+    /** Checks whether enough ingredients were added. */
+    private hasRequiredIngredientCount(): boolean {
+        return this.ingredients().length >= this.minIngredientCount;
+    }
+
+    /** Returns how many ingredients are still missing. */
+    private getMissingIngredientCount(): number {
+        return Math.max(this.minIngredientCount - this.ingredients().length, 0);
     }
 }

@@ -28,10 +28,10 @@
 
                 <div class="recipe-detail__cook-row" aria-label="Cooking persons">
                     <span class="recipe-detail__cook-person-text">
-                        Cooking person: {{ preferences?.cookingPersons ?? 1 }}
+                        Cooking person: {{ getCookingPersonCount(selectedRecipe) }}
                     </span>
 
-                    @for (chefIcon of chefIcons; track chefIcon.src) {
+                    @for (chefIcon of getChefIcons(selectedRecipe); track chefIcon.src) {
                     <img class="recipe-detail__chef-tag" [src]="chefIcon.src" [alt]="chefIcon.alt" />
                     }
                 </div>
@@ -177,8 +177,8 @@
                                 Step {{ step.order }}
                             </h3>
 
-                            <img class="recipe-detail__chef-tag" [src]="getStepChefIcon(index)"
-                                [alt]="getStepChefAlt(index)" />
+                            <img class="recipe-detail__chef-tag" [src]="getStepChefIcon(selectedRecipe, step, index)"
+                                [alt]="getStepChefAlt(step)" />
                         </div>
 
                         <p class="recipe-detail__direction-text">
