@@ -7,7 +7,7 @@
 .preferences-step {
     max-width: var(--app-page-max-width);
     min-height: 100vh;
-    margin: 0;
+    margin: 0 auto;
     padding: 48px;
     background: var(--app-color-page-background);
     font-family: var(--app-font-family-primary);
@@ -21,37 +21,12 @@
     width: 100%;
 }
 
-.preferences-step__logo-link,
-.preferences-step__back-link {
+.preferences-step__logo-link {
     display: inline-flex;
-    align-items: center;
-}
-
-.preferences-step__logo {
-    display: block;
-    width: 142px;
-    height: 48px;
 }
 
 .preferences-step__back-link {
-    gap: 8px;
     margin-top: 24px;
-    color: var(--app-color-generate-title);
-    font-family: var(--app-font-family-primary);
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 20px;
-    text-decoration: none;
-}
-
-.preferences-step__back-image {
-    display: block;
-    width: 32px;
-    height: 20px;
-}
-
-.preferences-step__back-text {
-    color: var(--app-color-generate-title);
 }
 
 .preferences-step__intro {

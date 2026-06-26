@@ -7,7 +7,14 @@ import {
 
 export type FirebaseRecipeSource = 'library' | 'generated';
 
-export type FirebaseRecipeRequestStatus = 'pending' | 'matched' | 'generated' | 'failed';
+export type FirebaseRecipeRequestStatus =
+    | 'pending'
+    | 'processing'
+    | 'completed'
+    | 'matched'
+    | 'generated'
+    | 'failed'
+    | 'quotaExceeded';
 
 export type FirebaseBooleanIndex = Record<string, true>;
 

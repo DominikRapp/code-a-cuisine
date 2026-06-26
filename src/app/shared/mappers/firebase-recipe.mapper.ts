@@ -19,6 +19,7 @@ export function mapFirebaseRecipe(record: FirebaseRecipeRecord): GeneratedRecipe
         title: record.title,
         description: record.description,
         ingredients: mapFirebaseIngredients(record.ingredients),
+        baseServings: record.baseServings,
         nutrition: { ...record.nutrition },
         steps: [...record.steps],
         cookingTime: record.cookingTime,

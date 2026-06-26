@@ -13,10 +13,11 @@ import {
   RecipeCuisine,
   RecipeDiet,
 } from '../../../../shared/models/recipe-generation.model';
+import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer';
 
 @Component({
   selector: 'app-preferences-step-page',
-  imports: [RouterLink],
+  imports: [RouterLink, LegalFooter],
   templateUrl: './preferences-step.page.html',
   styleUrl: './preferences-step.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

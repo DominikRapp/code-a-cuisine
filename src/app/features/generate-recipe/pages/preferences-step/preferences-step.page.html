@@ -1,13 +1,14 @@
 <main class="preferences-step" aria-labelledby="preferences-step-title">
     <header class="preferences-step__header" aria-label="Code à Cuisine">
         <a class="preferences-step__logo-link" routerLink="/" aria-label="Go to home page">
-            <img class="preferences-step__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
+            <img class="preferences-step__logo app-logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
         </a>
 
-        <a class="preferences-step__back-link" routerLink="/generate/ingredients" aria-label="Go back to ingredients">
-            <img class="preferences-step__back-image" src="assets/images/svg/back-arrow.svg" alt=""
+        <a class="preferences-step__back-link app-back-link" routerLink="/generate/ingredients"
+            aria-label="Go back to ingredients">
+            <img class="preferences-step__back-image app-back-link__icon" src="assets/images/svg/back-arrow.svg" alt=""
                 aria-hidden="true" />
-            <span class="preferences-step__back-text">Ingredients</span>
+            <span class="preferences-step__back-text app-back-link__text">Ingredients</span>
         </a>
     </header>
 
@@ -140,4 +141,5 @@
             Generate a recipe
         </button>
     </nav>
+    <app-legal-footer class="legal-footer--light" />
 </main>

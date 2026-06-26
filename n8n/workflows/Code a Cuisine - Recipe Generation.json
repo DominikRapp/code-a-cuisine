@@ -1,0 +1,696 @@
+{
+  "name": "Code a Cuisine - Recipe Generation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "code-a-cuisine/recipe-generation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1024,
+        352
+      ],
+      "id": "ad441fff-140e-4f31-9bba-a1d0cae2a27a",
+      "name": "Webhook",
+      "webhookId": "15731555-5e9d-447e-a479-72ed95e2515e"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Recipe generation workflow received the request.\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2960,
+        368
+      ],
+      "id": "17f51e14-cc08-4c82-b92d-f0f98a30355a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/recipeRequests/' + $('Webhook').item.json.body.requestId + '.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -864,
+        352
+      ],
+      "id": "de02fd17-d47e-41eb-855c-0ff7e04cffc2",
+      "name": "Firebase - Get Recipe Request"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/recipeRequests/' + $('Webhook').item.json.body.requestId + '.json' }}",
+        "sendBody": true,
+        "specifyBody": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={{\n  {\n    status: 'processing',\n    updatedAt: $now.toISO()\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -704,
+        352
+      ],
+      "id": "162622c6-0e52-44ac-969c-34bc700dc681",
+      "name": "Firebase - Set Processing"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/recipes.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -544,
+        352
+      ],
+      "id": "bde4540d-5607-47bf-a28a-03e5f7ce701c",
+      "name": "Firebase - Get Recipes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const request = $('Firebase - Get Recipe Request').item.json;\nconst recipesById = $('Firebase - Get Recipes').item.json;\n\nconst requestedNames = request.requestedIngredientNames ?? [];\nconst minPercent = request.minIngredientMatchPercent ?? 70;\nconst maxExtras = request.maxExtraBasicIngredients ?? 3;\n\nconst matches = Object.values(recipesById ?? {})\n  .filter((recipe) => matchesPreferences(recipe, request))\n  .filter((recipe) => matchesIngredients(recipe, requestedNames, minPercent, maxExtras))\n  .sort(sortMatches)\n  .slice(0, 3);\n\nreturn [\n  {\n    json: {\n      requestId: $('Webhook').item.json.body.requestId,\n      matchedRecipeIds: matches.map((recipe) => recipe.id),\n      usedIngredientPercent: getBestUsedPercent(matches, requestedNames),\n      status: matches.length > 0 ? 'completed' : 'failed',\n      error: matches.length > 0 ? null : 'noMatchingRecipes',\n    },\n  },\n];\n\n/** Checks all preference rules for one recipe. */\nfunction matchesPreferences(recipe, requestData) {\n  return recipe.cuisine === requestData.cuisine\n    && matchesDiet(recipe.diet, requestData.diet)\n    && matchesCookingTime(recipe.cookingTime, requestData.cookingTime)\n    && matchesCookingPersons(recipe, requestData.cookingPersons);\n}\n\n/** Checks whether the recipe diet is compatible with the selection. */\nfunction matchesDiet(recipeDiet, selectedDiet) {\n  if (selectedDiet === 'none') {\n    return true;\n  }\n\n  if (selectedDiet === 'vegetarian') {\n    return recipeDiet === 'vegetarian' || recipeDiet === 'vegan';\n  }\n\n  return recipeDiet === selectedDiet;\n}\n\n/** Allows recipes that need the same or less cooking time. */\nfunction matchesCookingTime(recipeTime, selectedTime) {\n  const ranks = { quick: 1, medium: 2, complex: 3 };\n\n  return ranks[recipeTime] <= ranks[selectedTime];\n}\n\n/** Checks whether the requested cooking persons are allowed. */\nfunction matchesCookingPersons(recipe, cookingPersons) {\n  const min = recipe.cookingPersonsMin ?? recipe.cookingPersons ?? 1;\n  const max = recipe.cookingPersonsMax ?? recipe.cookingPersons ?? 4;\n\n  return cookingPersons >= min && cookingPersons <= max;\n}\n\n/** Checks ingredient usage and allowed extra ingredients. */\nfunction matchesIngredients(recipe, requestedNames, minPercent, maxExtras) {\n  const requiredNames = getRequiredIngredientNames(recipe);\n  const extraNames = recipe.extraBasicIngredientNames ?? [];\n  const percent = getUsedIngredientPercent(requiredNames, requestedNames);\n\n  return percent >= minPercent && extraNames.length <= maxExtras;\n}\n\n/** Gets required recipe ingredients with a safe fallback. */\nfunction getRequiredIngredientNames(recipe) {\n  if (recipe.requiredIngredientNames?.length) {\n    return recipe.requiredIngredientNames;\n  }\n\n  return Object.keys(recipe.ingredientIndex ?? {});\n}\n\n/** Calculates the percentage of requested ingredients used. */\nfunction getUsedIngredientPercent(requiredNames, requestedNames) {\n  const usedCount = requestedNames.filter((name) => requiredNames.includes(name)).length;\n\n  return requestedNames.length ? Math.round((usedCount / requestedNames.length) * 100) : 0;\n}\n\n/** Returns the highest ingredient usage among all matches. */\nfunction getBestUsedPercent(matches, requestedNames) {\n  if (!matches.length) {\n    return 0;\n  }\n\n  const percents = matches.map((recipe) =>\n    getUsedIngredientPercent(getRequiredIngredientNames(recipe), requestedNames),\n  );\n\n  return Math.max(...percents);\n}\n\n/** Sorts matching recipes by likes and then id. */\nfunction sortMatches(first, second) {\n  const likeDifference = Number(second.likes ?? 0) - Number(first.likes ?? 0);\n\n  return likeDifference || String(first.id).localeCompare(String(second.id));\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -352,
+        352
+      ],
+      "id": "9c74b855-5270-4e7c-916a-ecc1942272ef",
+      "name": "Code - Match Recipes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst matchResult = $('Code - Match Recipes').item.json;\nconst ip = $('Webhook').item.json.headers['cf-connecting-ip'] ?? '';\nconst requestId = $('Webhook').item.json.body.requestId;\nconst dayKey = new Date().toISOString().slice(0, 10);\n\nreturn [\n  {\n    json: {\n      requestId,\n      dayKey,\n      ipHash: crypto.createHash('sha256').update(ip).digest('hex'),\n      matchedRecipeIds: (matchResult.matchedRecipeIds ?? []).slice(0, 3),\n      matchedUsedIngredientPercent: matchResult.usedIngredientPercent ?? 0,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        352
+      ],
+      "id": "2611390d-f7ca-4fdf-969a-0cb463f92f43",
+      "name": "Code - Prepare Quota Context"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/quota/dailyByIp/' + $json.dayKey + '/' + $json.ipHash + '.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        352
+      ],
+      "id": "13b8e371-f34f-4eeb-a1da-f30cae4e71a5",
+      "name": "Firebase - Get IP Quota"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/quota/dailySystem/' + $('Code - Prepare Quota Context').item.json.dayKey + '.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        352
+      ],
+      "id": "ba02c384-a265-4989-bf21-e676369df199",
+      "name": "Firebase - Get System Quota"
+    },
+    {
+      "parameters": {
+        "jsCode": "const context = $('Code - Prepare Quota Context').item.json;\nconst ipQuota = $('Firebase - Get IP Quota').item.json ?? {};\nconst systemQuota = $('Firebase - Get System Quota').item.json ?? {};\n\nconst ipCount = Number(ipQuota.used ?? 0);\nconst systemCount = Number(systemQuota.used ?? 0);\nconst ipLimit = 3;\nconst systemLimit = 12;\nconst quotaError = getQuotaError(ipCount, systemCount, ipLimit, systemLimit);\nconst needsGeneration = context.matchedRecipeIds.length < 3;\n\nreturn [{\n  json: {\n    ...context,\n    ipCount,\n    systemCount,\n    ipLimit,\n    systemLimit,\n    canGenerate: needsGeneration && quotaError === null,\n    error: quotaError,\n  },\n}];\n\n/** Returns the active quota error or null when quota is available. */\nfunction getQuotaError(ipCount, systemCount, ipLimit, systemLimit) {\n  if (ipCount >= ipLimit) {\n    return 'ipQuotaExceeded';\n  }\n\n  return systemCount >= systemLimit ? 'systemQuotaExceeded' : null;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        352
+      ],
+      "id": "df41a510-b9b8-4b8a-855a-6ca1becce2b0",
+      "name": "Code - Check Quota"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "62f94ca1-1c2c-4e0e-92ec-269bc5198e89",
+              "leftValue": "={{ $json.canGenerate }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        560,
+        352
+      ],
+      "id": "716e2e6a-11ee-4a38-9ca4-2443a1e865f7",
+      "name": "IF - Can Generate"
+    },
+    {
+      "parameters": {
+        "jsCode": "const BASIC_NAMES = new Set(['salt', 'pepper', 'oil', 'water', 'flour', 'butter']);\n\nconst VEGAN_FORBIDDEN = new Set([\n  'egg', 'milk', 'butter', 'cheese', 'cream', 'yogurt', 'honey', 'paneer',\n  'feta', 'mozzarella', 'ricotta', 'parmesan', 'goat-cheese', 'blue-cheese',\n  'chicken', 'beef', 'pork', 'fish', 'tuna', 'salmon', 'shrimp', 'bacon', 'ham',\n]);\n\nconst VEGETARIAN_FORBIDDEN = new Set([\n  'chicken', 'beef', 'pork', 'fish', 'tuna', 'salmon', 'shrimp', 'bacon', 'ham',\n]);\n\nconst KETO_FORBIDDEN = new Set([\n  'rice', 'pasta', 'bread', 'potato', 'flour', 'sugar', 'noodle', 'tortilla',\n]);\n\nconst request = $('Firebase - Get Recipe Request').item.json;\nconst quota = $('Code - Check Quota').item.json;\nconst payload = readPayload($input.first().json);\nconst result = validatePayload(payload, request);\n\nreturn [{ json: { ...quota, ...result } }];\n\n/** Reads direct JSON or a JSON string from Gemini output. */\nfunction readPayload(value) {\n  const source = value.content?.parts?.[0]?.text\n    ?? value.output\n    ?? value.text\n    ?? value.response\n    ?? value.content\n    ?? value;\n\n  return typeof source === 'string' ? parsePayload(source) : source;\n}\n\n/** Parses one possible JSON response string. */\nfunction parsePayload(value) {\n  const clean = value.replace(/^```(?:json)?\\s*/i, '').replace(/\\s*```$/i, '').trim();\n\n  try {\n    return JSON.parse(clean);\n  } catch {\n    return null;\n  }\n}\n\n/** Validates the top-level Gemini response shape. */\nfunction validatePayload(payload, requestData) {\n  if (!payload || typeof payload !== 'object') {\n    return invalidResult('invalidGeneratedRecipe');\n  }\n\n  if (payload.valid === false) {\n    return invalidResult('cannotGenerate');\n  }\n\n  return payload.valid === true && payload.recipe\n    ? validateRecipe(payload.recipe, requestData)\n    : invalidResult('invalidGeneratedRecipe');\n}\n\n/** Validates one generated recipe against the request rules. */\nfunction validateRecipe(recipe, requestData) {\n  if (!hasBaseFields(recipe) || !matchesRequest(recipe, requestData)) {\n    return invalidResult('invalidGeneratedRecipe');\n  }\n\n  const ingredientResult = validateIngredientRules(recipe, requestData);\n  const stepsValid = hasValidSteps(recipe.steps, requestData.cookingPersons);\n  const metadataValid = hasValidMetadata(recipe);\n  const dietValid = respectsDiet(recipe, requestData.diet);\n\n  return ingredientResult.valid && stepsValid && metadataValid && dietValid\n    ? validResult(recipe, ingredientResult.percent)\n    : invalidResult('invalidGeneratedRecipe');\n}\n\n/** Checks required recipe fields before deeper validation. */\nfunction hasBaseFields(recipe) {\n  return isText(recipe.title)\n    && isText(recipe.description)\n    && Array.isArray(recipe.ingredients)\n    && Array.isArray(recipe.requiredIngredientNames)\n    && Array.isArray(recipe.extraBasicIngredientNames)\n    && Array.isArray(recipe.steps)\n    && Array.isArray(recipe.tags)\n    && Array.isArray(recipe.searchKeywords);\n}\n\n/** Checks exact preference values from the original request. */\nfunction matchesRequest(recipe, requestData) {\n  return recipe.baseServings === requestData.servings\n    && recipe.cookingPersons === requestData.cookingPersons\n    && recipe.cookingPersonsMin === requestData.cookingPersons\n    && recipe.cookingPersonsMax === requestData.cookingPersons\n    && recipe.cookingTime === requestData.cookingTime\n    && recipe.cuisine === requestData.cuisine\n    && recipe.diet === requestData.diet;\n}\n\n/** Validates used ingredients, extras, and minimum match percentage. */\nfunction validateIngredientRules(recipe, requestData) {\n  const state = getIngredientState(recipe, requestData);\n  const extrasValid = hasAllowedExtras(state, requestData);\n  const requiredValid = hasValidRequiredNames(state);\n  const uniqueNames = state.names.length === recipe.ingredients.length;\n  const minimumReached = state.percent >= requestData.minIngredientMatchPercent;\n\n  return {\n    valid: state.names.length > 0 && uniqueNames && state.itemsValid\n      && extrasValid && requiredValid && minimumReached,\n    percent: state.percent,\n  };\n}\n\n/** Creates the normalized ingredient validation state. */\nfunction getIngredientState(recipe, requestData) {\n  const names = unique(recipe.ingredients.map((item) => item.normalizedName));\n  const userNames = unique(requestData.requestedIngredientNames ?? []);\n  const extras = unique(recipe.extraBasicIngredientNames ?? []);\n  const required = unique(recipe.requiredIngredientNames ?? []);\n  const usedNames = names.filter((name) => userNames.includes(name));\n  const generatedExtras = names.filter((name) => !userNames.includes(name));\n\n  return {\n    names,\n    userNames,\n    extras,\n    required,\n    usedNames,\n    generatedExtras,\n    percent: getPercent(usedNames, userNames),\n    itemsValid: recipe.ingredients.every(isValidIngredient),\n  };\n}\n\n/** Checks that all generated extras are allowed basic ingredients. */\nfunction hasAllowedExtras(state, requestData) {\n  return sameMembers(state.generatedExtras, state.extras)\n    && state.generatedExtras.every(isBasic)\n    && state.extras.every(isNormalizedName)\n    && state.generatedExtras.length <= requestData.maxExtraBasicIngredients;\n}\n\n/** Checks required user ingredients against the recipe ingredient list. */\nfunction hasValidRequiredNames(state) {\n  return state.required.every((name) => state.userNames.includes(name))\n    && state.required.every(isNormalizedName)\n    && state.usedNames.every((name) => state.required.includes(name));\n}\n\n/** Checks one ingredient object. */\nfunction isValidIngredient(item) {\n  return isText(item?.name)\n    && isNormalizedName(item?.normalizedName)\n    && Number.isFinite(item?.amount)\n    && item.amount > 0\n    && ['gram', 'ml', 'piece'].includes(item?.unit);\n}\n\n/** Checks exact step count, order, and chef number range. */\nfunction hasValidSteps(steps, cookingPersons) {\n  if (steps.length < 4 || steps.length > 6) {\n    return false;\n  }\n\n  return steps.every((step, index) =>\n    step.order === index + 1\n    && Number.isInteger(step.chefNumber)\n    && step.chefNumber >= 1\n    && step.chefNumber <= cookingPersons\n    && isText(step.text),\n  );\n}\n\n/** Checks nutrition, tags, and search keyword requirements. */\nfunction hasValidMetadata(recipe) {\n  return hasValidNutrition(recipe.nutrition)\n    && hasValidTags(recipe.tags)\n    && hasValidKeywords(recipe.searchKeywords);\n}\n\n/** Checks complete-recipe nutrition values. */\nfunction hasValidNutrition(nutrition) {\n  return Number.isInteger(nutrition?.calories)\n    && Number.isInteger(nutrition?.protein)\n    && Number.isInteger(nutrition?.carbohydrates)\n    && Number.isInteger(nutrition?.fat)\n    && Object.values(nutrition).every((value) => value >= 0);\n}\n\n/** Checks tag count and simple Title Case formatting. */\nfunction hasValidTags(tags) {\n  return tags.length >= 3\n    && tags.length <= 5\n    && tags.every((tag) => isText(tag) && tag[0] === tag[0].toUpperCase());\n}\n\n/** Checks keyword count and lowercase formatting. */\nfunction hasValidKeywords(keywords) {\n  return keywords.length >= 5\n    && keywords.length <= 10\n    && keywords.every((keyword) => isText(keyword) && keyword === keyword.toLowerCase());\n}\n\n/** Checks diet restrictions against every generated ingredient. */\nfunction respectsDiet(recipe, diet) {\n  const names = recipe.ingredients.map((item) => item.normalizedName);\n\n  if (diet === 'vegan') {\n    return !names.some((name) => VEGAN_FORBIDDEN.has(name));\n  }\n\n  if (diet === 'vegetarian') {\n    return !names.some((name) => VEGETARIAN_FORBIDDEN.has(name));\n  }\n\n  return diet !== 'keto' || !names.some((name) => KETO_FORBIDDEN.has(name));\n}\n\n/** Creates a successful validation result. */\nfunction validResult(recipe, usedIngredientPercent) {\n  return {\n    isValid: true,\n    error: null,\n    recipe,\n    usedIngredientPercent,\n  };\n}\n\n/** Creates one failed validation result. */\nfunction invalidResult(error) {\n  return {\n    isValid: false,\n    error,\n    recipe: null,\n    usedIngredientPercent: 0,\n  };\n}\n\n/** Checks whether a name belongs to the allowed basic ingredients. */\nfunction isBasic(name) {\n  return BASIC_NAMES.has(name);\n}\n\n/** Returns unique non-empty string values. */\nfunction unique(values) {\n  return [...new Set(values.filter(isText))];\n}\n\n/** Checks whether two arrays contain the same unique values. */\nfunction sameMembers(first, second) {\n  return first.length === second.length && first.every((value) => second.includes(value));\n}\n\n/** Calculates used requested ingredient percentage. */\nfunction getPercent(usedNames, requestedNames) {\n  return requestedNames.length\n    ? Math.round((usedNames.length / requestedNames.length) * 100)\n    : 0;\n}\n\n/** Checks lowercase English kebab-case ingredient names. */\nfunction isNormalizedName(value) {\n  return typeof value === 'string' && /^[a-z]+(?:-[a-z]+)*$/.test(value);\n}\n\n/** Checks one non-empty string. */\nfunction isText(value) {\n  return typeof value === 'string' && value.trim().length > 0;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        -48
+      ],
+      "id": "6911ae1e-4388-4a1f-a105-6836f8f9e4f5",
+      "name": "Code - Validate Generated Recipe"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are the strict recipe-generation engine for Code a Cuisine.\n\nGenerate exactly one original recipe from the request data below.\n\nReturn exactly one valid JSON object and nothing else.\nDo not return markdown.\nDo not return code fences.\nDo not return explanations.\nDo not return comments.\nDo not return text before or after the JSON.\nDo not use trailing commas.\n\nAll recipe data must be written in English.\n\nREQUEST DATA:\n{{ JSON.stringify($('Firebase - Get Recipe Request').item.json) }}\n\nThe request data is the source of truth.\n\nUse these request fields:\n\n* ingredients\n* requestedIngredientNames\n* servings\n* cookingPersons\n* cookingTime\n* cuisine\n* diet\n* minIngredientMatchPercent\n* maxExtraBasicIngredients\n\nSTRICT GENERATION RULES:\n\n1. Generate exactly one recipe or return the failure shape.\n2. Use the provided user ingredients whenever possible.\n3. The target is to use 100% of requestedIngredientNames.\n4. You must use at least minIngredientMatchPercent percent of requestedIngredientNames.\n5. If a meaningful recipe cannot use the required minimum percentage, return valid false.\n6. Do not invent normal ingredients that were not provided by the user.\n7. You may add only basic ingredients.\n8. You may add at most maxExtraBasicIngredients extra basic ingredients.\n9. Allowed extra basic ingredients are only:\n   salt, pepper, oil, water, flour, butter\n10. Do not add any other ingredient unless it exists in the request ingredients.\n11. extraBasicIngredientNames must contain every added basic ingredient.\n12. requiredIngredientNames must contain every requested user ingredient used in the recipe.\n13. requiredIngredientNames and extraBasicIngredientNames must use lowercase English kebab-case.\n14. Do not add brands, products, restaurant names, special equipment, exotic substitutions, or unavailable ingredients.\n15. Treat provided amounts as availability hints. Output realistic cooking quantities suitable for the requested servings.\n16. Allowed ingredient units are only:\n    gram, ml, piece\n\nSTRICT PREFERENCE RULES:\n\n17. cuisine must exactly match the requested cuisine.\n18. diet must exactly match the requested diet.\n19. cookingTime must exactly match the requested cookingTime.\n20. baseServings must exactly match requested servings.\n21. cookingPersons must exactly match requested cookingPersons.\n22. cookingPersonsMin must exactly match requested cookingPersons.\n23. cookingPersonsMax must exactly match requested cookingPersons.\n24. Do not generate a recipe that violates the requested diet.\n25. Vegan recipes must not contain meat, fish, eggs, dairy, honey, or other animal-derived ingredients.\n26. Vegetarian recipes must not contain meat or fish.\n27. Keto recipes must avoid high-carbohydrate ingredients such as sugar, rice, pasta, bread, potatoes, and flour-based dishes.\n28. If the requested ingredients conflict with the selected diet and no truthful recipe is possible, return valid false.\n\nQUALITY RULES:\n\n29. Use realistic ingredient amounts.\n30. Nutrition values must be realistic whole-number estimates for the complete recipe.\n31. Nutrition must contain calories, protein, carbohydrates, and fat.\n32. Include exactly 4 to 6 cooking steps.\n33. Step order must start at 1 and have no gaps.\n34. Every step must be specific, useful, and written in English.\n35. chefNumber must be an integer from 1 up to cookingPersons.\n36. tags must contain 3 to 5 short English Title Case values.\n37. searchKeywords must contain 5 to 10 useful lowercase search terms.\n38. Do not include these fields:\n    id, likes, isPublic, source, chefIcons, ingredientIndex, createdAt, updatedAt.\n\nReturn only one of these exact JSON shapes.\n\nIf generation is impossible:\n\n{\n\"valid\": false,\n\"error\": \"cannotGenerate\"\n}\n\nIf generation succeeds:\n\n{\n\"valid\": true,\n\"recipe\": {\n\"title\": \"string\",\n\"description\": \"string\",\n\"baseServings\": 1,\n\"cookingPersons\": 1,\n\"cookingPersonsMin\": 1,\n\"cookingPersonsMax\": 1,\n\"cookingTime\": \"quick\",\n\"cuisine\": \"string\",\n\"diet\": \"string\",\n\"ingredients\": [\n{\n\"name\": \"string\",\n\"normalizedName\": \"string\",\n\"amount\": 1,\n\"unit\": \"gram\"\n}\n],\n\"requiredIngredientNames\": [\n\"string\"\n],\n\"extraBasicIngredientNames\": [\n\"string\"\n],\n\"nutrition\": {\n\"calories\": 1,\n\"protein\": 1,\n\"carbohydrates\": 1,\n\"fat\": 1\n},\n\"steps\": [\n{\n\"order\": 1,\n\"chefNumber\": 1,\n\"text\": \"string\"\n}\n],\n\"tags\": [\n\"String\"\n],\n\"searchKeywords\": [\n\"string\"\n]\n}\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        -48
+      ],
+      "id": "b2ceec0c-b9a1-4598-9ce9-928dfe1fa006",
+      "name": "Gemini - Generate Recipe",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qirrtUeW2n8cEgho",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b6b79172-e2a5-4e36-b2c7-2e45b426ede7",
+              "leftValue": "={{ $json.isValid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1552,
+        -48
+      ],
+      "id": "b7bf5a85-a2b9-48e8-8d5d-8239ae73e3d3",
+      "name": "IF - Is Generated Recipe Valid"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/recipeRequests/' + $json.requestId + '.json' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    status: $('Code - Check Quota').item.json.matchedRecipeIds.length > 0\n      ? 'completed'\n      : 'failed',\n    matchedRecipeIds: $('Code - Check Quota').item.json.matchedRecipeIds,\n    generatedRecipeIds: [],\n    usedIngredientPercent: $('Code - Check Quota').item.json.matchedUsedIngredientPercent,\n    error: $('Code - Check Quota').item.json.matchedRecipeIds.length > 0\n      ? null\n      : ($json.error ?? 'invalidGeneratedRecipe'),\n    updatedAt: $now.toISO()\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1840,
+        -32
+      ],
+      "id": "f635e001-19a7-4ca6-b38e-7a1018553f73",
+      "name": "Firebase - Set Generation Failed"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst recipe = input.recipe;\nconst now = new Date().toISOString();\nconst chefIcons = createChefIcons(recipe.cookingPersons);\n\nconst recipeRecord = {\n  ...recipe,\n  id: `generated-${input.requestId}`,\n  ingredientIndex: createIngredientIndex(recipe.ingredients),\n  steps: addChefIcons(recipe.steps, chefIcons),\n  chefIcons,\n  likes: 0,\n  source: 'generated',\n  isPublic: true,\n  createdAt: now,\n  updatedAt: now,\n};\n\nreturn [{\n  json: {\n    ...input,\n    recipeId: recipeRecord.id,\n    recipeRecord,\n  },\n}];\n\n/** Creates the Firebase ingredient lookup index. */\nfunction createIngredientIndex(ingredients) {\n  return ingredients.reduce((index, ingredient) => {\n    index[ingredient.normalizedName] = true;\n    return index;\n  }, {});\n}\n\n/** Creates the matching chef icon paths. */\nfunction createChefIcons(count) {\n  const names = ['one', 'two', 'three', 'four'];\n\n  return names\n    .slice(0, count)\n    .map((name) => `assets/images/svg/chef-${name}.svg`);\n}\n\n/** Adds the visible chef icon to every cooking step. */\nfunction addChefIcons(steps, chefIcons) {\n  return steps.map((step) => ({\n    ...step,\n    chefIcon: chefIcons[step.chefNumber - 1],\n  }));\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        -240
+      ],
+      "id": "fe57272f-2d7d-4508-a52d-7e4bc1d35558",
+      "name": "Code - Prepare Generated Recipe Record"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $('Code - Prepare Generated Recipe Record').item.json;\nconst suggestions = $input.first().json ?? {};\nconst recipe = input.recipeRecord;\nconst recipeId = input.recipeId;\nconst now = recipe.updatedAt;\n\nreturn [{\n  json: {\n    ...input,\n    firebaseUpdate: {\n      ...createRecipeUpdates(recipe, recipeId),\n      ...createSuggestionUpdates(recipe.ingredients, suggestions, recipeId, now),\n    },\n  },\n}];\n\n/** Creates Firebase updates for the generated recipe and its indexes. */\nfunction createRecipeUpdates(recipe, recipeId) {\n  return {\n    [`recipes/${recipeId}`]: recipe,\n    [`publicRecipes/${recipeId}`]: true,\n    [`recipeIndexes/byCuisine/${recipe.cuisine}/${recipeId}`]: true,\n    [`recipeIndexes/byDiet/${recipe.diet}/${recipeId}`]: true,\n    [`recipeIndexes/byCookingTime/${recipe.cookingTime}/${recipeId}`]: true,\n    ...createIngredientIndexUpdates(recipe.ingredients, recipeId),\n  };\n}\n\n/** Creates recipe index entries for every ingredient. */\nfunction createIngredientIndexUpdates(ingredients, recipeId) {\n  return ingredients.reduce((updates, ingredient) => {\n    updates[`recipeIndexes/byIngredient/${ingredient.normalizedName}/${recipeId}`] = true;\n    return updates;\n  }, {});\n}\n\n/** Creates suggestion updates from validated generated recipe ingredients. */\nfunction createSuggestionUpdates(ingredients, suggestions, recipeId, now) {\n  return ingredients.reduce((updates, ingredient) => {\n    const current = suggestions[ingredient.normalizedName] ?? {};\n    const sourceRecipeIds = uniqueIds(current.sourceRecipeIds ?? [], recipeId);\n\n    updates[`ingredientSuggestions/${ingredient.normalizedName}`] = {\n      approved: current.approved ?? true,\n      createdAt: current.createdAt ?? now,\n      displayName: current.displayName ?? ingredient.name,\n      normalizedName: ingredient.normalizedName,\n      sourceRecipeIds,\n      updatedAt: now,\n      usageCount: sourceRecipeIds.length,\n    };\n\n    return updates;\n  }, {});\n}\n\n/** Adds the recipe id only once to a suggestion source list. */\nfunction uniqueIds(ids, recipeId) {\n  return [...new Set([...ids, recipeId])];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        -240
+      ],
+      "id": "c4989563-5504-4465-96b9-9bcb70f8bf64",
+      "name": "Code - Build Recipe Firebase Update"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/.json' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.firebaseUpdate }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2448,
+        -240
+      ],
+      "id": "04cfaee4-463b-4b13-8eae-a0904d792330",
+      "name": "Firebase - Write Generated Recipe"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/quota.json' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    ['dailyByIp/' + $('Code - Check Quota').item.json.dayKey + '/' + $('Code - Check Quota').item.json.ipHash]: {\n      used: $('Code - Check Quota').item.json.ipCount + 1,\n      limit: $('Code - Check Quota').item.json.ipLimit,\n      updatedAt: $now.toISO(),\n    },\n    ['dailySystem/' + $('Code - Check Quota').item.json.dayKey]: {\n      used: $('Code - Check Quota').item.json.systemCount + 1,\n      limit: $('Code - Check Quota').item.json.systemLimit,\n      updatedAt: $now.toISO(),\n    },\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2656,
+        -240
+      ],
+      "id": "971634ca-cf47-4327-86d4-3ca3b63c5a43",
+      "name": "Firebase - Increment Generation Quota"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/recipeRequests/' + $('Code - Check Quota').item.json.requestId + '.json' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    status: 'completed',\n    matchedRecipeIds: $('Code - Check Quota').item.json.matchedRecipeIds.slice(0, 2),\n    generatedRecipeIds: [\n      $('Code - Prepare Generated Recipe Record').item.json.recipeId\n    ],\n    usedIngredientPercent: $('Code - Validate Generated Recipe').item.json.usedIngredientPercent,\n    error: null,\n    updatedAt: $now.toISO()\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2848,
+        -240
+      ],
+      "id": "cb4f6bef-5c98-4702-a6d4-99b06e908e4f",
+      "name": "Firebase - Complete Generated Request"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/recipeRequests/' + $json.requestId + '.json' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    status: $json.matchedRecipeIds.length > 0 ? 'completed' : 'quotaExceeded',\n    matchedRecipeIds: $json.matchedRecipeIds,\n    generatedRecipeIds: [],\n    usedIngredientPercent: $json.matchedUsedIngredientPercent,\n    error: $json.matchedRecipeIds.length > 0 ? null : $json.error,\n    updatedAt: $now.toISO()\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        368
+      ],
+      "id": "e9f19a64-6d36-4af2-be0e-8af53ff480ef",
+      "name": "Firebase - Complete Existing Results"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/ingredientSuggestions.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2048,
+        -240
+      ],
+      "id": "b7b84329-08f1-4468-b382-afb7822065d4",
+      "name": "Firebase - Get Ingredient Suggestions"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst recipesById = $('Firebase - Get Recipes').item.json ?? {};\nconst existingRecipes = Object.values(recipesById);\n\nif (!input.isValid || !isDuplicateRecipe(input.recipe, existingRecipes)) {\n  return [{ json: input }];\n}\n\nreturn [{\n  json: {\n    ...input,\n    isValid: false,\n    recipe: null,\n    usedIngredientPercent: 0,\n    error: 'duplicateGeneratedRecipe',\n  },\n}];\n\n/** Checks whether a generated recipe duplicates an existing compatible recipe. */\nfunction isDuplicateRecipe(recipe, existingRecipes) {\n  return existingRecipes.some((existingRecipe) =>\n    hasSamePreferences(recipe, existingRecipe)\n    && hasSameRecipeIdentity(recipe, existingRecipe),\n  );\n}\n\n/** Checks the preferences that define a comparable recipe. */\nfunction hasSamePreferences(recipe, existingRecipe) {\n  return recipe.cuisine === existingRecipe.cuisine\n    && recipe.diet === existingRecipe.diet\n    && recipe.cookingTime === existingRecipe.cookingTime;\n}\n\n/** Checks title and complete ingredient combination for a duplicate. */\nfunction hasSameRecipeIdentity(recipe, existingRecipe) {\n  const sameTitle = normalizeTitle(recipe.title) === normalizeTitle(existingRecipe.title);\n  const sameIngredients = getIngredientSignature(recipe)\n    === getIngredientSignature(existingRecipe);\n\n  return sameTitle || sameIngredients;\n}\n\n/** Creates one stable normalized title. */\nfunction normalizeTitle(title) {\n  return String(title)\n    .toLowerCase()\n    .trim()\n    .replace(/[^a-z0-9]+/g, '-')\n    .replace(/^-|-$/g, '');\n}\n\n/** Creates a sorted ingredient signature without amounts. */\nfunction getIngredientSignature(recipe) {\n  const names = Array.isArray(recipe.ingredients)\n    ? recipe.ingredients.map((item) => item?.normalizedName)\n    : Object.keys(recipe.ingredientIndex ?? {});\n\n  return [...new Set(names.filter(isText))].sort().join('|');\n}\n\n/** Checks one non-empty string. */\nfunction isText(value) {\n  return typeof value === 'string' && value.trim().length > 0;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        -48
+      ],
+      "id": "bc0e6e8d-b230-45d6-b628-87907729702f",
+      "name": "Code - Reject Duplicate Recipe"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get Recipe Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Firebase - Get Recipe Request": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Set Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Set Processing": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get Recipes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get Recipes": {
+      "main": [
+        [
+          {
+            "node": "Code - Match Recipes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Match Recipes": {
+      "main": [
+        [
+          {
+            "node": "Code - Prepare Quota Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Prepare Quota Context": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get IP Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get IP Quota": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get System Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get System Quota": {
+      "main": [
+        [
+          {
+            "node": "Code - Check Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Check Quota": {
+      "main": [
+        [
+          {
+            "node": "IF - Can Generate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Can Generate": {
+      "main": [
+        [
+          {
+            "node": "Gemini - Generate Recipe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Firebase - Complete Existing Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Generate Recipe": {
+      "main": [
+        [
+          {
+            "node": "Code - Validate Generated Recipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validate Generated Recipe": {
+      "main": [
+        [
+          {
+            "node": "Code - Reject Duplicate Recipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Is Generated Recipe Valid": {
+      "main": [
+        [
+          {
+            "node": "Code - Prepare Generated Recipe Record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Firebase - Set Generation Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Prepare Generated Recipe Record": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get Ingredient Suggestions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Build Recipe Firebase Update": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Write Generated Recipe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Write Generated Recipe": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Increment Generation Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Increment Generation Quota": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Complete Generated Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Set Generation Failed": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Complete Generated Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Complete Existing Results": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get Ingredient Suggestions": {
+      "main": [
+        [
+          {
+            "node": "Code - Build Recipe Firebase Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Reject Duplicate Recipe": {
+      "main": [
+        [
+          {
+            "node": "IF - Is Generated Recipe Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "2rpqwG2tbcxWc4F6",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "6ba44a42-f13e-4811-a2b7-54eb1371cd0d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33c625ad888ccfe6cb41ee4bc3e8cdd96733d93ea4a0cfb1b7ebac9038046626"
+  },
+  "nodeGroups": [],
+  "id": "vppk3Cx9xiqtuDQW",
+  "tags": []
+}

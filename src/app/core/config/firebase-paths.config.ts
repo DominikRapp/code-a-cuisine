@@ -3,7 +3,6 @@ export const FIREBASE_PATHS = {
     publicRecipes: 'publicRecipes',
     recipeRequests: 'recipeRequests',
     ingredientSuggestions: 'ingredientSuggestions',
-    blockedIngredients: 'blockedIngredients',
     recipeIndexes: {
         byIngredient: 'recipeIndexes/byIngredient',
         byCuisine: 'recipeIndexes/byCuisine',
@@ -18,6 +17,5 @@ export const FIREBASE_PATHS = {
         recipeGeneration: 'logs/recipeGeneration',
         workflowErrors: 'logs/workflowErrors',
         quotaExceeded: 'logs/quotaExceeded',
-        blockedRequests: 'logs/blockedRequests',
     },
 } as const;

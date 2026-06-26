@@ -1,14 +1,14 @@
 <main class="category-recipes-page" aria-labelledby="category-recipes-title">
     <header class="category-recipes-page__header">
         <a class="category-recipes-page__logo-link" routerLink="/" aria-label="Go to home page">
-            <img class="category-recipes-page__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine"
-                width="142" height="48" />
+            <img class="category-recipes-page__logo app-logo" src="assets/images/svg/green-logo.svg"
+                alt="Code à Cuisine" />
         </a>
 
-        <a class="category-recipes-page__back-link" routerLink="/cookbook" aria-label="Back to cookbook">
-            <img class="category-recipes-page__back-icon" src="assets/images/svg/back-arrow.svg" alt=""
-                aria-hidden="true" />
-            <span>Cookbook</span>
+        <a class="category-recipes-page__back-link app-back-link" routerLink="/cookbook" aria-label="Back to cookbook">
+            <img class="category-recipes-page__back-icon app-back-link__icon" src="assets/images/svg/back-arrow.svg"
+                alt="" aria-hidden="true" />
+            <span class="app-back-link__text">Cookbook</span>
         </a>
     </header>
 
@@ -93,4 +93,5 @@
     <a class="category-recipes-page__generate-link" routerLink="/generate/ingredients">
         Generate a recipe
     </a>
+    <app-legal-footer class="legal-footer--light" />
 </main>

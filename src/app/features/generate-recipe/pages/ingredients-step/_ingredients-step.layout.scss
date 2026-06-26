@@ -7,7 +7,7 @@
 .ingredients-step {
     max-width: var(--app-page-max-width);
     min-height: 100vh;
-    margin: 0;
+    margin: 0 auto;
     padding: 48px 48px 48px 48px;
     background: var(--app-color-page-background);
     font-family: var(--app-font-family-primary);
@@ -22,12 +22,6 @@
 .ingredients-step__logo-link {
     display: inline-flex;
     align-items: center;
-}
-
-.ingredients-step__logo {
-    display: block;
-    width: 142px;
-    height: 48px;
 }
 
 .ingredients-step__intro {
@@ -52,6 +46,16 @@
     font-size: 24px;
     font-weight: 500;
     line-height: 34px;
+}
+
+.ingredients-step__quota-status {
+    min-height: 22px;
+    margin: 8px 0 0;
+    color: var(--app-color-generate-text);
+    font-family: var(--app-font-family-primary);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
 }
 
 .ingredients-step__content {

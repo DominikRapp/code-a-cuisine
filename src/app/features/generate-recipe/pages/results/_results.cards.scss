@@ -44,6 +44,24 @@
     line-height: 1.2;
 }
 
+.results-page__new-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    height: 30px;
+    margin-left: auto;
+    padding: 3px 18px;
+    border-radius: 30px;
+    background: var(--app-color-cream-warm);
+    color: var(--app-color-generate-title);
+    font-family: var(--app-font-family-primary);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.2;
+    box-sizing: border-box;
+}
+
 .results-page__recipe-title {
     display: -webkit-box;
     min-height: calc(2 * 1.22em);

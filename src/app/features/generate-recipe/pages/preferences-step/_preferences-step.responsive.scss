@@ -1,20 +1,4 @@
 @media (max-width: 1024px) {
-    .preferences-step__back-link {
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 20px;
-        background: transparent;
-    }
-
-    .preferences-step__back-text {
-        display: none;
-    }
-
-    .preferences-step__back-link:active {
-        background: var(--app-color-preferences-card);
-        border-radius: 2px;
-    }
 
     .preferences-step__counter-button:not(:disabled):hover,
     .preferences-step__counter-button:focus-visible {
@@ -32,6 +16,10 @@
     .preferences-step__tag-input:checked:focus-visible+.preferences-step__tag {
         background: var(--app-color-preferences-tag-active);
         color: var(--app-color-generate-text);
+    }
+
+    .preferences-step__back-text {
+        display: none;
     }
 
     .preferences-step__generate-button:not(:disabled):hover,

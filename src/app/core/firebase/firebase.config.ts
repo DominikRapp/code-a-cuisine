@@ -1,11 +1,8 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Auth, getAuth } from 'firebase/auth';
 import { Database, getDatabase } from 'firebase/database';
-
 import { environment } from '../../../environments/environment';
 
 let firebaseApp: FirebaseApp | null = null;
-let firebaseAuth: Auth | null = null;
 let firebaseDatabase: Database | null = null;
 
 /**
@@ -17,17 +14,6 @@ export function getFirebaseApp(): FirebaseApp {
     }
 
     return firebaseApp;
-}
-
-/**
- * Returns the initialized Firebase Auth instance.
- */
-export function getFirebaseAuth(): Auth {
-    if (!firebaseAuth) {
-        firebaseAuth = getAuth(getFirebaseApp());
-    }
-
-    return firebaseAuth;
 }
 
 /**

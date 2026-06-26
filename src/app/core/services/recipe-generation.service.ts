@@ -1,5 +1,4 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-
 import {
   GeneratedRecipe,
   RecipeGenerationError,
@@ -9,7 +8,11 @@ import {
   RecipePreferences,
 } from '../../shared/models/recipe-generation.model';
 import { RecipeDataService } from './recipe-data.service';
+import { N8nWorkflowService } from './n8n-workflow.service';
+import { RecipeGenerationQuotaStatusService } from './recipe-generation-quota-status.service';
 import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
+import { RecipeRequestService } from './recipe-request.service';
+import { FirebaseRecipeRequestRecord } from '../../shared/models/firebase-recipe.model';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +23,13 @@ export class RecipeGenerationService {
   private readonly preferences = signal<RecipePreferences | null>(null);
   private readonly lastError = signal<RecipeGenerationError | null>(null);
   private readonly minIngredientCount = RECIPE_GENERATION_CONFIG.ingredients.minCount;
+  private readonly recipeRequestService = inject(RecipeRequestService);
+  private readonly lastRequestId = signal<string | null>(null);
+  private readonly newRecipeIds = signal<Set<string>>(new Set());
+  private readonly n8nWorkflowService = inject(N8nWorkflowService);
+  private readonly recipeGenerationQuotaStatusService = inject(
+    RecipeGenerationQuotaStatusService,
+  );
 
   readonly hasIngredients = computed(() => this.ingredients().length >= this.minIngredientCount);
   readonly hasPreferences = computed(() => this.preferences() !== null);
@@ -38,15 +48,23 @@ export class RecipeGenerationService {
     this.clearLastError();
   }
 
-  /** Runs the current Firebase matching flow. */
-  generateRecipes(): RecipeGenerationResult {
+  /** Writes the request, starts n8n, and waits for workflow results. */
+  async generateRecipes(): Promise<RecipeGenerationResult> {
     const request = this.getRequest();
 
     if (!request) {
       return this.createFailedResult('missing-request');
     }
 
-    return this.createFirebaseResult(request);
+    this.clearNewRecipeIds();
+    const requestId = await this.createFirebaseRequest(request);
+
+    return this.createWorkflowResult(requestId);
+  }
+
+  /** Returns the latest Firebase request id. */
+  getLastRequestId(): string | null {
+    return this.lastRequestId();
   }
 
   /** Stores matching recipes in the recipe data service. */
@@ -57,6 +75,11 @@ export class RecipeGenerationService {
   /** Returns the latest generation error. */
   getLastError(): RecipeGenerationError | null {
     return this.lastError();
+  }
+
+  /** Checks whether a recipe was newly generated for the latest request. */
+  isNewRecipe(recipeId: string): boolean {
+    return this.newRecipeIds().has(recipeId);
   }
 
   /** Returns the selected ingredients. */
@@ -90,25 +113,14 @@ export class RecipeGenerationService {
     this.preferences.set(null);
     this.clearLastError();
     this.recipeDataService.clearGeneratedRecipes();
-  }
-
-  /** Creates the temporary Firebase matching result. */
-  private createFirebaseResult(request: RecipeGenerationRequest): RecipeGenerationResult {
-    const recipes = this.recipeDataService.getMatchingRecipes(request);
-
-    if (recipes.length === 0) {
-      return this.createFailedResult('no-recipes');
-    }
-
-    this.setGeneratedRecipes(recipes);
-    this.clearLastError();
-
-    return { status: 'success', source: 'firebase', recipes, error: null };
+    this.clearNewRecipeIds();
+    this.lastRequestId.set(null);
   }
 
   /** Creates and stores one failed generation result. */
   private createFailedResult(error: RecipeGenerationError): RecipeGenerationResult {
     this.lastError.set(error);
+    this.clearNewRecipeIds();
     this.setGeneratedRecipes([]);
 
     return { status: 'failed', source: 'firebase', recipes: [], error };
@@ -117,5 +129,98 @@ export class RecipeGenerationService {
   /** Clears the latest generation error. */
   private clearLastError(): void {
     this.lastError.set(null);
+  }
+
+  /** Creates one Firebase request for the n8n workflow. */
+  private async createFirebaseRequest(request: RecipeGenerationRequest): Promise<string | null> {
+    try {
+      const requestId = await this.recipeRequestService.createRequest(request);
+      this.lastRequestId.set(requestId);
+      return requestId;
+    } catch {
+      this.lastRequestId.set(null);
+      return null;
+    }
+  }
+
+  /** Creates a result from the finished n8n workflow request. */
+  private async createWorkflowResult(requestId: string | null): Promise<RecipeGenerationResult> {
+    if (!requestId) {
+      return this.createFailedResult('generation-failed');
+    }
+
+    await this.triggerWorkflow();
+    const record = await this.recipeRequestService.waitForFinalRequest(requestId);
+
+    return record ? this.createRequestResult(record) : this.createFailedResult('generation-failed');
+  }
+
+  /** Creates the final UI result from one Firebase request record. */
+  private async createRequestResult(record: FirebaseRecipeRequestRecord): Promise<RecipeGenerationResult> {
+    if (record.status !== 'completed') {
+      return this.createFailedResult(this.mapRequestError(record.status));
+    }
+
+    const generatedRecipeIds = record.generatedRecipeIds ?? [];
+
+    this.setNewRecipeIds(generatedRecipeIds);
+    await this.refreshQuotaAfterGeneratedRecipes(generatedRecipeIds);
+
+    const recipes = await this.recipeDataService.getRecipesByIds(
+      this.recipeRequestService.getResultRecipeIds(record),
+    );
+
+    return this.createRecipesResult(recipes);
+  }
+
+  /** Refreshes the displayed quota after one confirmed new recipe generation. */
+  private async refreshQuotaAfterGeneratedRecipes(recipeIds: string[]): Promise<void> {
+    if (recipeIds.length === 0) {
+      return;
+    }
+
+    await this.recipeGenerationQuotaStatusService.refreshAfterSuccessfulGeneration();
+  }
+
+  /** Creates the result from resolved Firebase recipes. */
+  private createRecipesResult(recipes: GeneratedRecipe[]): RecipeGenerationResult {
+    if (recipes.length === 0) {
+      return this.createFailedResult('no-recipes');
+    }
+
+    this.setGeneratedRecipes(recipes);
+    this.clearLastError();
+
+    return { status: 'success', source: 'n8n', recipes, error: null };
+  }
+
+  /** Clears the ids of recipes newly generated for the latest request. */
+  private clearNewRecipeIds(): void {
+    this.newRecipeIds.set(new Set());
+  }
+
+  /** Stores newly generated recipe ids for the latest request. */
+  private setNewRecipeIds(recipeIds: string[]): void {
+    this.newRecipeIds.set(new Set(recipeIds));
+  }
+
+  /** Maps request status to the existing UI error state. */
+  private mapRequestError(status: string): RecipeGenerationError {
+    return status === 'quotaExceeded' ? 'quota-exhausted' : 'generation-failed';
+  }
+
+  /** Starts the future n8n workflow when a request id exists. */
+  private async triggerWorkflow(): Promise<void> {
+    const requestId = this.lastRequestId();
+
+    if (!requestId) {
+      return;
+    }
+
+    try {
+      await this.n8nWorkflowService.triggerRecipeGeneration(requestId);
+    } catch {
+      return;
+    }
   }
 }

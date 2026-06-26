@@ -12,10 +12,11 @@ import {
   buildCookbookCategoryRoute,
   buildRecipeDetailRoute,
 } from '../../../../shared/utils/recipe-route.util';
+import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer';
 
 @Component({
   selector: 'app-cookbook-page',
-  imports: [RouterLink],
+  imports: [RouterLink, LegalFooter],
   templateUrl: './cookbook.page.html',
   styleUrl: './cookbook.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

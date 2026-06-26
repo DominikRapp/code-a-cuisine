@@ -70,3 +70,9 @@ temp/
 
 # Local Firebase environment config
 src/environments/environment.ts
+
+# Local Firebase seed export
+src/app/core/firebase/firebase-seed-preview.json
+
+# Raw Firebase Realtime Database exports
+*-default-rtdb-export.json

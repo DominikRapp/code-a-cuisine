@@ -1,0 +1,174 @@
+{
+  "name": "Code a Cuisine - Recipe Quota Status",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "code-a-cuisine/recipe-generation-status",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e760d3a2-07f3-4284-8674-16f5b0db21e0",
+      "name": "Webhook",
+      "webhookId": "fe3ed048-c50d-419f-a121-4e6dfd27fb81"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst headers = $input.first().json.headers ?? {};\nconst ip = headers['cf-connecting-ip'] ?? '';\n\nif (!ip) {\n  throw new Error('Missing client IP header.');\n}\n\nconst dayKey = new Date().toISOString().slice(0, 10);\nconst ipHash = crypto.createHash('sha256').update(ip).digest('hex');\n\nreturn [{ json: { dayKey, ipHash } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b1ea2e54-1619-4ec6-b26a-8400d7cd42f9",
+      "name": "Code - Prepare Quota Context"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/quota/dailyByIp/' + $json.dayKey + '/' + $json.ipHash + '.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "6e561388-84ad-404d-a51c-289894be6fa0",
+      "name": "Firebase - Get IP Quota"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/quota/dailySystem/' + $('Code - Prepare Quota Context').item.json.dayKey + '.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "1a8a4462-0f55-499b-bf2c-55ffd21a04f4",
+      "name": "Firebase - Get System Quota"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ipQuota = $('Firebase - Get IP Quota').item.json ?? {};\nconst systemQuota = $('Firebase - Get System Quota').item.json ?? {};\n\nconst ipRemaining = Math.max(0, 3 - Number(ipQuota.used ?? 0));\nconst systemRemaining = Math.max(0, 12 - Number(systemQuota.used ?? 0));\nconst remainingGenerations = Math.min(ipRemaining, systemRemaining);\n\nreturn [{ json: { remainingGenerations } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "fd70d622-e954-4537-8553-b192a7b9ab22",
+      "name": "Code - Build Quota Status"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "fb847adc-2314-4948-af2c-1edfd6dcb9a7",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code - Prepare Quota Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Prepare Quota Context": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get IP Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get IP Quota": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get System Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get System Quota": {
+      "main": [
+        [
+          {
+            "node": "Code - Build Quota Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Build Quota Status": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "2rpqwG2tbcxWc4F6",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "90f1bbed-8e4e-4097-a7e1-62c06a73efe3",
+  "meta": {
+    "instanceId": "33c625ad888ccfe6cb41ee4bc3e8cdd96733d93ea4a0cfb1b7ebac9038046626"
+  },
+  "nodeGroups": [],
+  "id": "aLZa0PtSbp8LP3LY",
+  "tags": []
+}

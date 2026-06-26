@@ -9,7 +9,6 @@ export interface FirebaseDatabaseRoot {
     publicRecipes: FirebaseBooleanIndex;
     recipeRequests: Record<string, FirebaseRecipeRequestRecord>;
     ingredientSuggestions: Record<string, FirebaseIngredientSuggestionRecord>;
-    blockedIngredients: Record<string, FirebaseBlockedIngredientRecord>;
     recipeIndexes: FirebaseRecipeIndexes;
     quota: FirebaseQuotaRoot;
     logs: FirebaseLogRoot;
@@ -21,13 +20,6 @@ export interface FirebaseIngredientSuggestionRecord {
     approved: boolean;
     usageCount: number;
     sourceRecipeIds: string[];
-    createdAt: string;
-    updatedAt: string;
-}
-
-export interface FirebaseBlockedIngredientRecord {
-    normalizedName: string;
-    reason: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -54,7 +46,6 @@ export interface FirebaseLogRoot {
     recipeGeneration: Record<string, FirebaseRecipeGenerationLogRecord>;
     workflowErrors: Record<string, FirebaseWorkflowErrorLogRecord>;
     quotaExceeded: Record<string, FirebaseQuotaExceededLogRecord>;
-    blockedRequests: Record<string, FirebaseBlockedRequestLogRecord>;
 }
 
 export interface FirebaseRecipeGenerationLogRecord {
@@ -74,11 +65,5 @@ export interface FirebaseWorkflowErrorLogRecord {
 export interface FirebaseQuotaExceededLogRecord {
     ipHash: string;
     quotaType: 'ip' | 'system';
-    createdAt: string;
-}
-
-export interface FirebaseBlockedRequestLogRecord {
-    ipHash: string;
-    blockedIngredientNames: string[];
     createdAt: string;
 }

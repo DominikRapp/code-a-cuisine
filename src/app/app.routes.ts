@@ -63,6 +63,11 @@ export const routes: Routes = [
             import('./features/legal/pages/imprint.page').then((m) => m.ImprintPage),
     },
     {
+        path: APP_ROUTES.privacy,
+        loadComponent: () =>
+            import('./features/legal/pages/privacy.page').then((m) => m.PrivacyPage),
+    },
+    {
         path: '**',
         redirectTo: APP_ROUTES.home,
     },

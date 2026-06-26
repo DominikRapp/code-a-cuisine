@@ -13,10 +13,11 @@ import {
   buildPreferenceTags,
   getRecipeCookingTimeLabel,
 } from '../../../../shared/utils/recipe-tag.util';
+import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer';
 
 @Component({
   selector: 'app-results-page',
-  imports: [RouterLink],
+  imports: [RouterLink, LegalFooter],
   templateUrl: './results.page.html',
   styleUrl: './results.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +29,7 @@ export class ResultsPage {
 
   readonly recipes = this.recipeDataService.getGeneratedRecipes();
   readonly preferenceTags = this.getPreferenceTags();
+  readonly detailQueryParams = this.getDetailQueryParams();
 
   constructor() {
     this.redirectWithoutGeneratedRecipes();
@@ -53,6 +55,11 @@ export class ResultsPage {
     return buildRecipeDetailRoute(recipe);
   }
 
+  /** Checks whether a visible result recipe was newly generated. */
+  isNewRecipe(recipe: GeneratedRecipe): boolean {
+    return this.recipeGenerationService.isNewRecipe(recipe.id);
+  }
+
   /** Redirects users who opened results without generated recipes. */
   private redirectWithoutGeneratedRecipes(): void {
     if (this.recipes.length > 0) {
@@ -65,5 +72,12 @@ export class ResultsPage {
   /** Returns selected preferences as visible result tags. */
   private getPreferenceTags(): string[] {
     return buildPreferenceTags(this.recipeGenerationService.getPreferences());
+  }
+
+  /** Returns the requested servings for recipe detail links. */
+  private getDetailQueryParams(): { servings: number } | null {
+    const servings = this.recipeGenerationService.getPreferences()?.servings;
+
+    return servings ? { servings } : null;
   }
 }

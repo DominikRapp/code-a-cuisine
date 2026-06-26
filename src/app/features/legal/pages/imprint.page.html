@@ -1,0 +1,62 @@
+<main class="legal-page" aria-labelledby="imprint-title">
+    <header class="legal-page__header">
+        <a class="legal-page__logo-link" routerLink="/" aria-label="Go to home page">
+            <img class="legal-page__logo app-logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
+        </a>
+
+        <button class="legal-page__back-button" type="button" aria-label="Go back" (click)="goBack()">
+            <img class="legal-page__back-icon" src="assets/images/svg/back-arrow.svg" alt="" aria-hidden="true" />
+        </button>
+    </header>
+
+    <section class="legal-page__content">
+        <h1 id="imprint-title" class="legal-page__title">Imprint</h1>
+
+        <p class="legal-page__intro">
+            Code à Cuisine is a temporary, non-commercial student project created for
+            educational and assessment purposes at Developer Akademie GmbH.
+        </p>
+
+        <section class="legal-page__section" aria-labelledby="operator-title">
+            <h2 id="operator-title" class="legal-page__subtitle">Website operator</h2>
+
+            <address class="legal-page__address">
+                Dominik Rapp<br />
+                Kirchenstraße 19<br />
+                2054 Alberndorf<br />
+                Austria
+            </address>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="contact-title">
+            <h2 id="contact-title" class="legal-page__subtitle">Contact</h2>
+
+            <p class="legal-page__text">
+                <a class="legal-page__link" href="mailto:rapp.dominik@hotmail.com">
+                    rapp.dominik@hotmail.com
+                </a>
+            </p>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="project-title">
+            <h2 id="project-title" class="legal-page__subtitle">About this project</h2>
+
+            <p class="legal-page__text">
+                This website is available for a limited period as part of a student project.
+                It does not offer products, paid services or commercial transactions.
+            </p>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="credits-title">
+            <h2 id="credits-title" class="legal-page__subtitle">Credits</h2>
+
+            <p class="legal-page__text">
+                The application code was created by Dominik Rapp. The visual design concept,
+                Figma materials and graphic assets are based on project materials provided by
+                Developer Akademie GmbH.
+            </p>
+        </section>
+    </section>
+
+    <app-legal-footer class="legal-footer--light" />
+</main>

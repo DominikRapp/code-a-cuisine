@@ -16,8 +16,18 @@ export const RECIPE_GENERATION_CONFIG = {
         maxExtraBasicIngredients: 3,
         maxSuggestions: 3,
     },
+    loading: {
+        delayMs: 2500,
+    },
+    workflow: {
+        pollIntervalMs: 500,
+        maxWaitMs: 60000,
+    },
     quota: {
         perIpPerDay: 3,
         systemPerDay: 12,
+    },
+    requests: {
+        maxStored: 3,
     },
 };

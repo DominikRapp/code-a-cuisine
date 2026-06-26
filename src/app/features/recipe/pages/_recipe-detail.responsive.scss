@@ -32,7 +32,6 @@
     }
 
     .recipe-detail__back-link {
-        gap: 0;
         margin-top: 18px;
     }
 
@@ -202,17 +201,6 @@
 @media (max-width: 640px) {
     .recipe-detail {
         padding: 16px 8px;
-    }
-
-    .recipe-detail__logo-link,
-    .recipe-detail__logo {
-        width: 94px;
-        height: auto;
-    }
-
-    .recipe-detail__back-icon {
-        width: 24px;
-        height: auto;
     }
 
     .recipe-detail__card {

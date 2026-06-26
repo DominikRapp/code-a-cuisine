@@ -1,15 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnDestroy,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
-import { MOCK_GENERATION_DELAY_MS } from '../../../../shared/data/mock/generation-flow.mock-data';
+import { RECIPE_GENERATION_CONFIG } from '../../../../core/config/recipe-generation.config';
+import { RecipeGenerationResult } from '../../../../shared/models/recipe-generation.model';
 
 @Component({
   selector: 'app-loading-page',
@@ -21,17 +16,17 @@ import { MOCK_GENERATION_DELAY_MS } from '../../../../shared/data/mock/generatio
 export class LoadingPage implements OnDestroy {
   private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly router = inject(Router);
-  private loadingTimeoutId: number | null = null;
+  private isActive = true;
 
   readonly showErrorPopup = signal(false);
 
   constructor() {
-    this.startGeneration();
+    void this.startGeneration();
   }
 
-  /** Clears pending loading actions when the page is destroyed. */
+  /** Stops pending page actions after destroy. */
   ngOnDestroy(): void {
-    this.clearLoadingTimeout();
+    this.isActive = false;
   }
 
   /** Hides the current loading error popup. */
@@ -39,19 +34,33 @@ export class LoadingPage implements OnDestroy {
     this.showErrorPopup.set(false);
   }
 
-  /** Starts the temporary generation flow. */
-  private startGeneration(): void {
+  /** Starts generation and keeps the loader visible long enough. */
+  private async startGeneration(): Promise<void> {
     if (!this.recipeGenerationService.hasRequest()) {
       this.router.navigate([APP_ROUTES.generateIngredients]);
       return;
     }
 
-    this.loadingTimeoutId = window.setTimeout(() => this.finishGeneration(), MOCK_GENERATION_DELAY_MS);
+    const [result] = await Promise.all([
+      this.recipeGenerationService.generateRecipes(),
+      this.waitMinimumLoadingTime(),
+    ]);
+
+    this.handleGenerationResult(result);
   }
 
-  /** Finishes generation and handles the result state. */
-  private finishGeneration(): void {
-    const result = this.recipeGenerationService.generateRecipes();
+  /** Waits for the configured minimum loading time. */
+  private waitMinimumLoadingTime(): Promise<void> {
+    return new Promise((resolve) =>
+      window.setTimeout(resolve, RECIPE_GENERATION_CONFIG.loading.delayMs),
+    );
+  }
+
+  /** Handles the finished generation result. */
+  private handleGenerationResult(result: RecipeGenerationResult): void {
+    if (!this.isActive) {
+      return;
+    }
 
     if (result.status === 'success') {
       this.router.navigate([APP_ROUTES.generateResults]);
@@ -59,15 +68,5 @@ export class LoadingPage implements OnDestroy {
     }
 
     this.showErrorPopup.set(true);
-  }
-
-  /** Clears the active loading timeout. */
-  private clearLoadingTimeout(): void {
-    if (this.loadingTimeoutId === null) {
-      return;
-    }
-
-    window.clearTimeout(this.loadingTimeoutId);
-    this.loadingTimeoutId = null;
   }
 }

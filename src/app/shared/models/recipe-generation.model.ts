@@ -63,6 +63,7 @@ export interface GeneratedRecipe {
     title: string;
     description: string;
     ingredients: RecipeIngredient[];
+    baseServings: number;
     nutrition: RecipeNutrition;
     steps: RecipeStep[];
     cookingTime: RecipeCookingTime;

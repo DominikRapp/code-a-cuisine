@@ -1,0 +1,107 @@
+<main class="legal-page" aria-labelledby="privacy-title">
+    <header class="legal-page__header">
+        <a class="legal-page__logo-link" routerLink="/" aria-label="Go to home page">
+            <img class="legal-page__logo app-logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
+        </a>
+
+        <button class="legal-page__back-button" type="button" aria-label="Go back" (click)="goBack()">
+            <img class="legal-page__back-icon" src="assets/images/svg/back-arrow.svg" alt="" aria-hidden="true" />
+        </button>
+    </header>
+
+    <section class="legal-page__content">
+        <h1 id="privacy-title" class="legal-page__title">Privacy</h1>
+
+        <p class="legal-page__intro">
+            This page explains how Code à Cuisine processes data while providing recipe search
+            and recipe generation features.
+        </p>
+
+        <section class="legal-page__section" aria-labelledby="controller-title">
+            <h2 id="controller-title" class="legal-page__subtitle">Controller</h2>
+
+            <address class="legal-page__address">
+                Dominik Rapp<br />
+                Kirchenstraße 19<br />
+                2054 Alberndorf<br />
+                Austria<br />
+                <a class="legal-page__link" href="mailto:rapp.dominik@hotmail.com">
+                    rapp.dominik@hotmail.com
+                </a>
+            </address>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="data-title">
+            <h2 id="data-title" class="legal-page__subtitle">What is processed</h2>
+
+            <p class="legal-page__text">
+                When you request a recipe, the project processes the ingredients, quantities and
+                preferences you enter or select. Technical request information is also processed
+                to provide the feature and protect it from misuse.
+            </p>
+
+            <p class="legal-page__text">
+                Please do not enter names, contact details, health information or other personal
+                information into ingredient fields.
+            </p>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="services-title">
+            <h2 id="services-title" class="legal-page__subtitle">Services used</h2>
+
+            <p class="legal-page__text">
+                Firebase stores recipe and request data. n8n runs the recipe workflow and checks
+                the daily generation limit. Google Gemini may create a recipe when no suitable
+                existing recipe is available.
+            </p>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="storage-title">
+            <h2 id="storage-title" class="legal-page__subtitle">Browser storage</h2>
+
+            <p class="legal-page__text">
+                Your browser stores liked recipe IDs and the displayed daily recipe availability
+                locally. You can remove this information at any time by clearing this website’s
+                site data in your browser settings.
+            </p>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="retention-title">
+            <h2 id="retention-title" class="legal-page__subtitle">Retention</h2>
+
+            <p class="legal-page__text">
+                Request and daily-limit records are kept only as long as needed to operate and
+                protect the project. Generated recipes may remain in the shared recipe library
+                until the project is taken offline.
+            </p>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="legal-basis-title">
+            <h2 id="legal-basis-title" class="legal-page__subtitle">Why data is processed</h2>
+
+            <p class="legal-page__text">
+                Data is processed to provide the recipe features you request and to maintain the
+                secure operation of this temporary project.
+            </p>
+        </section>
+
+        <section class="legal-page__section" aria-labelledby="rights-title">
+            <h2 id="rights-title" class="legal-page__subtitle">Your rights</h2>
+
+            <p class="legal-page__text">
+                Subject to applicable law, you may request access, correction, deletion or
+                restriction of your personal data. You may also object to processing. For requests,
+                contact
+                <a class="legal-page__link" href="mailto:rapp.dominik@hotmail.com">
+                    rapp.dominik@hotmail.com
+                </a>.
+            </p>
+
+            <p class="legal-page__text">
+                You may also lodge a complaint with the Austrian Data Protection Authority.
+            </p>
+        </section>
+    </section>
+
+    <app-legal-footer class="legal-footer--light" />
+</main>

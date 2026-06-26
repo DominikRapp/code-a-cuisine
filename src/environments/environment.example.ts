@@ -9,4 +9,8 @@ export const environment = {
     messagingSenderId: 'YOUR_FIREBASE_MESSAGING_SENDER_ID',
     appId: 'YOUR_FIREBASE_APP_ID',
   },
+  n8n: {
+    recipeGenerationWebhookUrl: 'YOUR_N8N_RECIPE_GENERATION_WEBHOOK_URL',
+    recipeQuotaStatusWebhookUrl: 'YOUR_N8N_RECIPE_QUOTA_STATUS_WEBHOOK_URL',
+  },
 };

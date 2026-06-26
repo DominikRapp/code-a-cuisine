@@ -77,20 +77,11 @@
     }
 
     .category-recipes-page__back-link {
-        width: 44px;
-        min-height: 44px;
         margin-top: 18px;
-        justify-content: center;
     }
 
     .category-recipes-page__back-link span {
         display: none;
-    }
-
-    .category-recipes-page__logo-link,
-    .category-recipes-page__logo {
-        width: clamp(112px, 38vw, 142px);
-        height: auto;
     }
 
     .category-recipes-page__hero-image {

@@ -11,16 +11,9 @@
 }
 
 .results-page__logo-link {
-    display: inline-flex;
-    width: 142px;
-    height: 48px;
-    margin-bottom: 52px;
-}
-
-.results-page__logo {
-    display: block;
-    width: 142px;
-    height: 48px;
+    display: flex;
+    width: min(100%, 1680px);
+    margin: 0 auto 52px;
 }
 
 .results-page__footer {

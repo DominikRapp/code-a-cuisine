@@ -1,0 +1,169 @@
+{
+  "name": "Code a Cuisine - Workflow Errors",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "81d9c792-a0c3-4bde-b2a8-41424fafc84a",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst execution = input.execution ?? {};\nconst trigger = input.trigger ?? {};\nconst error = execution.error ?? trigger.error ?? {};\nconst executionId = String(execution.id ?? 'trigger');\n\nreturn [{\n  json: {\n    logId: `error-${Date.now()}-${executionId}`,\n    log: {\n      occurredAt: $now.toISO(),\n      workflowId: input.workflow?.id ?? null,\n      workflowName: input.workflow?.name ?? null,\n      executionId: execution.id ?? null,\n      executionUrl: execution.url ?? null,\n      mode: execution.mode ?? trigger.mode ?? null,\n      lastNodeExecuted: execution.lastNodeExecuted ?? error.node?.name ?? null,\n      message: error.message ?? 'Unknown workflow error',\n    },\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "c3d62bb5-638a-4a01-96e4-f5d771a7285c",
+      "name": "Code - Prepare Error Log"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/logs/workflowErrors.json' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.firebaseUpdate }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        736,
+        0
+      ],
+      "id": "b426e496-894b-47db-acb4-94abd87bd1c2",
+      "name": "Firebase - Write Workflow Error Log"
+    },
+    {
+      "parameters": {
+        "toRecipients": "rapp.dominik@hotmail.com",
+        "subject": "Code a Cuisine – n8n workflow error",
+        "bodyContent": "=A Code a Cuisine workflow failed.\n\nWorkflow: {{ $('Code - Prepare Error Log').item.json.log.workflowName ?? 'Unknown workflow' }}\nExecution ID: {{ $('Code - Prepare Error Log').item.json.log.executionId ?? 'Unknown' }}\nLast node: {{ $('Code - Prepare Error Log').item.json.log.lastNodeExecuted ?? 'Unknown' }}\nError: {{ $('Code - Prepare Error Log').item.json.log.message ?? 'Unknown error' }}\nTime: {{ $('Code - Prepare Error Log').item.json.log.occurredAt ?? 'Unknown' }}\n\nOpen n8n and Firebase logs/workflowErrors for the full error details.\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        912,
+        0
+      ],
+      "id": "7865683f-2678-4605-8858-5beadb1bd94c",
+      "name": "Email - Send Workflow Error Alert",
+      "webhookId": "abb6ff96-c915-4aa6-83a7-54af34a6df41",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "EL948t5SvELfLaAg",
+          "name": "Microsoft Outlook OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/logs/workflowErrors.json' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        368,
+        0
+      ],
+      "id": "f7023501-3af0-4abc-8d7a-f63b7488393d",
+      "name": "Firebase - Get Workflow Error Logs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prepared = $('Code - Prepare Error Log').item.json;\nconst existingLogs = $input.first().json ?? {};\nconst logEntries = Object.entries(existingLogs)\n  .filter(([, log]) => log && typeof log === 'object');\n\nconst deleteCount = Math.max(0, logEntries.length - 23);\nconst oldestEntries = logEntries\n  .sort(sortByOccurredAt)\n  .slice(0, deleteCount);\n\nconst firebaseUpdate = {\n  [prepared.logId]: prepared.log,\n};\n\noldestEntries.forEach(([logId]) => {\n  firebaseUpdate[logId] = null;\n});\n\nreturn [{\n  json: {\n    ...prepared,\n    firebaseUpdate,\n  },\n}];\n\n/** Sorts Firebase logs from oldest to newest. */\nfunction sortByOccurredAt([, first], [, second]) {\n  return getTimestamp(first) - getTimestamp(second);\n}\n\n/** Returns a safe timestamp from one error log. */\nfunction getTimestamp(log) {\n  const timestamp = Date.parse(log.occurredAt ?? '');\n\n  return Number.isNaN(timestamp) ? 0 : timestamp;\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "1d754b8c-4b36-4d53-a736-94161f989bf2",
+      "name": "Code - Build Error Log Update"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code - Prepare Error Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Prepare Error Log": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get Workflow Error Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Write Workflow Error Log": {
+      "main": [
+        [
+          {
+            "node": "Email - Send Workflow Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get Workflow Error Logs": {
+      "main": [
+        [
+          {
+            "node": "Code - Build Error Log Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Build Error Log Update": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Write Workflow Error Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "68977b4f-b711-4cb6-8989-1e9a7a2ad9c3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33c625ad888ccfe6cb41ee4bc3e8cdd96733d93ea4a0cfb1b7ebac9038046626"
+  },
+  "nodeGroups": [],
+  "id": "2rpqwG2tbcxWc4F6",
+  "tags": []
+}

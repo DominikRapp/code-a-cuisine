@@ -7,3 +7,60 @@ body {
 * {
     box-sizing: border-box;
 }
+
+.app-logo {
+    display: block;
+    width: 142px;
+    height: 48px;
+}
+
+.app-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    color: var(--app-color-generate-title);
+    font-family: var(--app-font-family-primary);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.app-back-link:hover {
+    text-decoration: none;
+}
+
+.app-back-link:focus-visible {
+    border-radius: 4px;
+    outline: 2px solid var(--app-color-brand-green);
+    outline-offset: 4px;
+}
+
+.app-back-link__icon {
+    display: block;
+    width: 32px;
+    min-width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .app-logo {
+        width: 95px;
+        height: 32px;
+    }
+
+    .app-back-link {
+        justify-content: center;
+        gap: 0;
+        width: 44px;
+        height: 44px;
+        min-height: 44px;
+    }
+
+    .app-back-link__text {
+        display: none;
+    }
+}

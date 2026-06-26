@@ -1,0 +1,147 @@
+{
+  "name": "Code a Cuisine - Data Cleanup",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3,
+              "triggerAtMinute": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7918ec90-dfc5-44aa-aeb3-8cc6258747db",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/recipeRequests.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        160,
+        0
+      ],
+      "id": "2a916ee9-15fd-4f73-aa29-7201c664e270",
+      "name": "Firebase - Get Recipe Requests"
+    },
+    {
+      "parameters": {
+        "url": "https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/quota.json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        352,
+        0
+      ],
+      "id": "1237da77-8a7e-4df7-be85-71ffe8939b09",
+      "name": "Firebase - Get Quota"
+    },
+    {
+      "parameters": {
+        "jsCode": "const requests = $('Firebase - Get Recipe Requests').item.json ?? {};\nconst quota = $('Firebase - Get Quota').item.json ?? {};\nconst now = new Date();\nconst requestCutoff = new Date(now);\n\nrequestCutoff.setUTCDate(now.getUTCDate() - 7);\n\nconst firebaseUpdate = {\n  ...buildRequestDeletes(requests, requestCutoff.getTime()),\n  ...buildQuotaDeletes(quota, toDayKey(requestCutoff)),\n};\n\nreturn [{ json: { firebaseUpdate } }];\n\n/** Creates delete updates for safely finished old requests. */\nfunction buildRequestDeletes(requests, cutoffTime) {\n  return Object.entries(requests).reduce((updates, [requestId, request]) => {\n    if (shouldDeleteRequest(request, cutoffTime)) {\n      updates[`recipeRequests/${requestId}`] = null;\n    }\n\n    return updates;\n  }, {});\n}\n\n/** Checks whether one request is finished and older than seven days. */\nfunction shouldDeleteRequest(request, cutoffTime) {\n  const finished = ['completed', 'failed', 'quotaExceeded'].includes(request?.status);\n  const timestamp = Date.parse(request?.updatedAt ?? request?.createdAt ?? '');\n\n  return finished && Number.isFinite(timestamp) && timestamp < cutoffTime;\n}\n\n/** Creates delete updates for quota days older than the retained period. */\nfunction buildQuotaDeletes(quota, cutoffDayKey) {\n  const updates = {};\n  addQuotaDeletes(updates, quota.dailyByIp, 'quota/dailyByIp', cutoffDayKey);\n  addQuotaDeletes(updates, quota.dailySystem, 'quota/dailySystem', cutoffDayKey);\n\n  return updates;\n}\n\n/** Adds deletion paths for old UTC quota day keys. */\nfunction addQuotaDeletes(updates, records, path, cutoffDayKey) {\n  Object.keys(records ?? {})\n    .filter((dayKey) => dayKey < cutoffDayKey)\n    .forEach((dayKey) => {\n      updates[`${path}/${dayKey}`] = null;\n    });\n}\n\n/** Converts a date into the same UTC key format as the main workflow. */\nfunction toDayKey(date) {\n  return date.toISOString().slice(0, 10);\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        0
+      ],
+      "id": "29182efc-313b-473b-be7f-52a74fa38f83",
+      "name": "Code - Build Cleanup Update"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://code-a-cuisine-805b1-default-rtdb.europe-west1.firebasedatabase.app/.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.firebaseUpdate }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        736,
+        0
+      ],
+      "id": "fc99f957-08a1-422f-8745-f5fb41426576",
+      "name": "Firebase - Write Cleanup Update"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get Recipe Requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get Recipe Requests": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Get Quota",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Firebase - Get Quota": {
+      "main": [
+        [
+          {
+            "node": "Code - Build Cleanup Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Build Cleanup Update": {
+      "main": [
+        [
+          {
+            "node": "Firebase - Write Cleanup Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "2rpqwG2tbcxWc4F6",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "f1e0c96a-ce5f-4ff7-8d65-1ef89f3fdb34",
+  "meta": {
+    "instanceId": "33c625ad888ccfe6cb41ee4bc3e8cdd96733d93ea4a0cfb1b7ebac9038046626"
+  },
+  "nodeGroups": [],
+  "id": "xGFDprtxzsQnUUfY",
+  "tags": []
+}

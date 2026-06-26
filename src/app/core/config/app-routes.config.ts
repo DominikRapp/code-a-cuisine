@@ -8,4 +8,5 @@ export const APP_ROUTES = {
     cookbook: 'cookbook',
     cookbookCategory: 'cookbook/category/:categoryId',
     imprint: 'imprint',
+    privacy: 'privacy',
 } as const;

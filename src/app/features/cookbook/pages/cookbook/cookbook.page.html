@@ -1,13 +1,13 @@
 <main class="cookbook-page" aria-labelledby="cookbook-title">
     <header class="cookbook-page__header">
         <a class="cookbook-page__logo-link" routerLink="/" aria-label="Go to home page">
-            <img class="cookbook-page__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" width="142"
-                height="48" />
+            <img class="cookbook-page__logo app-logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
         </a>
 
-        <a class="cookbook-page__back-link" routerLink="/" aria-label="Back to home page">
-            <img class="cookbook-page__back-icon" src="assets/images/svg/back-arrow.svg" alt="" aria-hidden="true" />
-            <span>Back</span>
+        <a class="cookbook-page__back-link app-back-link" routerLink="/" aria-label="Back to home page">
+            <img class="cookbook-page__back-icon app-back-link__icon" src="assets/images/svg/back-arrow.svg" alt=""
+                aria-hidden="true" />
+            <span class="app-back-link__text">Back</span>
         </a>
     </header>
 
@@ -87,4 +87,5 @@
             </span>
         </a>
     </div>
+    <app-legal-footer class="legal-footer--light" />
 </main>

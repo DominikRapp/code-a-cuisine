@@ -21,40 +21,10 @@
 
 .cookbook-page__logo-link {
     display: inline-flex;
-    width: 142px;
-    height: 48px;
-}
-
-.cookbook-page__logo {
-    display: block;
-    width: 142px;
-    height: 48px;
 }
 
 .cookbook-page__back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
     margin-top: 22px;
-    color: var(--app-color-generate-title);
-    font-family: var(--app-font-family-primary);
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 20px;
-    text-decoration: none;
-}
-
-.cookbook-page__back-link:hover,
-.cookbook-page__back-link:focus-visible {
-    text-decoration: none;
-    outline: none;
-}
-
-.cookbook-page__back-icon {
-    display: block;
-    width: 24px;
-    height: 24px;
 }
 
 .cookbook-page__hero-card {

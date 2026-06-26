@@ -15,10 +15,11 @@ import {
   RecipeCuisine,
 } from '../../../../shared/models/recipe-generation.model';
 import { RECIPE_CATEGORY_PAGE_SIZE } from '../../../../core/config/recipe-list.config';
+import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer';
 
 @Component({
   selector: 'app-category-recipes-page',
-  imports: [RouterLink],
+  imports: [RouterLink, LegalFooter],
   templateUrl: './category-recipes.page.html',
   styleUrl: './category-recipes.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
 import { get, ref } from 'firebase/database';
-
 import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
 import {
     LIKED_RECIPE_IDS_STORAGE_KEY,
@@ -12,6 +11,7 @@ import { mapFirebaseRecipe } from '../../shared/mappers/firebase-recipe.mapper';
 import { FirebaseRecipeRecord } from '../../shared/models/firebase-recipe.model';
 import {
     GeneratedRecipe,
+    RecipeCookingTime,
     RecipeCuisine,
     RecipeGenerationRequest,
 } from '../../shared/models/recipe-generation.model';
@@ -27,22 +27,45 @@ export class RecipeDataService {
     private readonly libraryLoaded = signal(false);
     private readonly likedRecipeIds = signal<Set<string>>(this.loadLikedRecipeIds());
     private readonly maxGeneratedRecipes = RECIPE_GENERATION_CONFIG.generatedRecipes.max;
+    private readonly libraryLoadPromise = this.loadFirebaseRecipes();
 
-    constructor() {
-        void this.loadFirebaseRecipes();
+    /** Waits until Firebase recipes are loaded. */
+    async waitForLibrary(): Promise<void> {
+        await this.libraryLoadPromise;
     }
 
-    /** Stores sorted and capped generated or matched recipes. */
+    /** Stores capped recipes in workflow result order. */
     setGeneratedRecipes(recipes: GeneratedRecipe[]): void {
         const uniqueRecipes = this.getUniqueRecipesById(recipes);
-        const topRecipes = this.getTopRecipesByLikes(uniqueRecipes);
 
-        this.generatedRecipes.set(topRecipes.slice(0, this.maxGeneratedRecipes));
+        this.generatedRecipes.set(uniqueRecipes.slice(0, this.maxGeneratedRecipes));
     }
 
     /** Returns generated recipes with local like values. */
     getGeneratedRecipes(): GeneratedRecipe[] {
         return this.applyLocalLikes(this.generatedRecipes());
+    }
+
+    /** Returns current Firebase recipes by their ids. */
+    async getRecipesByIds(recipeIds: string[]): Promise<GeneratedRecipe[]> {
+        const recipes = await Promise.all(
+            recipeIds.map((recipeId) => this.readFirebaseRecipe(recipeId)),
+        );
+
+        return recipes.filter((recipe): recipe is GeneratedRecipe => recipe !== null);
+    }
+
+    /** Reads one current public recipe directly from Firebase. */
+    private async readFirebaseRecipe(recipeId: string): Promise<GeneratedRecipe | null> {
+        try {
+            const path = `${FIREBASE_PATHS.recipes}/${recipeId}`;
+            const snapshot = await get(ref(getFirebaseDatabase(), path));
+            const record = snapshot.val() as FirebaseRecipeRecord | null;
+
+            return record?.isPublic ? this.applyLocalLike(mapFirebaseRecipe(record)) : null;
+        } catch {
+            return null;
+        }
     }
 
     /** Returns true when generated recipes exist. */
@@ -142,10 +165,45 @@ export class RecipeDataService {
     private matchesPreferences(record: FirebaseRecipeRecord, request: RecipeGenerationRequest): boolean {
         return (
             record.cuisine === request.preferences.cuisine &&
-            record.diet === request.preferences.diet &&
-            record.cookingTime === request.preferences.cookingTime &&
+            this.matchesDiet(record, request) &&
+            this.matchesCookingTime(record, request) &&
             this.matchesCookingPersons(record, request.preferences.cookingPersons)
         );
+    }
+
+    /** Checks whether the selected diet fits the recipe. */
+    private matchesDiet(record: FirebaseRecipeRecord, request: RecipeGenerationRequest): boolean {
+        const selectedDiet = request.preferences.diet;
+
+        if (selectedDiet === 'none') {
+            return true;
+        }
+
+        return selectedDiet === 'vegetarian'
+            ? record.diet === 'vegetarian' || record.diet === 'vegan'
+            : record.diet === selectedDiet;
+    }
+
+    /** Checks whether the recipe stays within the selected cooking time. */
+    private matchesCookingTime(
+        record: FirebaseRecipeRecord,
+        request: RecipeGenerationRequest,
+    ): boolean {
+        const selectedTime = request.preferences.cookingTime;
+
+        return selectedTime !== null &&
+            this.getCookingTimeRank(record.cookingTime) <= this.getCookingTimeRank(selectedTime);
+    }
+
+    /** Returns the comparable rank for one cooking time option. */
+    private getCookingTimeRank(cookingTime: RecipeCookingTime): number {
+        const ranks: Record<RecipeCookingTime, number> = {
+            quick: 1,
+            medium: 2,
+            complex: 3,
+        };
+
+        return ranks[cookingTime];
     }
 
     /** Checks whether the cooking person count fits. */
@@ -156,13 +214,13 @@ export class RecipeDataService {
     /** Checks the configured ingredient matching rules. */
     private matchesIngredients(record: FirebaseRecipeRecord, request: RecipeGenerationRequest): boolean {
         const requestedNames = this.getRequestedIngredientNames(request);
+        const extraNames = record.extraBasicIngredientNames ?? [];
         const matchCount = this.countMatchingIngredients(record, requestedNames);
 
         return (
             this.getIngredientMatchPercent(matchCount, requestedNames.length) >=
             RECIPE_GENERATION_CONFIG.ingredients.minUsagePercent &&
-            record.extraBasicIngredientNames.length <=
-            RECIPE_GENERATION_CONFIG.ingredients.maxExtraBasicIngredients
+            extraNames.length <= RECIPE_GENERATION_CONFIG.ingredients.maxExtraBasicIngredients
         );
     }
 
@@ -173,7 +231,7 @@ export class RecipeDataService {
 
     /** Counts requested ingredients that are used by one recipe. */
     private countMatchingIngredients(record: FirebaseRecipeRecord, requestedNames: string[]): number {
-        const requiredNames = new Set(record.requiredIngredientNames);
+        const requiredNames = new Set(record.requiredIngredientNames ?? []);
         return requestedNames.filter((name) => requiredNames.has(name)).length;
     }
 

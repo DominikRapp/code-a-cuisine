@@ -1,7 +1,6 @@
 <main class="results-page" aria-labelledby="results-title">
     <a class="results-page__logo-link" routerLink="/" aria-label="Go to home page">
-        <img class="results-page__logo" src="assets/images/svg/white-logo.svg" alt="Code à Cuisine" width="142"
-            height="48" />
+        <img class="results-page__logo app-logo" src="assets/images/svg/white-logo.svg" alt="Code à Cuisine" />
     </a>
 
     <section class="results-page__hero">
@@ -34,6 +33,10 @@
                 <h2 class="results-page__recipe-number">
                     {{ getRecipeNumber(index) }}
                 </h2>
+
+                @if (isNewRecipe(recipe)) {
+                <span class="results-page__new-tag">New</span>
+                }
             </header>
 
             <p class="results-page__recipe-title">
@@ -47,7 +50,8 @@
                 <span>Cooking time: {{ getCookingTimeLabel(recipe.cookingTime) }}</span>
             </p>
 
-            <a class="results-page__view-link" [routerLink]="getRecipeDetailRoute(recipe)">
+            <a class="results-page__view-link" [routerLink]="getRecipeDetailRoute(recipe)"
+                [queryParams]="detailQueryParams">
                 View
             </a>
         </article>
@@ -62,4 +66,5 @@
                 aria-hidden="true" />
         </a>
     </footer>
+    <app-legal-footer class="legal-footer--dark" />
 </main>

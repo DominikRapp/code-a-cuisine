@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
 import { get, ref } from 'firebase/database';
-
 import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
 import { FIREBASE_PATHS } from '../config/firebase-paths.config';
 import { getFirebaseDatabase } from '../firebase/firebase.config';

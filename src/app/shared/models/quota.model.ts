@@ -7,3 +7,7 @@ export interface RecipeGenerationQuota {
   dailyIpLimit: number;
   dailySystemLimit: number;
 }
+
+export interface RecipeGenerationQuotaStatus {
+  remainingGenerations: number;
+}

@@ -1,7 +1,7 @@
 <main class="ingredients-step" aria-labelledby="ingredients-step-title">
     <header class="ingredients-step__header" aria-label="Code à Cuisine">
         <a class="ingredients-step__logo-link" routerLink="/" aria-label="Go to home page">
-            <img class="ingredients-step__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
+            <img class="ingredients-step__logo app-logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
         </a>
     </header>
 
@@ -13,6 +13,17 @@
         <p class="ingredients-step__description">
             Got random stuff in your kitchen? Pop it in—we’ve got the perfect recipe waiting.
         </p>
+
+        <p class="ingredients-step__quota-status" aria-live="polite">
+            @if (remainingGenerations() === 0) {
+            No new recipes are available today. More will be available tomorrow.
+            } @else {
+            You can still generate {{ remainingGenerations() ?? '…' }} new recipe{{
+            remainingGenerations() === 1 ? '' : 's'
+            }} today.
+            }
+        </p>
+
     </section>
 
     <section class="ingredients-step__content" aria-label="Recipe ingredient input and ingredient list">
@@ -30,10 +41,10 @@
                             type="text" inputmode="text" autocomplete="off" aria-autocomplete="list"
                             aria-controls="ingredient-suggestions" [value]="ingredientName()"
                             (input)="setIngredientName($event)" (keydown.arrowdown)="focusFirstSuggestion($event)" />
-                        @if (autocompleteCompletion()) {
-                        <span class="ingredients-step__autocomplete-preview" aria-hidden="true"
-                            [style.left.px]="autocompleteOffset()">
-                            {{ autocompleteCompletion() }}
+                        @if (autocompleteCompletion(); as completion) {
+                        <span class="ingredients-step__autocomplete-preview" aria-hidden="true">
+                            <span class="ingredients-step__autocomplete-prefix">{{ ingredientName() }}</span>{{
+                            completion }}
                         </span>
                         }
                     </div>
@@ -279,4 +290,5 @@
             }
         </div>
     </section>
+    <app-legal-footer class="legal-footer--light" />
 </main>

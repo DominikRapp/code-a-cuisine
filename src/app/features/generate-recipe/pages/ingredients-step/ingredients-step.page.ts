@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
+import { RecipeGenerationQuotaStatusService } from '../../../../core/services/recipe-generation-quota-status.service';
 import { IngredientSuggestionService } from '../../../../core/services/ingredient-suggestion.service';
 import { RECIPE_INGREDIENT_UNIT_OPTIONS } from '../../../../shared/data/recipe-ingredient-options.data';
 import {
@@ -16,16 +17,20 @@ import {
 } from '../../../../shared/utils/ingredient.util';
 import { RecipeIngredient, RecipeIngredientUnit } from '../../../../shared/models/recipe-generation.model';
 import { RECIPE_GENERATION_CONFIG } from '../../../../core/config/recipe-generation.config';
+import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer';
 
 @Component({
     selector: 'app-ingredients-step-page',
-    imports: [FormsModule, RouterLink],
+    imports: [FormsModule, RouterLink, LegalFooter],
     templateUrl: './ingredients-step.page.html',
     styleUrl: './ingredients-step.page.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IngredientsStepPage {
+export class IngredientsStepPage implements OnInit {
     private readonly recipeGenerationService = inject(RecipeGenerationService);
+    private readonly recipeGenerationQuotaStatusService = inject(
+        RecipeGenerationQuotaStatusService,
+    );
     private readonly ingredientSuggestionService = inject(IngredientSuggestionService);
     private readonly minIngredientCount = RECIPE_GENERATION_CONFIG.ingredients.minCount;
 
@@ -40,10 +45,15 @@ export class IngredientsStepPage {
     readonly editUnit = signal<RecipeIngredientUnit>('gram');
     readonly suggestions = computed(() => this.getSuggestions());
     readonly autocompleteCompletion = computed(() => this.getAutocompleteCompletion());
-    readonly autocompleteOffset = computed(() => 16 + this.ingredientName().length * 8.5);
     readonly canAddIngredient = computed(() => this.hasValidIngredientInput());
     readonly canContinueToPreferences = computed(() => this.hasRequiredIngredientCount());
     readonly missingIngredientCount = computed(() => this.getMissingIngredientCount());
+    readonly remainingGenerations = this.recipeGenerationQuotaStatusService.remainingGenerations;
+
+    /** Refreshes the quota status without blocking the ingredient page. */
+    ngOnInit(): void {
+        void this.recipeGenerationQuotaStatusService.refreshIfNeeded();
+    }
 
     /** Saves the selected ingredients for the preferences step. */
     saveIngredients(event?: Event): void {

@@ -2,14 +2,14 @@
 <main class="recipe-detail" aria-labelledby="recipe-detail-title">
     <header class="recipe-detail__header">
         <a class="recipe-detail__logo-link" routerLink="/" aria-label="Go to home page">
-            <img class="recipe-detail__logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" width="142"
-                height="48" />
+            <img class="recipe-detail__logo app-logo" src="assets/images/svg/green-logo.svg" alt="Code à Cuisine" />
         </a>
 
-        <a class="recipe-detail__back-link" routerLink="/generate/results" aria-label="Back to recipe results">
-            <img class="recipe-detail__back-icon" src="assets/images/svg/back-arrow.svg" alt="" aria-hidden="true" />
-
-            <span>Recipe results</span>
+        <a class="recipe-detail__back-link app-back-link" routerLink="/generate/results"
+            aria-label="Back to recipe results">
+            <img class="recipe-detail__back-icon app-back-link__icon" src="assets/images/svg/back-arrow.svg" alt=""
+                aria-hidden="true" />
+            <span class="app-back-link__text">Recipe results</span>
         </a>
     </header>
 
@@ -29,6 +29,10 @@
                 <div class="recipe-detail__cook-row" aria-label="Cooking persons">
                     <span class="recipe-detail__cook-person-text">
                         Cooking person: {{ getCookingPersonCount(selectedRecipe) }}
+                    </span>
+
+                    <span class="recipe-detail__serving-text">
+                        Serves: {{ getServingCount(selectedRecipe) }}
                     </span>
 
                     @for (chefIcon of getChefIcons(selectedRecipe); track chefIcon.src) {
@@ -65,22 +69,24 @@
                     <dl class="recipe-detail__nutrition-list">
                         <div class="recipe-detail__nutrition-item">
                             <dt>Energy</dt>
-                            <dd>{{ selectedRecipe.nutrition.calories }} kcal</dd>
+                            <dd>{{ getNutritionAmount(selectedRecipe, selectedRecipe.nutrition.calories) }} kcal</dd>
                         </div>
 
                         <div class="recipe-detail__nutrition-item">
                             <dt>Protein</dt>
-                            <dd>{{ selectedRecipe.nutrition.protein }}g</dd>
+                            <dd>{{ getNutritionAmount(selectedRecipe, selectedRecipe.nutrition.protein) }}g</dd>
                         </div>
 
                         <div class="recipe-detail__nutrition-item">
                             <dt>Fat</dt>
-                            <dd>{{ selectedRecipe.nutrition.fat }}g</dd>
+                            <dd>{{ getNutritionAmount(selectedRecipe, selectedRecipe.nutrition.fat) }}g</dd>
                         </div>
 
                         <div class="recipe-detail__nutrition-item">
                             <dt>Carbs</dt>
-                            <dd>{{ selectedRecipe.nutrition.carbohydrates }}g</dd>
+                            <dd>
+                                {{ getNutritionAmount(selectedRecipe, selectedRecipe.nutrition.carbohydrates) }}g
+                            </dd>
                         </div>
                     </dl>
                 </section>
@@ -121,7 +127,7 @@
                         <ul class="recipe-detail__ingredient-list">
                             @for (ingredient of selectedRecipe.ingredients; track ingredient.id) {
                             <li>
-                                <span>{{ getIngredientAmount(ingredient) }}</span>
+                                <span>{{ getIngredientAmount(selectedRecipe, ingredient) }}</span>
                                 {{ ingredient.name }}
                             </li>
                             }
@@ -240,5 +246,6 @@
             </span>
         </a>
     </div>
+    <app-legal-footer class="legal-footer--light" />
 </main>
 }
