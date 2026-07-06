@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-
 import { APP_ROUTES } from '../../../../core/config/app-routes.config';
 import { RecipeDataService } from '../../../../core/services/recipe-data.service';
 import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
@@ -27,12 +26,14 @@ export class ResultsPage {
   private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly router = inject(Router);
 
-  readonly recipes = this.recipeDataService.getGeneratedRecipes();
-  readonly preferenceTags = this.getPreferenceTags();
-  readonly detailQueryParams = this.getDetailQueryParams();
+  readonly recipes = computed(() =>
+    this.recipeDataService.getGeneratedRecipes(),
+  );
+
+  readonly preferenceTags = computed(() => this.getPreferenceTags());
 
   constructor() {
-    this.redirectWithoutGeneratedRecipes();
+    void this.restoreResultsOrRedirect();
   }
 
   /** Returns the display label for a generated recipe number. */
@@ -42,7 +43,7 @@ export class ResultsPage {
 
   /** Returns the result intro text for the visible recipe count. */
   getResultDescription(): string {
-    return `We took what you have and found ${this.recipes.length} recipe suggestion.`;
+    return `We took what you have and found ${this.recipes().length} recipe suggestion.`;
   }
 
   /** Returns the display label for a recipe cooking time. */
@@ -60,13 +61,20 @@ export class ResultsPage {
     return this.recipeGenerationService.isNewRecipe(recipe.id);
   }
 
-  /** Redirects users who opened results without generated recipes. */
-  private redirectWithoutGeneratedRecipes(): void {
-    if (this.recipes.length > 0) {
+  /** Restores the latest recipe result or redirects when no result exists. */
+  private async restoreResultsOrRedirect(): Promise<void> {
+    if (this.recipes().length > 0) {
       return;
     }
 
-    this.router.navigate([APP_ROUTES.generateIngredients]);
+    const restoredRecipes =
+      await this.recipeGenerationService.restoreLastGeneratedResults();
+
+    if (restoredRecipes.length > 0) {
+      return;
+    }
+
+    void this.router.navigate([APP_ROUTES.generateIngredients]);
   }
 
   /** Returns selected preferences as visible result tags. */
@@ -75,7 +83,7 @@ export class ResultsPage {
   }
 
   /** Returns result-specific query parameters for recipe detail links. */
-  private getDetailQueryParams(): {
+  getDetailQueryParams(): {
     source: 'results';
     servings?: number;
   } {

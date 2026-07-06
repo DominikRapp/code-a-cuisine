@@ -29,9 +29,10 @@ export class LoadingPage implements OnDestroy {
     this.isActive = false;
   }
 
-  /** Hides the current loading error popup. */
-  closeErrorPopup(): void {
+  /** Returns to the ingredient step while keeping the current ingredient draft. */
+  returnToIngredients(): void {
     this.showErrorPopup.set(false);
+    void this.router.navigate([APP_ROUTES.generateIngredients]);
   }
 
   /** Starts generation and keeps the loader visible long enough. */

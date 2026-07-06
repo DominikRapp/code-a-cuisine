@@ -11,8 +11,15 @@ import { RecipeDataService } from './recipe-data.service';
 import { N8nWorkflowService } from './n8n-workflow.service';
 import { RecipeGenerationQuotaStatusService } from './recipe-generation-quota-status.service';
 import { RECIPE_GENERATION_CONFIG } from '../config/recipe-generation.config';
+import { LAST_GENERATED_RESULTS_STORAGE_KEY } from '../config/recipe-storage.config';
 import { RecipeRequestService } from './recipe-request.service';
 import { FirebaseRecipeRequestRecord } from '../../shared/models/firebase-recipe.model';
+
+interface StoredGeneratedResults {
+  recipeIds: string[];
+  newRecipeIds: string[];
+  preferences: RecipePreferences | null;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -77,6 +84,39 @@ export class RecipeGenerationService {
     return this.lastError();
   }
 
+  /** Restores the latest successful recipe result for the current browser session. */
+  async restoreLastGeneratedResults(): Promise<GeneratedRecipe[]> {
+    const storedResults = this.readStoredGeneratedResults();
+
+    if (!storedResults || storedResults.recipeIds.length === 0) {
+      return [];
+    }
+
+    const recipes = await this.recipeDataService.getRecipesByIds(
+      storedResults.recipeIds,
+    );
+
+    if (recipes.length === 0) {
+      this.clearStoredGeneratedResults();
+      return [];
+    }
+
+    const restoredRecipeIds = new Set(recipes.map((recipe) => recipe.id));
+
+    this.setGeneratedRecipes(recipes);
+    this.setNewRecipeIds(
+      storedResults.newRecipeIds.filter((recipeId) =>
+        restoredRecipeIds.has(recipeId),
+      ),
+    );
+
+    if (storedResults.preferences) {
+      this.preferences.set({ ...storedResults.preferences });
+    }
+
+    return recipes;
+  }
+
   /** Checks whether a recipe was newly generated for the latest request. */
   isNewRecipe(recipeId: string): boolean {
     return this.newRecipeIds().has(recipeId);
@@ -115,6 +155,72 @@ export class RecipeGenerationService {
     this.recipeDataService.clearGeneratedRecipes();
     this.clearNewRecipeIds();
     this.lastRequestId.set(null);
+    this.clearStoredGeneratedResults();
+  }
+
+  /** Stores the latest successful result ids for the current browser session. */
+  private storeGeneratedResults(recipes: GeneratedRecipe[]): void {
+    const storedResults: StoredGeneratedResults = {
+      recipeIds: recipes.map((recipe) => recipe.id),
+      newRecipeIds: [...this.newRecipeIds()],
+      preferences: this.getPreferences(),
+    };
+
+    try {
+      sessionStorage.setItem(
+        LAST_GENERATED_RESULTS_STORAGE_KEY,
+        JSON.stringify(storedResults),
+      );
+    } catch {
+      return;
+    }
+  }
+
+  /** Returns the latest stored result ids for the current browser session. */
+  private readStoredGeneratedResults(): StoredGeneratedResults | null {
+    try {
+      const storedValue = sessionStorage.getItem(
+        LAST_GENERATED_RESULTS_STORAGE_KEY,
+      );
+
+      if (!storedValue) {
+        return null;
+      }
+
+      const parsedValue = JSON.parse(
+        storedValue,
+      ) as Partial<StoredGeneratedResults>;
+
+      if (!Array.isArray(parsedValue.recipeIds)) {
+        this.clearStoredGeneratedResults();
+        return null;
+      }
+
+      return {
+        recipeIds: parsedValue.recipeIds.filter(this.isString),
+        newRecipeIds: Array.isArray(parsedValue.newRecipeIds)
+          ? parsedValue.newRecipeIds.filter(this.isString)
+          : [],
+        preferences: parsedValue.preferences ?? null,
+      };
+    } catch {
+      this.clearStoredGeneratedResults();
+      return null;
+    }
+  }
+
+  /** Clears the stored latest recipe result. */
+  private clearStoredGeneratedResults(): void {
+    try {
+      sessionStorage.removeItem(LAST_GENERATED_RESULTS_STORAGE_KEY);
+    } catch {
+      return;
+    }
+  }
+
+  /** Checks whether one value is a string. */
+  private isString(value: unknown): value is string {
+    return typeof value === 'string';
   }
 
   /** Creates and stores one failed generation result. */
@@ -189,6 +295,7 @@ export class RecipeGenerationService {
     }
 
     this.setGeneratedRecipes(recipes);
+    this.storeGeneratedResults(recipes);
     this.completeSuccessfulGeneration();
 
     return { status: 'success', source: 'n8n', recipes, error: null };

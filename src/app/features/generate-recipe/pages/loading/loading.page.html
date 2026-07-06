@@ -12,11 +12,11 @@
     </section>
 
     @if (showErrorPopup()) {
-    <div class="loading-page__overlay" (click)="closeErrorPopup()">
+    <div class="loading-page__overlay" (click)="returnToIngredients()">
         <aside class="loading-page__popup" role="dialog" aria-modal="true" aria-labelledby="loading-popup-title"
             aria-describedby="loading-popup-description" (click)="$event.stopPropagation()">
             <button class="loading-page__popup-close" type="button" aria-label="Close message"
-                (click)="closeErrorPopup()">
+                (click)="returnToIngredients()">
                 <img src="assets/images/svg/close-x.svg" alt="" aria-hidden="true" />
             </button>
 

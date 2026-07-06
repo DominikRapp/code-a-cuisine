@@ -12,9 +12,9 @@
             {{ getResultDescription() }}
         </p>
 
-        @if (preferenceTags.length > 0) {
+        @if (preferenceTags().length > 0) {
         <ul class="results-page__tags" aria-label="Selected recipe preferences">
-            @for (tag of preferenceTags; track tag) {
+            @for (tag of preferenceTags(); track tag) {
             <li class="results-page__tag">{{ tag }}</li>
             }
         </ul>
@@ -24,7 +24,7 @@
     </section>
 
     <section class="results-page__recipes" aria-label="Generated recipe suggestions">
-        @for (recipe of recipes; track recipe.id; let index = $index) {
+        @for (recipe of recipes(); track recipe.id; let index = $index) {
         <article class="results-page__recipe-card">
             <header class="results-page__recipe-header">
                 <img class="results-page__recipe-icon" src="assets/images/svg/result-recipe.svg" alt=""
@@ -51,7 +51,7 @@
             </p>
 
             <a class="results-page__view-link" [routerLink]="getRecipeDetailRoute(recipe)"
-                [queryParams]="detailQueryParams">
+                [queryParams]="getDetailQueryParams()">
                 View
             </a>
         </article>
