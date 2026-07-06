@@ -12,7 +12,7 @@
     flex-wrap: wrap;
     gap: 8px;
     margin: 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-tertiary);
     line-height: 24px;
 }
@@ -37,24 +37,24 @@
     border: 0;
     border-radius: 5px;
     background: transparent;
-    color: var(--app-color-recipe-heart);
+    color: var(--app-color-action-green);
     cursor: pointer;
     transition: background-color 160ms ease;
 }
 
 .recipe-detail__heart-button:not(.recipe-detail__heart-button--liked):hover,
 .recipe-detail__heart-button:not(.recipe-detail__heart-button--liked):focus-visible {
-    background: var(--app-color-recipe-heart-hover-bg);
+    background: var(--app-color-interactive-hover-bg);
     outline: none;
 }
 
 .recipe-detail__heart-button--liked {
     background: transparent;
-    color: var(--app-color-recipe-heart);
+    color: var(--app-color-action-green);
 }
 
 .recipe-detail__heart-button--liked:focus-visible {
-    outline: 2px solid var(--app-color-recipe-heart);
+    outline: 2px solid var(--app-color-action-green);
     outline-offset: 3px;
 }
 
@@ -89,7 +89,7 @@
     margin: 0 auto;
     padding: 32px 40px;
     border-radius: 20px;
-    background: #ecf0ec;
+    background: var(--app-color-recipe-new-link-hover-bg);
     box-sizing: border-box;
 }
 
@@ -97,7 +97,7 @@
     flex: 1 1 auto;
     min-width: 0;
     margin: 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 24px;
     font-weight: 600;
@@ -129,7 +129,7 @@
 .recipe-detail__cookbook-button:hover,
 .recipe-detail__cookbook-button:focus-visible {
     background: var(--app-color-generate-next-hover-bg);
-    color: var(--app-color-generate-next-hover-text);
+    color: var(--app-color-white);
     outline: none;
 }
 

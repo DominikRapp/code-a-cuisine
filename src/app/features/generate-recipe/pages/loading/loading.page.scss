@@ -36,7 +36,7 @@
     justify-content: center;
     width: 253px;
     height: 309px;
-    background: var(--app-color-generate-card);
+    background: var(--app-color-sage-surface);
     border-radius: 20px;
     overflow: hidden;
 }
@@ -64,7 +64,7 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    background: rgba(12, 33, 8, 0.4);
+    background: var(--app-color-loading-overlay);
     z-index: 10;
 }
 
@@ -75,7 +75,7 @@
     width: 567px;
     min-height: 345px;
     padding: 58px 64px 48px;
-    background: #2f532f;
+    background: var(--app-color-loading-popup);
     border-radius: 30px;
     animation: loading-popup-move-in 400ms linear;
 }

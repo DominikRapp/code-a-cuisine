@@ -1,7 +1,7 @@
 :host {
     display: block;
     min-height: 100vh;
-    background: var(--app-color-page-background);
+    background: var(--app-color-white);
 }
 
 .legal-page {
@@ -9,7 +9,7 @@
     max-width: var(--app-page-max-width);
     margin: 0 auto;
     padding: 48px;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
 }
 
 .legal-page__header {
@@ -64,7 +64,7 @@
 
 .legal-page__meta {
     margin: 16px 0 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 16px;
     font-weight: 500;
@@ -73,7 +73,7 @@
 
 .legal-page__intro {
     margin: 24px 0 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 20px;
     font-weight: 500;
@@ -96,7 +96,7 @@
 .legal-page__text,
 .legal-page__address,
 .legal-page__list {
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 18px;
     font-weight: 500;
@@ -123,8 +123,8 @@
     margin-top: 20px;
     padding: 18px 20px;
     border-radius: 8px;
-    background: var(--app-color-generate-card);
-    color: var(--app-color-generate-text);
+    background: var(--app-color-sage-surface);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 17px;
     font-weight: 600;

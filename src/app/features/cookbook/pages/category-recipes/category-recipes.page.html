@@ -29,7 +29,8 @@
         <ol class="category-recipes-page__recipe-list">
             @for (recipe of recipes(); track recipe.id; let index = $index) {
             <li class="category-recipes-page__recipe-item">
-                <a class="category-recipes-page__recipe-link" [routerLink]="getRecipeDetailRoute(recipe)">
+                <a class="category-recipes-page__recipe-link" [routerLink]="getRecipeDetailRoute(recipe)"
+                    [queryParams]="getRecipeDetailQueryParams()">
                     <span class="category-recipes-page__recipe-number">
                         {{ index + 1 }}.
                     </span>

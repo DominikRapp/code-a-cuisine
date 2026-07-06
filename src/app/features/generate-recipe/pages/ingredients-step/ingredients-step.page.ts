@@ -50,8 +50,9 @@ export class IngredientsStepPage implements OnInit {
     readonly missingIngredientCount = computed(() => this.getMissingIngredientCount());
     readonly remainingGenerations = this.recipeGenerationQuotaStatusService.remainingGenerations;
 
-    /** Refreshes the quota status without blocking the ingredient page. */
+    /** Restores the current ingredient list and refreshes the quota without blocking the page. */
     ngOnInit(): void {
+        this.ingredients.set(this.recipeGenerationService.getIngredients());
         void this.recipeGenerationQuotaStatusService.refreshIfNeeded();
     }
 
@@ -62,7 +63,7 @@ export class IngredientsStepPage implements OnInit {
             return;
         }
 
-        this.recipeGenerationService.setIngredients(this.ingredients());
+        this.persistIngredients();
     }
 
     /** Updates the current ingredient name input. */
@@ -100,6 +101,7 @@ export class IngredientsStepPage implements OnInit {
             return;
         }
         this.ingredients.update((items) => [...items, this.createIngredient(amount)]);
+        this.persistIngredients();
         this.resetIngredientForm();
     }
 
@@ -132,6 +134,7 @@ export class IngredientsStepPage implements OnInit {
                 updateRecipeIngredientAmountAndUnit(item, ingredientId, amount, this.editUnit()),
             ),
         );
+        this.persistIngredients();
         this.cancelEdit();
     }
 
@@ -145,6 +148,8 @@ export class IngredientsStepPage implements OnInit {
     /** Removes one ingredient from the list. */
     deleteIngredient(ingredientId: string): void {
         this.ingredients.update((items) => items.filter((item) => item.id !== ingredientId));
+        this.persistIngredients();
+
         if (this.editingIngredientId() === ingredientId) {
             this.cancelEdit();
         }
@@ -234,6 +239,11 @@ export class IngredientsStepPage implements OnInit {
     /** Creates a selected ingredient from the current form values. */
     private createIngredient(amount: number): RecipeIngredient {
         return createRecipeIngredient(this.ingredientName(), amount, this.selectedUnit());
+    }
+
+    /** Keeps the active ingredient draft in sync while navigating between steps. */
+    private persistIngredients(): void {
+        this.recipeGenerationService.setIngredients(this.ingredients());
     }
 
     /** Resets the add ingredient form to its initial state. */

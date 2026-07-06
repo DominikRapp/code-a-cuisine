@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { APP_ROUTES } from '../../../core/config/app-routes.config';
+import { isRecipeCuisine } from '../../../shared/data/recipe-cuisine.data';
+import { buildCookbookCategoryRoute } from '../../../shared/utils/recipe-route.util';
 import { RECIPE_GENERATION_CONFIG } from '../../../core/config/recipe-generation.config';
 import { RecipeDataService } from '../../../core/services/recipe-data.service';
 import {
@@ -39,6 +41,7 @@ export class RecipeDetailPage {
   private readonly requestedServings = this.getRequestedServings();
 
   readonly recipe = computed(() => this.getRecipeFromRoute());
+  readonly backDestination = this.getBackDestination();
 
   constructor() {
     this.redirectWithoutRecipe();
@@ -116,6 +119,48 @@ export class RecipeDetailPage {
     const servings = Number(this.route.snapshot.queryParamMap.get('servings'));
 
     return this.isValidServingCount(servings) ? servings : null;
+  }
+
+  /** Returns the correct back destination for the current recipe detail source. */
+  private getBackDestination(): {
+    route: string;
+    label: string;
+    queryParams: { page: number } | null;
+  } {
+    const source = this.route.snapshot.queryParamMap.get('source');
+
+    if (source === 'results') {
+      return {
+        route: `/${APP_ROUTES.generateResults}`,
+        label: 'Recipe results',
+        queryParams: null,
+      };
+    }
+
+    if (source === 'category') {
+      const categoryId = this.route.snapshot.queryParamMap.get('categoryId');
+
+      if (isRecipeCuisine(categoryId)) {
+        return {
+          route: buildCookbookCategoryRoute(categoryId),
+          label: `${getRecipeCuisineLabel(categoryId)} recipes`,
+          queryParams: this.getCategoryPageQueryParams(),
+        };
+      }
+    }
+
+    return {
+      route: `/${APP_ROUTES.cookbook}`,
+      label: 'Cookbook',
+      queryParams: null,
+    };
+  }
+
+  /** Returns the original category page when it is valid. */
+  private getCategoryPageQueryParams(): { page: number } | null {
+    const page = Number(this.route.snapshot.queryParamMap.get('page'));
+
+    return Number.isInteger(page) && page > 0 ? { page } : null;
   }
 
   /** Checks whether one route serving count is allowed. */

@@ -10,7 +10,6 @@ export const environment = {
     appId: 'YOUR_FIREBASE_APP_ID',
   },
   n8n: {
-    recipeGenerationWebhookUrl: 'YOUR_N8N_RECIPE_GENERATION_WEBHOOK_URL',
-    recipeQuotaStatusWebhookUrl: 'YOUR_N8N_RECIPE_QUOTA_STATUS_WEBHOOK_URL',
+    recipeGenerationWebhookUrl: 'YOUR_N8N_RECIPE_GENERATION_WEBHOOK_URL'
   },
 };

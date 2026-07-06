@@ -32,7 +32,7 @@ export class CategoryRecipesPage {
 
   readonly category = this.getCategoryFromRoute();
   readonly config = RECIPE_CATEGORY_DISPLAY_CONFIG[this.category];
-  readonly currentPage = signal(1);
+  readonly currentPage = signal(this.getPageFromRoute());
   readonly allRecipes = computed(() => this.recipeDataService.getRecipesByCuisine(this.category));
   readonly pageCount = computed(() => Math.ceil(this.allRecipes().length / this.pageSize));
   readonly pageNumbers = computed(() => this.getPageNumbers());
@@ -41,6 +41,19 @@ export class CategoryRecipesPage {
   /** Returns the detail route for a recipe. */
   getRecipeDetailRoute(recipe: GeneratedRecipe): string {
     return buildRecipeDetailRoute(recipe);
+  }
+
+  /** Returns category-specific query parameters for recipe detail links. */
+  getRecipeDetailQueryParams(): {
+    source: 'category';
+    categoryId: RecipeCuisine;
+    page: number;
+  } {
+    return {
+      source: 'category',
+      categoryId: this.category,
+      page: this.currentPage(),
+    };
   }
 
   /** Returns the display label for a recipe cooking time. */
@@ -88,6 +101,13 @@ export class CategoryRecipesPage {
 
     this.router.navigate([APP_ROUTES.cookbook]);
     return 'italian';
+  }
+
+  /** Returns the requested category page from the route. */
+  private getPageFromRoute(): number {
+    const page = Number(this.route.snapshot.queryParamMap.get('page'));
+
+    return Number.isInteger(page) && page > 0 ? page : 1;
   }
 
   /** Returns visible recipes for the current page. */

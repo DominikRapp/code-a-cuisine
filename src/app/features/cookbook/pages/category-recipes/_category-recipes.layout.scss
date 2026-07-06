@@ -1,7 +1,7 @@
 :host {
     display: block;
     min-height: 100vh;
-    background: var(--app-color-page-background);
+    background: var(--app-color-white);
 }
 
 .category-recipes-page {
@@ -62,7 +62,7 @@
 .category-recipes-page__generate-link:hover,
 .category-recipes-page__generate-link:focus-visible {
     background: var(--app-color-action-green);
-    color: var(--app-color-generate-next-hover-text);
+    color: var(--app-color-white);
     outline: none;
 }
 

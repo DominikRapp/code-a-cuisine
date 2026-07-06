@@ -22,7 +22,7 @@
 }
 
 .ingredients-step__list-item:hover:not(.ingredients-step__list-item--editing) {
-    background: var(--app-color-generate-input-warm);
+    background: var(--app-color-cream-warm);
 }
 
 .ingredients-step__ingredient-marker,
@@ -59,7 +59,7 @@
     border: 0;
     border-radius: 2px;
     background: transparent;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     cursor: pointer;
 }
 
@@ -83,17 +83,17 @@
 .ingredients-step__item-button--edit:active,
 .ingredients-step__item-button--delete:active {
     background: var(--app-color-generate-icon-action-bg);
-    color: var(--app-color-generate-next-hover-text);
+    color: var(--app-color-white);
 }
 
 .ingredients-step__item-button--check:hover,
 .ingredients-step__item-button--check:focus-visible {
-    background: var(--app-color-generate-input-warm);
+    background: var(--app-color-cream-warm);
     outline: none;
 }
 
 .ingredients-step__item-button--check:active {
-    background: var(--app-color-generate-input-warm);
+    background: var(--app-color-cream-warm);
     color: var(--app-color-action-green);
 }
 
@@ -134,10 +134,10 @@
     border: 0;
     border-radius: 20px;
     outline: none;
-    background: var(--app-color-generate-input-warm);
+    background: var(--app-color-cream-warm);
     box-shadow: none;
     caret-color: var(--app-color-generate-caret);
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 16px;
     font-weight: 500;

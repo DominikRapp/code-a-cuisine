@@ -33,15 +33,15 @@
     .category-recipes-page__page-link:hover,
     .category-recipes-page__page-link:focus-visible {
         background: transparent;
-        color: var(--app-color-generate-text);
+        color: var(--app-color-text-primary);
         outline: none;
     }
 
     .category-recipes-page__page-link[aria-current='page'],
     .category-recipes-page__page-link[aria-current='page']:hover,
     .category-recipes-page__page-link[aria-current='page']:focus-visible {
-        background: var(--app-color-generate-card);
-        color: var(--app-color-generate-text);
+        background: var(--app-color-sage-surface);
+        color: var(--app-color-text-primary);
     }
 }
 

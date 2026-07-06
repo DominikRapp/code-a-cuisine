@@ -1,7 +1,7 @@
 :host {
     display: block;
     min-height: 100vh;
-    background: var(--app-color-page-background);
+    background: var(--app-color-white);
 }
 
 .preferences-step {
@@ -9,7 +9,7 @@
     min-height: 100vh;
     margin: 0 auto;
     padding: 48px;
-    background: var(--app-color-page-background);
+    background: var(--app-color-white);
     font-family: var(--app-font-family-primary);
     box-sizing: border-box;
 }
@@ -37,7 +37,7 @@
 
 .preferences-step__title {
     margin: 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 28px;
     font-weight: 600;
@@ -70,7 +70,7 @@
 .preferences-step__generate-button:not(:disabled):hover,
 .preferences-step__generate-button:not(:disabled):focus-visible {
     background: var(--app-color-generate-next-hover-bg);
-    color: var(--app-color-generate-next-hover-text);
+    color: var(--app-color-white);
     outline: none;
 }
 

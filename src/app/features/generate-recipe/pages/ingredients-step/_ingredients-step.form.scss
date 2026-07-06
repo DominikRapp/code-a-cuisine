@@ -15,7 +15,7 @@
     background: var(--app-color-generate-input);
     box-shadow: none;
     caret-color: var(--app-color-generate-caret);
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 16px;
     font-weight: 500;
@@ -59,7 +59,7 @@
     min-height: 28px;
     padding: 0 16px;
     border-radius: 14px;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 16px;
     font-weight: 500;
@@ -87,10 +87,10 @@
     border: 0;
     border-radius: 20px;
     outline: none;
-    background: var(--app-color-generate-input-warm);
+    background: var(--app-color-cream-warm);
     box-shadow: none;
     caret-color: var(--app-color-generate-caret);
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 18px;
     font-weight: 500;
@@ -121,8 +121,8 @@
     border: 0;
     border-radius: 20px;
     outline: none;
-    background: var(--app-color-generate-input-warm);
-    color: var(--app-color-generate-text);
+    background: var(--app-color-cream-warm);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 16px;
     font-weight: 500;
@@ -157,7 +157,7 @@
     min-height: 28px;
     padding: 0 12px;
     border-radius: 20px;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 16px;
     font-weight: 500;
@@ -182,13 +182,13 @@
     border: 0;
     border-radius: 5px;
     background: transparent;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     cursor: pointer;
 }
 
 .ingredients-step__add-button:hover:not(:disabled),
 .ingredients-step__add-button:focus-visible:not(:disabled) {
-    background: var(--app-color-generate-input-warm);
+    background: var(--app-color-cream-warm);
     color: var(--app-color-brand-green);
     outline: none;
 }

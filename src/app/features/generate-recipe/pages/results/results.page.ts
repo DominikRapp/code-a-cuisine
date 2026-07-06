@@ -74,10 +74,15 @@ export class ResultsPage {
     return buildPreferenceTags(this.recipeGenerationService.getPreferences());
   }
 
-  /** Returns the requested servings for recipe detail links. */
-  private getDetailQueryParams(): { servings: number } | null {
+  /** Returns result-specific query parameters for recipe detail links. */
+  private getDetailQueryParams(): {
+    source: 'results';
+    servings?: number;
+  } {
     const servings = this.recipeGenerationService.getPreferences()?.servings;
 
-    return servings ? { servings } : null;
+    return servings
+      ? { source: 'results', servings }
+      : { source: 'results' };
   }
 }

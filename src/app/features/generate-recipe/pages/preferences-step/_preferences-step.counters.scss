@@ -14,7 +14,7 @@
 
 .preferences-step__counter-title {
     margin: 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 20px;
     font-weight: 500;
@@ -38,7 +38,7 @@
     border: 0;
     border-radius: 4px;
     background: transparent;
-    color: var(--app-color-preferences-icon);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 8px;
     font-weight: 600;
@@ -55,13 +55,13 @@
 
 .preferences-step__counter-button:not(:disabled):hover,
 .preferences-step__counter-button:focus-visible {
-    background: var(--app-color-preferences-counter-hover);
-    color: var(--app-color-preferences-icon);
+    background: var(--app-color-interactive-hover-bg);
+    color: var(--app-color-text-primary);
     outline: none;
 }
 
 .preferences-step__counter-button:not(:disabled):active {
-    background: var(--app-color-preferences-counter-active);
+    background: var(--app-color-sage-surface);
     transform: none;
 }
 
@@ -72,7 +72,7 @@
     min-width: 24px;
     height: 24px;
     background: var(--app-color-preferences-card);
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 20px;
     font-weight: 500;
@@ -83,7 +83,7 @@
     display: inline-flex;
     align-items: center;
     width: 72px;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 20px;
     font-weight: 500;

@@ -3,7 +3,7 @@
     .preferences-step__counter-button:not(:disabled):hover,
     .preferences-step__counter-button:focus-visible {
         background: transparent;
-        color: var(--app-color-preferences-icon);
+        color: var(--app-color-text-primary);
         outline: none;
     }
 
@@ -15,7 +15,7 @@
     .preferences-step__tag-input:checked+.preferences-step__tag:hover,
     .preferences-step__tag-input:checked:focus-visible+.preferences-step__tag {
         background: var(--app-color-preferences-tag-active);
-        color: var(--app-color-generate-text);
+        color: var(--app-color-text-primary);
     }
 
     .preferences-step__back-text {

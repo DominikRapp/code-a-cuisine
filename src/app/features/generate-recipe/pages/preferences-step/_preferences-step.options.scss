@@ -27,7 +27,7 @@
     gap: 8px;
     margin: 0;
     padding: 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 24px;
     font-weight: 500;
@@ -91,7 +91,7 @@
 
 .preferences-step__tag-input:checked+.preferences-step__tag {
     background: var(--app-color-preferences-tag-active);
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     box-shadow: none;
 }
 

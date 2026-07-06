@@ -1,7 +1,7 @@
 :host {
     display: block;
     min-height: 100vh;
-    background: var(--app-color-page-background);
+    background: var(--app-color-white);
 }
 
 .ingredients-step {
@@ -9,7 +9,7 @@
     min-height: 100vh;
     margin: 0 auto;
     padding: 48px 48px 48px 48px;
-    background: var(--app-color-page-background);
+    background: var(--app-color-white);
     font-family: var(--app-font-family-primary);
     box-sizing: border-box;
 }
@@ -41,7 +41,7 @@
 
 .ingredients-step__description {
     margin-top: 18px;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 24px;
     font-weight: 500;
@@ -51,7 +51,7 @@
 .ingredients-step__quota-status {
     min-height: 22px;
     margin: 8px 0 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 18px;
     font-weight: 500;
@@ -71,7 +71,7 @@
     width: 577px;
     min-height: 209px;
     border-radius: 14px;
-    background: var(--app-color-generate-card);
+    background: var(--app-color-sage-surface);
     box-sizing: border-box;
 }
 
@@ -79,7 +79,7 @@
     width: 478px;
     min-height: 230px;
     border-radius: 14px;
-    background: var(--app-color-generate-card);
+    background: var(--app-color-sage-surface);
     box-sizing: border-box;
     padding: 22px 28px 24px;
 }
@@ -119,7 +119,7 @@
 .ingredients-step__label,
 .ingredients-step__list-title {
     margin: 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 20px;
     font-weight: 500;
@@ -136,7 +136,7 @@
 
 .ingredients-step__minimum-hint {
     margin: 0 0 10px;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 16px;
     font-weight: 500;
@@ -150,7 +150,7 @@
     width: 162px;
     height: 62px;
     background: var(--app-color-generate-next-bg);
-    color: var(--app-color-generate-next-text);
+    color: var(--app-color-cream-warm);
     font-family: var(--app-font-family-primary);
     font-size: 24px;
     font-weight: 600;
@@ -167,6 +167,6 @@
 .ingredients-step__next-link:hover,
 .ingredients-step__next-link:focus-visible {
     background: var(--app-color-generate-next-hover-bg);
-    color: var(--app-color-generate-next-hover-text);
+    color: var(--app-color-white);
     outline: none;
 }

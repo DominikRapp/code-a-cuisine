@@ -189,9 +189,15 @@ export class RecipeGenerationService {
     }
 
     this.setGeneratedRecipes(recipes);
-    this.clearLastError();
+    this.completeSuccessfulGeneration();
 
     return { status: 'success', source: 'n8n', recipes, error: null };
+  }
+
+  /** Clears only the completed ingredient input after successful results are available. */
+  private completeSuccessfulGeneration(): void {
+    this.ingredients.set([]);
+    this.clearLastError();
   }
 
   /** Clears the ids of recipes newly generated for the latest request. */

@@ -22,16 +22,19 @@ export class N8nWorkflowService {
         await firstValueFrom(this.http.post(webhookUrl, { requestId }));
     }
 
-    /** Gets the current available recipe generation count. */
+    /** Gets the current available recipe generation count through the main workflow. */
     async getRecipeGenerationQuotaStatus(): Promise<RecipeGenerationQuotaStatus | null> {
-        const webhookUrl = N8N_WORKFLOW_CONFIG.recipeQuotaStatusWebhookUrl;
+        const webhookUrl = N8N_WORKFLOW_CONFIG.recipeGenerationWebhookUrl;
 
         if (!webhookUrl) {
             return null;
         }
 
         try {
-            const status = await firstValueFrom(this.http.get<unknown>(webhookUrl));
+            const status = await firstValueFrom(
+                this.http.post<unknown>(webhookUrl, { mode: 'quota-status' }),
+            );
+
             return this.isRecipeGenerationQuotaStatus(status) ? status : null;
         } catch {
             return null;

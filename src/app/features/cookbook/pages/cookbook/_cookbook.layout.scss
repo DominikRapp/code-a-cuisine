@@ -1,7 +1,7 @@
 :host {
     display: block;
     min-height: 100vh;
-    background: var(--app-color-page-background);
+    background: var(--app-color-white);
 }
 
 .cookbook-page {
@@ -37,7 +37,7 @@
     margin: 48px auto 0;
     padding: 40px 24px;
     border-radius: 20px;
-    background: #f7f9f7;
+    background: var(--app-color-cookbook-intro-card);
     box-sizing: border-box;
 }
 
@@ -57,7 +57,7 @@
 .cookbook-page__description {
     max-width: 390px;
     margin: 8px 0 0;
-    color: var(--app-color-generate-text);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-primary);
     font-size: 24px;
     font-weight: 500;

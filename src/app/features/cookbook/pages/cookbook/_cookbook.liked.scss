@@ -52,7 +52,7 @@
     height: 124px;
     padding: 14px 16px;
     border-radius: 16px;
-    background: #e4e8e4;
+    background: var(--app-color-cookbook-liked-card);
     color: var(--app-color-generate-title);
     text-decoration: none;
     scroll-snap-align: nearest;
@@ -105,8 +105,8 @@
     width: 64px;
     height: 32px;
     border-radius: 30px;
-    background: #b0c0b0;
-    color: var(--app-color-generate-text);
+    background: var(--app-color-cookbook-liked-count);
+    color: var(--app-color-text-primary);
     font-family: var(--app-font-family-tertiary);
     font-size: 16px;
     font-weight: 500;

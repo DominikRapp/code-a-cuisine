@@ -82,7 +82,6 @@ firebase/
 n8n/
   workflows/
     Code a Cuisine - Recipe Generation.json
-    Code a Cuisine - Recipe Quota Status.json
     Code a Cuisine - Data Cleanup.json
     Code a Cuisine - Workflow Errors.json
 
@@ -127,10 +126,7 @@ export const environment = {
         appId: 'YOUR_FIREBASE_APP_ID',
     },
     n8n: {
-        recipeGenerationWebhookUrl:
-            'YOUR_N8N_RECIPE_GENERATION_WEBHOOK_URL',
-        recipeQuotaStatusWebhookUrl:
-            'YOUR_N8N_RECIPE_QUOTA_STATUS_WEBHOOK_URL',
+        recipeGenerationWebhookUrl: 'YOUR_N8N_RECIPE_GENERATION_WEBHOOK_URL',
     },
 };
 ```
@@ -238,7 +234,6 @@ These rules are suitable only for this temporary project setup. They must be rep
 Import these workflows into n8n:
 
 * [Recipe Generation](n8n/workflows/Code%20a%20Cuisine%20-%20Recipe%20Generation.json)
-* [Recipe Quota Status](n8n/workflows/Code%20a%20Cuisine%20-%20Recipe%20Quota%20Status.json)
 * [Data Cleanup](n8n/workflows/Code%20a%20Cuisine%20-%20Data%20Cleanup.json)
 * [Workflow Errors](n8n/workflows/Code%20a%20Cuisine%20-%20Workflow%20Errors.json)
 
@@ -254,12 +249,14 @@ After importing the workflows:
 
 ### Webhook endpoints
 
-| Workflow            | Method | Path                                      |
-| ------------------- | ------ | ----------------------------------------- |
-| Recipe Generation   | `POST` | `code-a-cuisine/recipe-generation`        |
-| Recipe Quota Status | `GET`  | `code-a-cuisine/recipe-generation-status` |
+| Workflow          | Method | Path                               |
+| ----------------- | ------ | ---------------------------------- |
+| Recipe Generation | `POST` | `code-a-cuisine/recipe-generation` |
 
-The quota endpoint returns the currently available generation count without exposing Firebase quota records to the browser.
+The same Recipe Generation webhook handles both requests:
+
+- `{ "requestId": "..." }` starts a recipe-generation request.
+- `{ "mode": "quota-status" }` returns the current available generation count without exposing Firebase quota records to the browser.
 
 ## Daily Generation Limits
 
