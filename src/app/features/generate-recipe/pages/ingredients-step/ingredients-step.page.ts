@@ -37,13 +37,16 @@ export class IngredientsStepPage implements OnInit {
     readonly amountMaxLength = INGREDIENT_AMOUNT_MAX_DIGITS;
     readonly unitOptions = RECIPE_INGREDIENT_UNIT_OPTIONS;
     readonly ingredientName = signal('');
+    readonly ingredientSuggestionsVisible = signal(false);
     readonly ingredientAmount = signal<number | null>(null);
     readonly selectedUnit = signal<RecipeIngredientUnit>('gram');
     readonly ingredients = signal<RecipeIngredient[]>([]);
     readonly editingIngredientId = signal<string | null>(null);
     readonly editAmount = signal<number | null>(null);
     readonly editUnit = signal<RecipeIngredientUnit>('gram');
-    readonly suggestions = computed(() => this.getSuggestions());
+    readonly suggestions = computed(() =>
+        this.ingredientSuggestionsVisible() ? this.getSuggestions() : [],
+    );
     readonly autocompleteCompletion = computed(() => this.getAutocompleteCompletion());
     readonly canAddIngredient = computed(() => this.hasValidIngredientInput());
     readonly canContinueToPreferences = computed(() => this.hasRequiredIngredientCount());
@@ -78,6 +81,22 @@ export class IngredientsStepPage implements OnInit {
         this.ingredientName.set(input.value);
     }
 
+    /** Shows ingredient suggestions while focus stays inside the ingredient input area. */
+    showIngredientSuggestions(): void {
+        this.ingredientSuggestionsVisible.set(true);
+    }
+
+    /** Hides ingredient suggestions after focus leaves the ingredient input area. */
+    hideIngredientSuggestionsWhenFocusLeaves(event: FocusEvent): void {
+        const nextTarget = event.relatedTarget as HTMLElement | null;
+
+        if (nextTarget?.closest('.ingredients-step__ingredient-group')) {
+            return;
+        }
+
+        this.ingredientSuggestionsVisible.set(false);
+    }
+
     /** Updates the current ingredient amount input. */
     setIngredientAmount(event: Event): void {
         this.ingredientAmount.set(this.getSanitizedAmountFromEvent(event));
@@ -89,9 +108,15 @@ export class IngredientsStepPage implements OnInit {
         dropdown.open = false;
     }
 
-    /** Uses a suggested ingredient as the current input. */
-    selectSuggestion(name: string): void {
+    /** Uses a suggested ingredient and keeps focus in the ingredient input. */
+    selectSuggestion(
+        event: Event,
+        name: string,
+        ingredientNameInput: HTMLInputElement,
+    ): void {
+        event.preventDefault();
         this.ingredientName.set(name);
+        ingredientNameInput.focus();
     }
 
     /** Adds the ingredient to the visible ingredient list. */
@@ -174,6 +199,41 @@ export class IngredientsStepPage implements OnInit {
         }
         event.preventDefault();
         this.focusFirstElement('.ingredients-step__suggestion');
+    }
+
+    /** Moves through ingredient suggestions and returns to the input above the first suggestion. */
+    focusAdjacentSuggestion(
+        event: Event,
+        direction: number,
+        ingredientNameInput: HTMLInputElement,
+    ): void {
+        event.preventDefault();
+
+        const currentSuggestion = event.currentTarget as HTMLElement | null;
+
+        if (!currentSuggestion) {
+            return;
+        }
+
+        const suggestions = this.getSiblingOptions(currentSuggestion);
+        const currentIndex = suggestions.indexOf(currentSuggestion);
+
+        if (currentIndex === -1) {
+            return;
+        }
+
+        if (direction < 0 && currentIndex === 0) {
+            ingredientNameInput.focus();
+            return;
+        }
+
+        const nextIndex = currentIndex + direction;
+
+        if (nextIndex < 0 || nextIndex >= suggestions.length) {
+            return;
+        }
+
+        suggestions[nextIndex]?.focus();
     }
 
     /** Opens a unit dropdown and focuses the first option. */

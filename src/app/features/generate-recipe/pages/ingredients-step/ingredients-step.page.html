@@ -31,16 +31,19 @@
             <fieldset class="ingredients-step__fieldset">
                 <legend class="ingredients-step__legend">Add an ingredient</legend>
 
-                <div class="ingredients-step__ingredient-group">
+                <div class="ingredients-step__ingredient-group"
+                    (focusout)="hideIngredientSuggestionsWhenFocusLeaves($event)">
                     <label class="ingredients-step__label" for="ingredient-name">
                         Ingredient
                     </label>
 
                     <div class="ingredients-step__input-shell">
-                        <input id="ingredient-name" class="ingredients-step__text-input" name="ingredientName"
-                            type="text" inputmode="text" autocomplete="off" aria-autocomplete="list"
-                            aria-controls="ingredient-suggestions" [value]="ingredientName()"
-                            (input)="setIngredientName($event)" (keydown.arrowdown)="focusFirstSuggestion($event)" />
+                        <input #ingredientNameInput id="ingredient-name" class="ingredients-step__text-input"
+                            name="ingredientName" type="text" inputmode="text" autocomplete="off"
+                            aria-autocomplete="list" aria-controls="ingredient-suggestions"
+                            [attr.aria-expanded]="suggestions().length > 0" [value]="ingredientName()"
+                            (focus)="showIngredientSuggestions()" (input)="setIngredientName($event)"
+                            (keydown.arrowdown)="focusFirstSuggestion($event)" />
                         @if (autocompleteCompletion(); as completion) {
                         <span class="ingredients-step__autocomplete-preview" aria-hidden="true">
                             <span class="ingredients-step__autocomplete-prefix">{{ ingredientName() }}</span>{{
@@ -54,10 +57,11 @@
                         aria-label="Ingredient suggestions">
                         @for (suggestion of suggestions(); track suggestion) {
                         <li class="ingredients-step__suggestion" tabindex="0" role="button"
-                            (click)="selectSuggestion(suggestion)" (keydown.enter)="selectSuggestion(suggestion)"
-                            (keydown.space)="selectSuggestion(suggestion)"
-                            (keydown.arrowdown)="focusAdjacentOption($event, 1)"
-                            (keydown.arrowup)="focusAdjacentOption($event, -1)">
+                            (pointerdown)="selectSuggestion($event, suggestion, ingredientNameInput)"
+                            (keydown.enter)="selectSuggestion($event, suggestion, ingredientNameInput)"
+                            (keydown.space)="selectSuggestion($event, suggestion, ingredientNameInput)"
+                            (keydown.arrowdown)="focusAdjacentSuggestion($event, 1, ingredientNameInput)"
+                            (keydown.arrowup)="focusAdjacentSuggestion($event, -1, ingredientNameInput)">
                             {{ suggestion }}
                         </li>
                         }
@@ -233,7 +237,8 @@
                                         xmlns="http://www.w3.org/2000/svg">
                                         <mask id="mask0_4352_3477" style="mask-type:alpha" maskUnits="userSpaceOnUse"
                                             x="2" y="2" width="15" height="15">
-                                            <rect x="2" y="2" width="15" height="15" fill="var(--app-color-icon-mask)" />
+                                            <rect x="2" y="2" width="15" height="15"
+                                                fill="var(--app-color-icon-mask)" />
                                         </mask>
                                         <g mask="url(#mask0_4352_3477)">
                                             <path

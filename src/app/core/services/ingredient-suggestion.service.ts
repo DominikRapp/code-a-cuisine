@@ -18,7 +18,7 @@ export class IngredientSuggestionService {
 
     /** Returns matching ingredient suggestions up to the configured limit. */
     getSuggestions(value: string): string[] {
-        const search = value.trim().toLowerCase();
+        const search = value.toLowerCase();
 
         if (!search) {
             return [];
