@@ -42,6 +42,7 @@ export class PreferencesStepPage {
       return;
     }
 
+    this.recipeGenerationService.startNewRecipe();
     this.savePreferences();
     this.router.navigate([APP_ROUTES.generateLoading]);
   }

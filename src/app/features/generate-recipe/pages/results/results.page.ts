@@ -61,12 +61,13 @@ export class ResultsPage {
     return this.recipeGenerationService.isNewRecipe(recipe.id);
   }
 
+  /** Clears the current result before starting a new recipe flow. */
+  startNewRecipe(): void {
+    this.recipeGenerationService.startNewRecipe();
+  }
+
   /** Restores the latest recipe result or redirects when no result exists. */
   private async restoreResultsOrRedirect(): Promise<void> {
-    if (this.recipes().length > 0) {
-      return;
-    }
-
     const restoredRecipes =
       await this.recipeGenerationService.restoreLastGeneratedResults();
 

@@ -158,6 +158,15 @@ export class RecipeGenerationService {
     this.clearStoredGeneratedResults();
   }
 
+  /** Clears the latest results before a new recipe flow starts. */
+  startNewRecipe(): void {
+    this.clearLastError();
+    this.recipeDataService.clearGeneratedRecipes();
+    this.clearNewRecipeIds();
+    this.lastRequestId.set(null);
+    this.clearStoredGeneratedResults();
+  }
+
   /** Stores the latest successful result ids for the current browser session. */
   private storeGeneratedResults(recipes: GeneratedRecipe[]): void {
     const storedResults: StoredGeneratedResults = {
@@ -167,7 +176,7 @@ export class RecipeGenerationService {
     };
 
     try {
-      sessionStorage.setItem(
+      localStorage.setItem(
         LAST_GENERATED_RESULTS_STORAGE_KEY,
         JSON.stringify(storedResults),
       );
@@ -179,7 +188,7 @@ export class RecipeGenerationService {
   /** Returns the latest stored result ids for the current browser session. */
   private readStoredGeneratedResults(): StoredGeneratedResults | null {
     try {
-      const storedValue = sessionStorage.getItem(
+      const storedValue = localStorage.getItem(
         LAST_GENERATED_RESULTS_STORAGE_KEY,
       );
 
@@ -212,7 +221,7 @@ export class RecipeGenerationService {
   /** Clears the stored latest recipe result. */
   private clearStoredGeneratedResults(): void {
     try {
-      sessionStorage.removeItem(LAST_GENERATED_RESULTS_STORAGE_KEY);
+      localStorage.removeItem(LAST_GENERATED_RESULTS_STORAGE_KEY);
     } catch {
       return;
     }

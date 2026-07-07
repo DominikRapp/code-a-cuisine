@@ -84,7 +84,7 @@
         width: 100%;
         padding: 0 clamp(6px, 2vw, 14px);
         white-space: nowrap;
-        font-size: clamp(15px, 4.4vw, 20px);
+        font-size: clamp(16px, 4.4vw, 20px);
     }
 
     .preferences-step__tag-grid {
@@ -121,7 +121,7 @@
     }
 
     .preferences-step__tag-note {
-        font-size: 14px;
+        font-size: 16px;
         line-height: 20px;
     }
 
@@ -150,7 +150,7 @@
 
     .preferences-step__time-options .preferences-step__tag {
         padding: 0 6px;
-        font-size: clamp(14px, 4.6vw, 16px);
+        font-size: clamp(16px, 4.6vw, 16px);
     }
 
     .preferences-step__tag-grid {

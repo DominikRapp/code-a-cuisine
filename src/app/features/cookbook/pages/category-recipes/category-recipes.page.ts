@@ -16,6 +16,7 @@ import {
 } from '../../../../shared/models/recipe-generation.model';
 import { RECIPE_CATEGORY_PAGE_SIZE } from '../../../../core/config/recipe-list.config';
 import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer';
+import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
 
 @Component({
   selector: 'app-category-recipes-page',
@@ -28,6 +29,7 @@ export class CategoryRecipesPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly recipeDataService = inject(RecipeDataService);
+  private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly pageSize = RECIPE_CATEGORY_PAGE_SIZE;
 
   readonly category = this.getCategoryFromRoute();
@@ -89,6 +91,11 @@ export class CategoryRecipesPage {
   /** Returns true when next navigation is possible. */
   canGoToNextPage(): boolean {
     return this.currentPage() < this.pageCount();
+  }
+
+  /** Clears the current result before starting a new recipe flow. */
+  startNewRecipe(): void {
+    this.recipeGenerationService.startNewRecipe();
   }
 
   /** Returns the selected category from the route. */

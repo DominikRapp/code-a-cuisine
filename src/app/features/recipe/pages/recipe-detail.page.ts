@@ -5,6 +5,7 @@ import { isRecipeCuisine } from '../../../shared/data/recipe-cuisine.data';
 import { buildCookbookCategoryRoute } from '../../../shared/utils/recipe-route.util';
 import { RECIPE_GENERATION_CONFIG } from '../../../core/config/recipe-generation.config';
 import { RecipeDataService } from '../../../core/services/recipe-data.service';
+import { RecipeGenerationService } from '../../../core/services/recipe-generation.service';
 import {
   GeneratedRecipe,
   RecipeCookingTime,
@@ -37,6 +38,7 @@ export class RecipeDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly recipeDataService = inject(RecipeDataService);
+  private readonly recipeGenerationService = inject(RecipeGenerationService);
   private readonly recipeId = this.route.snapshot.paramMap.get('recipeId') ?? '';
   private readonly requestedServings = this.getRequestedServings();
 
@@ -45,6 +47,11 @@ export class RecipeDetailPage {
 
   constructor() {
     this.redirectWithoutRecipe();
+  }
+
+  /** Clears the current result before starting a new recipe flow. */
+  startNewRecipe(): void {
+    this.recipeGenerationService.startNewRecipe();
   }
 
   /** Toggles the local like state for the selected recipe. */

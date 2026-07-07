@@ -13,6 +13,7 @@ import {
   buildRecipeDetailRoute,
 } from '../../../../shared/utils/recipe-route.util';
 import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer';
+import { RecipeGenerationService } from '../../../../core/services/recipe-generation.service';
 
 @Component({
   selector: 'app-cookbook-page',
@@ -23,6 +24,7 @@ import { LegalFooter } from '../../../../shared/layout/legal-footer/legal-footer
 })
 export class CookbookPage {
   private readonly recipeDataService = inject(RecipeDataService);
+  private readonly recipeGenerationService = inject(RecipeGenerationService);
 
   readonly cuisineCards = RECIPE_CUISINE_CARDS;
   readonly mostLikedRecipes = computed(() =>
@@ -42,6 +44,11 @@ export class CookbookPage {
   /** Returns the detail route for a recipe. */
   getRecipeDetailRoute(recipe: GeneratedRecipe): string {
     return buildRecipeDetailRoute(recipe);
+  }
+
+  /** Clears the current result before starting a new recipe flow. */
+  startNewRecipe(): void {
+    this.recipeGenerationService.startNewRecipe();
   }
 
   /** Converts vertical wheel movement into horizontal recipe scrolling. */
